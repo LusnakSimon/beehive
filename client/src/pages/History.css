@@ -1,0 +1,45 @@
+.history {
+  padding: 1rem 0;
+}
+
+.history h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.time-range-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.chart-container {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.chart-container h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .history h1 {
+    font-size: 1.5rem;
+  }
+  
+  .time-range-selector {
+    width: 100%;
+  }
+  
+  .time-range-selector .btn {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+}
