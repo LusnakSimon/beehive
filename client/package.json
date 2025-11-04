@@ -15,9 +15,7 @@
     "recharts": "^2.10.3"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.0.4",
-    "vite": "^5.0.8",
-    "vite-plugin-pwa": "^0.17.4",
-    "workbox-window": "^7.0.0"
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8"
   }
 }
