@@ -41,13 +41,13 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\./i,
+            urlPattern: /^https:\/\/.*\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 // 1 hour
+                maxAgeSeconds: 60 * 60
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -58,6 +58,11 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      external: []
+    }
+  },
   server: {
     port: 3000,
     proxy: {
