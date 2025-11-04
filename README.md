@@ -367,7 +367,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## 📞 Contact
 
-**Simon Lušňák**  
+**Šimon Lušňák**  
 - GitHub: [@LusnakSimon](https://github.com/LusnakSimon)
 - Repository: https://github.com/LusnakSimon/beehive
 
