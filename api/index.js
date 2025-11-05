@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit'
 import { waitUntil } from '@vercel/functions'
 import sensorRoutes from './routes/sensor.js'
 import esp32Routes from './routes/esp32.js'
+import testDataRoutes from './routes/testData.js'
 
 const app = express()
 
@@ -62,6 +63,7 @@ async function connectDB() {
 // Routes
 app.use('/api/sensor', sensorRoutes)
 app.use('/api/esp32', esp32Routes)
+app.use('/api/test', testDataRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ 
