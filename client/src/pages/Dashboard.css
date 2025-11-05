@@ -38,13 +38,20 @@
   border-radius: 50%;
   font-size: 1.5rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
   backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .refresh-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
+}
+
+.refresh-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .refresh-btn.refreshing {
@@ -52,8 +59,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { 
+    transform: rotate(0deg);
+  }
+  to { 
+    transform: rotate(360deg);
+  }
 }
 
 /* Status Banner */
@@ -219,6 +230,7 @@
   margin: 1rem -0.5rem 0.75rem;
   opacity: 0.8;
   transition: opacity 0.3s;
+  min-height: 60px;
 }
 
 .metric-card-modern:hover .mini-chart {

@@ -302,6 +302,11 @@
   .chart-card h3 {
     font-size: 1rem;
   }
+
+  /* Increase chart height on mobile for better readability */
+  .chart-card .recharts-responsive-container {
+    min-height: 280px !important;
+  }
 }
 
 @media (min-width: 1024px) {

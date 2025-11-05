@@ -177,7 +177,7 @@ export default function Dashboard() {
           </div>
           {history24h.length > 0 && (
             <div className="mini-chart">
-              <ResponsiveContainer width="100%" height={50}>
+              <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={getMiniChartData('temperature')}>
                   <Line type="monotone" dataKey="value" stroke={getMetricStatus('temperature', data.temperature).color} strokeWidth={2} dot={false} />
                   <Tooltip 
@@ -213,7 +213,7 @@ export default function Dashboard() {
           </div>
           {history24h.length > 0 && (
             <div className="mini-chart">
-              <ResponsiveContainer width="100%" height={50}>
+              <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={getMiniChartData('humidity')}>
                   <Line type="monotone" dataKey="value" stroke={getMetricStatus('humidity', data.humidity).color} strokeWidth={2} dot={false} />
                   <Tooltip 
@@ -249,7 +249,7 @@ export default function Dashboard() {
           </div>
           {history24h.length > 0 && (
             <div className="mini-chart">
-              <ResponsiveContainer width="100%" height={50}>
+              <ResponsiveContainer width="100%" height={60}>
                 <LineChart data={getMiniChartData('weight')}>
                   <Line type="monotone" dataKey="value" stroke={getMetricStatus('weight', data.weight).color} strokeWidth={2} dot={false} />
                   <Tooltip 

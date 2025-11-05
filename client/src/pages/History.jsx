@@ -107,10 +107,11 @@ export default function History() {
 
   const renderChart = (dataKey, name, color, unit) => {
     const chartData = selectedMetric === 'all' || selectedMetric === dataKey ? data : []
+    const chartHeight = window.innerWidth < 768 ? 280 : 300
     
     if (chartType === 'area') {
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id={`color${dataKey}`} x1="0" y1="0" x2="0" y2="1">
@@ -146,7 +147,7 @@ export default function History() {
       )
     } else if (chartType === 'bar') {
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
@@ -167,7 +168,7 @@ export default function History() {
       )
     } else {
       return (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis 
