@@ -131,7 +131,8 @@ export default function Dashboard() {
           onClick={fetchLatestData}
           disabled={isRefreshing}
         >
-          🔄
+          <span className="refresh-icon">🔄</span>
+          <span>Obnoviť</span>
         </button>
       </header>
       
