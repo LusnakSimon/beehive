@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import History from './pages/History'
 import Settings from './pages/Settings'
+import Admin from './pages/Admin'
 import Navigation from './components/Navigation'
 import './App.css'
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/history" element={<History />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
     </div>

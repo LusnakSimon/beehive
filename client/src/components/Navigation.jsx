@@ -16,6 +16,10 @@ export default function Navigation() {
         <span className="icon">⚙️</span>
         <span>Nastavenia</span>
       </NavLink>
+      <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        <span className="icon">🔧</span>
+        <span>Admin</span>
+      </NavLink>
     </nav>
   )
 }
