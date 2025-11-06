@@ -363,6 +363,19 @@
     gap: 0.75rem;
   }
   
+  .range-inputs {
+    gap: 0.5rem;
+  }
+  
+  .range-inputs input {
+    padding: 0.5rem;
+    min-width: 0;
+  }
+  
+  .range-inputs span {
+    font-size: 14px;
+  }
+  
   .btn-primary,
   .btn-secondary {
     padding: 0.75rem 0.5rem;
