@@ -167,6 +167,17 @@ export default function Admin() {
             <li>Každý úľ má mierne odlišné hodnoty pre realistickosť</li>
           </ul>
         </div>
+
+        <div className="donate-section">
+          <a 
+            href="https://ko-fi.com/dongfeng400" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="donate-link"
+          >
+            ☕ Support the project
+          </a>
+        </div>
       </div>
     </div>
   )
