@@ -363,6 +363,12 @@ export default function History() {
             >
               ⚖️
             </button>
+            <button 
+              className={`control-btn ${selectedMetric === 'battery' ? 'active' : ''}`}
+              onClick={() => setSelectedMetric('battery')}
+            >
+              🔋
+            </button>
           </div>
         </div>
       </div>
@@ -386,6 +392,13 @@ export default function History() {
           <div className="chart-card">
             <h3>⚖️ Hmotnosť v čase</h3>
             {renderChart('weight', 'Hmotnosť', '#10b981', 'kg')}
+          </div>
+        )}
+
+        {(selectedMetric === 'all' || selectedMetric === 'battery') && (
+          <div className="chart-card">
+            <h3>🔋 Batéria v čase</h3>
+            {renderChart('battery', 'Batéria', '#ef4444', '%')}
           </div>
         )}
       </div>

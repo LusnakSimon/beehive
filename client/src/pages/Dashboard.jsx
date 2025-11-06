@@ -8,7 +8,8 @@ export default function Dashboard() {
     humidity: 0,
     weight: 0,
     battery: 0,
-    lastUpdate: null
+    lastUpdate: null,
+    metadata: null
   })
   const [previousData, setPreviousData] = useState(null)
   const [history24h, setHistory24h] = useState([])
@@ -291,6 +292,57 @@ export default function Dashboard() {
             {data.battery > 30 ? '✓ Dostačujúce napätie' : '⚠️ Nabite batériu'}
           </div>
         </div>
+
+        {/* Signal Strength Card - Only for LoRaWAN */}
+        {data.metadata?.source === 'lorawan' && data.metadata?.rssi && (
+          <div className="metric-card-modern">
+            <div className="metric-header">
+              <span className="metric-icon-modern">📡</span>
+              <span className="metric-label-modern">LoRaWAN Signál</span>
+            </div>
+            <div className="signal-indicators">
+              <div className="signal-item">
+                <div className="signal-label">RSSI</div>
+                <div className="signal-value">
+                  <span className="signal-number">{data.metadata.rssi}</span>
+                  <span className="signal-unit">dBm</span>
+                </div>
+                <div className={`signal-quality ${
+                  data.metadata.rssi > -90 ? 'good' : 
+                  data.metadata.rssi > -110 ? 'warning' : 'poor'
+                }`}>
+                  {data.metadata.rssi > -90 ? '🟢 Silný' : 
+                   data.metadata.rssi > -110 ? '🟡 Stredný' : '🔴 Slabý'}
+                </div>
+              </div>
+              <div className="signal-item">
+                <div className="signal-label">SNR</div>
+                <div className="signal-value">
+                  <span className="signal-number">{data.metadata.snr}</span>
+                  <span className="signal-unit">dB</span>
+                </div>
+                <div className={`signal-quality ${
+                  data.metadata.snr > 0 ? 'good' : 
+                  data.metadata.snr > -10 ? 'warning' : 'poor'
+                }`}>
+                  {data.metadata.snr > 0 ? '🟢 Vynikajúci' : 
+                   data.metadata.snr > -10 ? '🟡 Dobrý' : '🔴 Slabý'}
+                </div>
+              </div>
+            </div>
+            {data.metadata.gatewayId && (
+              <div className="gateway-info">
+                <div className="gateway-label">Gateway</div>
+                <div className="gateway-id">{data.metadata.gatewayId}</div>
+              </div>
+            )}
+            {data.metadata.spreadingFactor && (
+              <div className="metric-range-modern">
+                SF{data.metadata.spreadingFactor} @ {(data.metadata.frequency / 1000000).toFixed(1)} MHz
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
