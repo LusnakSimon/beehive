@@ -347,6 +347,7 @@
 @media (max-width: 768px) {
   .settings {
     padding: 0.5rem;
+    padding-bottom: 10rem;
   }
   
   .settings h1 {
@@ -357,6 +358,10 @@
     margin: 0 0 0.75rem;
     border-radius: 8px;
     padding: 1rem;
+  }
+  
+  .settings-section:last-of-type {
+    margin-bottom: 3rem;
   }
   
   .hive-item {
