@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useHive } from '../context/HiveContext'
 import './Admin.css'
 
 export default function Admin() {
+  const { hives } = useHive()
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
@@ -12,6 +14,9 @@ export default function Admin() {
     setResult(null)
 
     try {
+      // Get all hive IDs from context
+      const hiveIds = hives.map(hive => hive.id)
+      
       const response = await fetch('/api/test/generate', {
         method: 'POST',
         headers: {
@@ -19,7 +24,8 @@ export default function Admin() {
         },
         body: JSON.stringify({
           days: days,
-          pointsPerDay: 24
+          pointsPerDay: 24,
+          hiveIds: hiveIds
         })
       })
 
@@ -76,7 +82,8 @@ export default function Admin() {
         <div className="admin-section">
           <h2>📊 Generovanie testovacích dát</h2>
           <p className="section-description">
-            Vygeneruj realistické testovacie dáta s dennými cyklami teploty, vlhkosti a postupným nárastom hmotnosti.
+            Vygeneruj realistické testovacie dáta pre <strong>{hives.length} úle</strong> ({hives.map(h => h.name).join(', ')})
+            <br />s dennými cyklami teploty, vlhkosti a postupným nárastom hmotnosti.
           </p>
 
           <div className="button-grid">
@@ -85,7 +92,7 @@ export default function Admin() {
               onClick={() => generateTestData(7)}
               disabled={loading}
             >
-              {loading ? '⏳ Generujem...' : '�� Generuj 7 dní'}
+              {loading ? '⏳ Generujem...' : '📅 Generuj 7 dní'}
             </button>
 
             <button
@@ -124,9 +131,20 @@ export default function Admin() {
         {result && (
           <div className="result-box success">
             <h3>✅ Úspech!</h3>
-            <pre>{JSON.stringify(result, null, 2)}</pre>
+            <div className="result-details">
+              {result.hives && (
+                <>
+                  <p><strong>Úle:</strong> {result.hives.join(', ')}</p>
+                  <p><strong>Celkovo záznamov:</strong> {result.count}</p>
+                  <p><strong>Na úľ:</strong> {result.perHive} záznamov</p>
+                </>
+              )}
+              {result.deletedCount !== undefined && (
+                <p><strong>Vymazaných záznamov:</strong> {result.deletedCount}</p>
+              )}
+            </div>
             <p className="result-hint">
-              Teraz môžeš prejsť na Dashboard alebo História a vidieť nové dáta v grafoch! 📈
+              Teraz môžeš prepínať medzi úľami a vidieť rôzne dáta v grafoch! 📈🐝
             </p>
           </div>
         )}
@@ -146,6 +164,7 @@ export default function Admin() {
             <li>Vlhkosť kolíše medzi 40-70%</li>
             <li>Hmotnosť postupne rastie (simulácia produkcie medu)</li>
             <li>Batéria postupne klesá</li>
+            <li>Každý úľ má mierne odlišné hodnoty pre realistickosť</li>
           </ul>
         </div>
       </div>

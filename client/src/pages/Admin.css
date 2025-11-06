@@ -117,6 +117,24 @@
   font-size: 1.125rem;
 }
 
+.result-details {
+  background: var(--background);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.result-details p {
+  margin: 0.5rem 0;
+  font-size: 0.9375rem;
+  color: var(--text);
+}
+
+.result-details strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .result-box pre {
   background: var(--background);
   padding: 1rem;
