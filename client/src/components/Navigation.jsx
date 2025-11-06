@@ -12,6 +12,10 @@ export default function Navigation() {
         <span className="icon">📊</span>
         <span>História</span>
       </NavLink>
+      <NavLink to="/inspection" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        <span className="icon">📋</span>
+        <span>Kontrola</span>
+      </NavLink>
       <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
         <span className="icon">⚙️</span>
         <span>Nastavenia</span>
