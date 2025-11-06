@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react'
+import { useHive } from '../context/HiveContext'
 import './Settings.css'
 
 export default function Settings() {
+  const { hives, addHive, updateHive, deleteHive } = useHive()
   const [settings, setSettings] = useState({
-    hiveId: '',
     notifications: true,
     tempMin: 30,
     tempMax: 36,
     humidityMin: 50,
     humidityMax: 60,
     updateInterval: 30
+  })
+
+  const [showAddHive, setShowAddHive] = useState(false)
+  const [newHive, setNewHive] = useState({
+    id: '',
+    name: '',
+    location: '',
+    color: '#fbbf24'
   })
 
   useEffect(() => {
@@ -32,23 +41,125 @@ export default function Settings() {
     setSettings(prev => ({ ...prev, [field]: value }))
   }
 
+  const handleAddHive = () => {
+    if (!newHive.id || !newHive.name) {
+      alert('Vyplň ID a názov úľa')
+      return
+    }
+    
+    addHive(newHive)
+    setNewHive({ id: '', name: '', location: '', color: '#fbbf24' })
+    setShowAddHive(false)
+    alert('Úľ pridaný!')
+  }
+
+  const handleDeleteHive = (id) => {
+    if (confirm('Naozaj chceš vymazať tento úľ?')) {
+      deleteHive(id)
+      alert('Úľ vymazaný!')
+    }
+  }
+
+  const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
+
   return (
     <div className="settings">
       <h1>⚙️ Nastavenia</h1>
 
       <div className="settings-section">
-        <h2>Základné nastavenia</h2>
+        <h2>Správa úľov</h2>
         
-        <div className="form-group">
-          <label htmlFor="hiveId">ID úľa</label>
-          <input
-            id="hiveId"
-            type="text"
-            value={settings.hiveId}
-            onChange={(e) => handleChange('hiveId', e.target.value)}
-            placeholder="napr. HIVE-001"
-          />
+        <div className="hives-list">
+          {hives.map(hive => (
+            <div key={hive.id} className="hive-item">
+              <div className="hive-item-icon" style={{ backgroundColor: hive.color }}>
+                🐝
+              </div>
+              <div className="hive-item-info">
+                <div className="hive-item-name">{hive.name}</div>
+                <div className="hive-item-id">{hive.id}</div>
+                {hive.location && (
+                  <div className="hive-item-location">📍 {hive.location}</div>
+                )}
+              </div>
+              <button 
+                className="btn-delete-hive"
+                onClick={() => handleDeleteHive(hive.id)}
+                disabled={hives.length === 1}
+              >
+                🗑️
+              </button>
+            </div>
+          ))}
         </div>
+
+        {!showAddHive ? (
+          <button className="btn-add-hive" onClick={() => setShowAddHive(true)}>
+            ➕ Pridať nový úľ
+          </button>
+        ) : (
+          <div className="add-hive-form">
+            <div className="form-group">
+              <label htmlFor="hiveId">ID úľa *</label>
+              <input
+                id="hiveId"
+                type="text"
+                value={newHive.id}
+                onChange={(e) => setNewHive(prev => ({ ...prev, id: e.target.value }))}
+                placeholder="napr. HIVE-004"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="hiveName">Názov úľa *</label>
+              <input
+                id="hiveName"
+                type="text"
+                value={newHive.name}
+                onChange={(e) => setNewHive(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="napr. Úľ 4"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="hiveLocation">Lokalita (voliteľné)</label>
+              <input
+                id="hiveLocation"
+                type="text"
+                value={newHive.location}
+                onChange={(e) => setNewHive(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="napr. Záhrada D"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Farba</label>
+              <div className="color-picker">
+                {colors.map(color => (
+                  <button
+                    key={color}
+                    className={`color-option ${newHive.color === color ? 'active' : ''}`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setNewHive(prev => ({ ...prev, color }))}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button className="btn-secondary" onClick={() => setShowAddHive(false)}>
+                Zrušiť
+              </button>
+              <button className="btn-primary" onClick={handleAddHive}>
+                Pridať úľ
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="settings-section">
+        <h2>Základné nastavenia</h2>
 
         <div className="form-group">
           <label htmlFor="updateInterval">Interval aktualizácie (sekundy)</label>
