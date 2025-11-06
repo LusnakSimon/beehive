@@ -6,6 +6,7 @@ import { waitUntil } from '@vercel/functions'
 import sensorRoutes from './routes/sensor.js'
 import esp32Routes from './routes/esp32.js'
 import testDataRoutes from './routes/testData.js'
+import lorawanRoutes from './routes/lorawan.js'
 
 const app = express()
 
@@ -64,6 +65,7 @@ async function connectDB() {
 app.use('/api/sensor', sensorRoutes)
 app.use('/api/esp32', esp32Routes)
 app.use('/api/test', testDataRoutes)
+app.use('/api/lorawan', lorawanRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ 
