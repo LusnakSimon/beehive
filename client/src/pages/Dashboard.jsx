@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts'
+import { useHive } from '../context/HiveContext'
+import HiveSelector from '../components/HiveSelector'
 import './Dashboard.css'
 
 export default function Dashboard() {
+  const { selectedHive } = useHive()
   const [data, setData] = useState({
     temperature: 0,
     humidity: 0,
@@ -24,12 +27,12 @@ export default function Dashboard() {
       fetch24hHistory()
     }, 30000) // Refresh every 30s
     return () => clearInterval(interval)
-  }, [])
+  }, [selectedHive]) // Re-fetch when hive changes
 
   const fetchLatestData = async () => {
     try {
       setIsRefreshing(true)
-      const response = await fetch('/api/sensor/latest')
+      const response = await fetch(`/api/sensor/latest?hiveId=${selectedHive}`)
       if (response.ok) {
         const result = await response.json()
         setPreviousData(data)
@@ -45,7 +48,7 @@ export default function Dashboard() {
 
   const fetch24hHistory = async () => {
     try {
-      const response = await fetch('/api/sensor/history?range=24h')
+      const response = await fetch(`/api/sensor/history?range=24h&hiveId=${selectedHive}`)
       if (response.ok) {
         const result = await response.json()
         setHistory24h(result.slice(-24)) // Last 24 data points
@@ -136,6 +139,10 @@ export default function Dashboard() {
           <span>Obnoviť</span>
         </button>
       </header>
+
+      <div className="hive-selector-container">
+        <HiveSelector />
+      </div>
       
       <div className="status-banner-modern" style={{ borderLeftColor: overallStatus.color }}>
         <div className="status-icon" style={{ backgroundColor: overallStatus.color }}>

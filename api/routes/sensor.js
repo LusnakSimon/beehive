@@ -3,10 +3,12 @@ import Reading from '../models/Reading.js'
 
 const router = express.Router()
 
-// GET /api/sensor/latest - Posledné meranie
+// GET /api/sensor/latest?hiveId=HIVE-001 - Posledné meranie
 router.get('/latest', async (req, res) => {
   try {
-    const latest = await Reading.findOne().sort({ timestamp: -1 })
+    const hiveId = req.query.hiveId || 'HIVE-001'
+    
+    const latest = await Reading.findOne({ hiveId }).sort({ timestamp: -1 })
     
     if (!latest) {
       return res.json({
@@ -14,7 +16,8 @@ router.get('/latest', async (req, res) => {
         humidity: 0,
         weight: 0,
         battery: 0,
-        lastUpdate: null
+        lastUpdate: null,
+        metadata: null
       })
     }
 
@@ -23,7 +26,8 @@ router.get('/latest', async (req, res) => {
       humidity: latest.humidity,
       weight: latest.weight,
       battery: latest.battery,
-      lastUpdate: latest.timestamp
+      lastUpdate: latest.timestamp,
+      metadata: latest.metadata || null
     })
   } catch (error) {
     console.error('Chyba pri načítaní dát:', error)
@@ -31,10 +35,11 @@ router.get('/latest', async (req, res) => {
   }
 })
 
-// GET /api/sensor/history?range=6h|24h|7d|30d|90d|180d|365d - História meraní
+// GET /api/sensor/history?range=6h|24h|7d|30d|90d|180d|365d&hiveId=HIVE-001 - História meraní
 router.get('/history', async (req, res) => {
   try {
     const range = req.query.range || '24h'
+    const hiveId = req.query.hiveId || 'HIVE-001'
     const now = new Date()
     let startDate
 
@@ -65,6 +70,7 @@ router.get('/history', async (req, res) => {
     }
 
     const readings = await Reading.find({
+      hiveId,
       timestamp: { $gte: startDate }
     }).sort({ timestamp: 1 }).select('-__v')
 
@@ -75,10 +81,11 @@ router.get('/history', async (req, res) => {
   }
 })
 
-// GET /api/sensor/stats?range=... - Štatistiky pre dané obdobie
+// GET /api/sensor/stats?range=...&hiveId=HIVE-001 - Štatistiky pre dané obdobie
 router.get('/stats', async (req, res) => {
   try {
     const range = req.query.range || '24h'
+    const hiveId = req.query.hiveId || 'HIVE-001'
     const now = new Date()
     let startDate
 
@@ -109,7 +116,7 @@ router.get('/stats', async (req, res) => {
     }
     
     const stats = await Reading.aggregate([
-      { $match: { timestamp: { $gte: startDate } } },
+      { $match: { hiveId, timestamp: { $gte: startDate } } },
       {
         $group: {
           _id: null,

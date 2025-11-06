@@ -4,9 +4,12 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
   ResponsiveContainer, Brush 
 } from 'recharts'
+import { useHive } from '../context/HiveContext'
+import HiveSelector from '../components/HiveSelector'
 import './History.css'
 
 export default function History() {
+  const { selectedHive } = useHive()
   const [data, setData] = useState([])
   const [stats, setStats] = useState(null)
   const [timeRange, setTimeRange] = useState('24h')
@@ -17,12 +20,12 @@ export default function History() {
   useEffect(() => {
     fetchHistoricalData()
     fetchStats()
-  }, [timeRange])
+  }, [timeRange, selectedHive]) // Re-fetch when hive changes
 
   const fetchHistoricalData = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`/api/sensor/history?range=${timeRange}`)
+      const response = await fetch(`/api/sensor/history?range=${timeRange}&hiveId=${selectedHive}`)
       if (response.ok) {
         const result = await response.json()
         setData(result)
@@ -36,7 +39,7 @@ export default function History() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`/api/sensor/stats?range=${timeRange}`)
+      const response = await fetch(`/api/sensor/stats?range=${timeRange}&hiveId=${selectedHive}`)
       if (response.ok) {
         const result = await response.json()
         setStats(result)
@@ -222,6 +225,10 @@ export default function History() {
           📥 Export CSV
         </button>
       </header>
+
+      <div className="hive-selector-container">
+        <HiveSelector />
+      </div>
 
       {stats && (
         <div className="stats-grid">

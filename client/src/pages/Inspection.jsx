@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useHive } from '../context/HiveContext'
+import HiveSelector from '../components/HiveSelector'
 import './Inspection.css'
 
 export default function Inspection() {
+  const { selectedHive } = useHive()
   const [checklist, setChecklist] = useState({
     pollen: false,
     capped: false,
@@ -20,11 +23,11 @@ export default function Inspection() {
 
   useEffect(() => {
     fetchInspectionHistory()
-  }, [])
+  }, [selectedHive]) // Re-fetch when hive changes
 
   const fetchInspectionHistory = async () => {
     try {
-      const response = await fetch('/api/inspection/history?limit=10')
+      const response = await fetch(`/api/inspection/history?limit=10&hiveId=${selectedHive}`)
       if (response.ok) {
         const data = await response.json()
         setHistory(data)
@@ -50,7 +53,8 @@ export default function Inspection() {
         body: JSON.stringify({
           checklist,
           notes,
-          timestamp: new Date()
+          timestamp: new Date(),
+          hiveId: selectedHive
         })
       })
 
@@ -99,6 +103,10 @@ export default function Inspection() {
           <p className="subtitle-inspection">Zaznamenaj stav úľa</p>
         </div>
       </header>
+
+      <div className="hive-selector-container">
+        <HiveSelector />
+      </div>
 
       {showSuccess && (
         <div className="success-banner">

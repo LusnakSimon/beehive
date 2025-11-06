@@ -31,6 +31,12 @@
   margin: 0.25rem 0 0;
 }
 
+/* Hive Selector Container */
+.hive-selector-container {
+  padding: 1rem;
+  margin: 0 0 1rem;
+}
+
 .refresh-btn {
   background: white;
   border: none;

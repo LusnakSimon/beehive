@@ -1,0 +1,134 @@
+.hive-selector {
+  position: relative;
+  z-index: 100;
+}
+
+.hive-selector-btn {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  max-width: 280px;
+}
+
+.hive-selector-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hive-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.hive-info {
+  flex: 1;
+  text-align: left;
+}
+
+.hive-name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.hive-location {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.dropdown-arrow {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Dropdown */
+.hive-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+}
+
+.hive-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: dropdownSlide 0.2s ease-out;
+  z-index: 100;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hive-dropdown-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--border);
+}
+
+.hive-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.hive-dropdown-item:hover {
+  background: rgba(251, 191, 36, 0.05);
+}
+
+.hive-dropdown-item.active {
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.check-icon {
+  margin-left: auto;
+  color: #10b981;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hive-selector-btn {
+    max-width: 100%;
+  }
+  
+  .hive-dropdown {
+    left: 0;
+    right: 0;
+  }
+}
