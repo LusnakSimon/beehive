@@ -28,14 +28,10 @@ export const NotificationProvider = ({ children }) => {
 
   useEffect(() => {
     // Check if notifications are supported
-    const supported = 'Notification' in window && 'serviceWorker' in navigator;
-    setIsSupported(supported);
-    
-    console.log('Notifications supported:', supported);
+    setIsSupported('Notification' in window && 'serviceWorker' in navigator);
     
     if ('Notification' in window) {
       setPermission(Notification.permission);
-      console.log('Notification permission:', Notification.permission);
     }
   }, []);
 
@@ -54,7 +50,6 @@ export const NotificationProvider = ({ children }) => {
       
       // Wait for service worker to be ready
       await navigator.serviceWorker.ready;
-      console.log('Service Worker ready');
     } catch (error) {
       console.error('Service Worker registration failed:', error);
     }
@@ -69,26 +64,15 @@ export const NotificationProvider = ({ children }) => {
     try {
       const perm = await Notification.requestPermission();
       setPermission(perm);
-      console.log('Permission result:', perm);
       
       if (perm === 'granted') {
-        // Show test notification using simple Notification API
-        try {
-          new Notification('Beehive Monitor', {
+        // Show test notification
+        if (registration) {
+          await registration.showNotification('Beehive Monitor', {
             body: 'Notifikácie sú aktivované! 🐝',
-            icon: '/icon.svg'
+            icon: '/icon.svg',
+            badge: '/icon.svg'
           });
-        } catch (e) {
-          console.error('Simple notification failed:', e);
-          
-          // Try with service worker
-          if (registration) {
-            await registration.showNotification('Beehive Monitor', {
-              body: 'Notifikácie sú aktivované! 🐝',
-              icon: '/icon.svg',
-              badge: '/icon.svg'
-            });
-          }
         }
         
         updateSettings({ ...settings, enabled: true });
@@ -106,58 +90,24 @@ export const NotificationProvider = ({ children }) => {
   const updateSettings = (newSettings) => {
     setSettings(newSettings);
     localStorage.setItem('notificationSettings', JSON.stringify(newSettings));
-    console.log('Settings updated:', newSettings);
   };
 
   const sendNotification = async (title, options = {}) => {
-    console.log('sendNotification called:', { title, options, permission, isSupported, enabled: settings.enabled });
-    
-    if (!isSupported) {
-      console.error('Notifications not supported');
-      alert('Notifikácie nie sú podporované v tomto prehliadači');
-      return;
-    }
-
-    if (permission !== 'granted') {
-      console.error('Permission not granted:', permission);
-      alert('Povoľ notifikácie v prehliadači');
-      return;
-    }
-
-    if (!settings.enabled) {
-      console.error('Notifications not enabled in settings');
+    if (!isSupported || permission !== 'granted' || !settings.enabled) {
+      console.log('Notifications not enabled');
       return;
     }
 
     try {
-      // Try simple notification first
-      try {
-        const notif = new Notification(title, {
-          icon: '/icon.svg',
-          badge: '/icon.svg',
-          ...options
-        });
-        console.log('Simple notification shown:', notif);
-        return;
-      } catch (simpleError) {
-        console.log('Simple notification failed, trying service worker:', simpleError);
-      }
-
-      // Fallback to service worker notification
       if (registration) {
         await registration.showNotification(title, {
           icon: '/icon.svg',
           badge: '/icon.svg',
           ...options
         });
-        console.log('Service worker notification shown');
-      } else {
-        console.error('No service worker registration available');
-        alert('Service Worker nie je dostupný. Skús refreshnuť stránku.');
       }
     } catch (error) {
       console.error('Error showing notification:', error);
-      alert('Chyba pri zobrazení notifikácie: ' + error.message);
     }
   };
 
