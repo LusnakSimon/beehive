@@ -2,7 +2,7 @@
 .inspection {
   min-height: 100vh;
   background: var(--background);
-  padding-bottom: 6rem;
+  padding-bottom: 8rem;
 }
 
 .inspection-header {
