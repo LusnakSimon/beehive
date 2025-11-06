@@ -30,7 +30,8 @@ Inteligentný IoT systém na monitorovanie včelieho úľa | Bachelor's Thesis P
 - **Vite 5** - Build tool & Dev server  
 - **React Router 6** - Client-side routing
 - **Recharts 2.10** - Data visualization
-- **Service Worker** - Offline caching
+- **Service Worker** - Offline caching & Push notifications
+- **Notification API** - Real-time alerts
 - **Manifest.json** - PWA installability
 
 ### Backend (API)
@@ -45,6 +46,7 @@ Inteligentný IoT systém na monitorovanie včelieho úľa | Bachelor's Thesis P
 - **ESP32-C3** - Wi-Fi microcontroller
 - **DHT22** - Temperature & Humidity sensor
 - **HX711** - Load cell amplifier (weight measurement)
+- **LoRaWAN** - Long-range wireless (optional)
 - **Arduino IDE** - Firmware programming
 - **REST API** - HTTP data transmission
 
@@ -281,6 +283,70 @@ const char* apiKey = "beehive-secret-key-2024";
 4. Upload to ESP32-C3
 
 See [arduino/README.md](arduino/README.md) for detailed setup.
+
+---
+
+## 🧪 Testing Without Hardware
+
+### ESP32 Device Simulator
+
+Test the system without physical ESP32 hardware using the built-in simulator:
+
+#### WiFi Mode
+```bash
+node scripts/simulate-esp32.js
+```
+
+#### LoRaWAN Mode
+```bash
+MODE=lorawan node scripts/simulate-esp32.js
+```
+
+#### Custom Configuration
+```bash
+# Custom hive ID and faster updates
+HIVE_ID=HIVE-002 INTERVAL=10000 node scripts/simulate-esp32.js
+
+# Test with local backend
+BACKEND_URL=http://localhost:5000 node scripts/simulate-esp32.js
+```
+
+**Simulator Features:**
+- 🌡️ Realistic temperature cycles (30-36°C)
+- 💧 Dynamic humidity simulation (40-70%)
+- ⚖️ Weight variations (~45kg)
+- 🔋 Battery levels (70-90%)
+- 📡 LoRaWAN signal simulation (RSSI, SNR, SF)
+
+See [scripts/SIMULATOR_README.md](scripts/SIMULATOR_README.md) for full documentation.
+
+---
+
+## 🔔 Push Notifications
+
+The app includes a complete notification system for real-time alerts:
+
+### Alert Types
+1. **🌡️ Temperature** - Outside optimal range (30-36°C)
+2. **💧 Humidity** - Outside optimal range (40-70%)
+3. **🔋 Battery** - Low battery (<20%)
+4. **⚖️ Weight** - Significant change (>2kg/hour)
+5. **⚠️ Offline** - Device not responding (>60 minutes)
+
+### Setup
+1. Go to **⚙️ Settings → 🔔 Notifications**
+2. Click **"Povoliť notifikácie"**
+3. Allow browser permission
+4. Select which alert types you want
+5. Test with **"🔔 Otestovať notifikáciu"**
+
+### How It Works
+- **Automatic checks** every 30 seconds
+- **Service Worker** handles notifications
+- **Works on mobile** (Android Chrome, iOS Safari 16.4+)
+- **Backend API** evaluates conditions
+
+See [NOTIFICATIONS.md](NOTIFICATIONS.md) for troubleshooting and details.
 
 ---
 
