@@ -5,7 +5,7 @@
 }
 
 .settings h1 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   margin-bottom: 1.5rem;
 }
 
@@ -23,26 +23,6 @@
   color: var(--text);
 }
 
-@media (max-width: 768px) {
-  .settings {
-    padding: 0;
-  }
-  
-  .settings h1 {
-    font-size: 1.5rem;
-    padding: 0 1rem;
-  }
-  
-  .settings-section {
-    margin: 0 0 1rem;
-    border-radius: 0;
-  }
-  
-  .settings-section h2 {
-    font-size: 1.125rem;
-  }
-}
-
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -52,6 +32,7 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--text);
+  font-size: 16px;
 }
 
 .form-group input[type="text"],
@@ -95,6 +76,7 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--text);
+  font-size: 16px;
 }
 
 .range-inputs {
@@ -113,6 +95,7 @@
 
 .range-inputs span {
   color: var(--text-secondary);
+  font-size: 16px;
 }
 
 .info-box {
@@ -124,16 +107,11 @@
 .info-box p {
   margin-bottom: 0.5rem;
   color: var(--text-secondary);
+  font-size: 16px;
 }
 
 .info-box p:last-child {
   margin-bottom: 0;
-}
-
-@media (max-width: 768px) {
-  .settings h1 {
-    font-size: 1.5rem;
-  }
 }
 
 /* Hive Management */
@@ -178,17 +156,17 @@
 .hive-item-name {
   font-weight: 600;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 16px;
 }
 
 .hive-item-id {
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--text-secondary);
   font-family: monospace;
 }
 
 .hive-item-location {
-  font-size: 0.8125rem;
+  font-size: 14px;
   color: var(--text-secondary);
   margin-top: 0.25rem;
 }
@@ -221,7 +199,7 @@
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -275,7 +253,7 @@
   flex: 1;
   padding: 0.75rem 1.5rem;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -306,7 +284,7 @@
   width: 100%;
   padding: 1rem;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -322,4 +300,25 @@
 .btn.btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .settings {
+    padding: 0;
+  }
+  
+  .settings h1 {
+    font-size: 1.5rem;
+    padding: 0 1rem;
+  }
+  
+  .settings-section {
+    margin: 0 0 1rem;
+    border-radius: 0;
+  }
+  
+  .settings-section h2 {
+    font-size: 1.125rem;
+  }
 }
