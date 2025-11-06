@@ -7,9 +7,11 @@
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-around;
-  padding: 0.5rem;
+  padding: 0.5rem 0.25rem;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 40;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav-link {
@@ -17,17 +19,24 @@
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.2s;
-  font-size: 0.875rem;
-  min-width: 80px;
+  font-size: 0.75rem;
+  min-width: 60px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-link .icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+}
+
+.nav-link span:not(.icon) {
+  font-size: 0.6875rem;
+  text-align: center;
 }
 
 .nav-link:hover {
