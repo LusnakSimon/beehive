@@ -10,7 +10,10 @@ export default function Settings() {
     tempMax: 36,
     humidityMin: 50,
     humidityMax: 60,
-    updateInterval: 30
+    updateInterval: 30,
+    loraDevEUI: '',
+    loraAppEUI: '',
+    loraAppKey: ''
   })
 
   const [showAddHive, setShowAddHive] = useState(false)
@@ -156,6 +159,52 @@ export default function Settings() {
             </div>
           </div>
         )}
+      </div>
+
+      <div className="settings-section">
+        <h2>📡 LoRaWAN konfigurácia</h2>
+        
+        <div className="form-group">
+          <label htmlFor="loraDevEUI">Device EUI</label>
+          <input
+            id="loraDevEUI"
+            type="text"
+            value={settings.loraDevEUI}
+            onChange={(e) => handleChange('loraDevEUI', e.target.value)}
+            placeholder="0000000000000000"
+            maxLength="16"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="loraAppEUI">Application EUI</label>
+          <input
+            id="loraAppEUI"
+            type="text"
+            value={settings.loraAppEUI}
+            onChange={(e) => handleChange('loraAppEUI', e.target.value)}
+            placeholder="0000000000000000"
+            maxLength="16"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="loraAppKey">Application Key</label>
+          <input
+            id="loraAppKey"
+            type="text"
+            value={settings.loraAppKey}
+            onChange={(e) => handleChange('loraAppKey', e.target.value)}
+            placeholder="00000000000000000000000000000000"
+            maxLength="32"
+          />
+        </div>
+
+        <div className="info-box">
+          <p>💡 Tieto hodnoty získaš z The Things Network konzoly</p>
+          <p>🔒 Údaje sa ukladajú len lokálne vo tvojom telefóne</p>
+          <p>📶 Frekvencia: EU868, Metóda: OTAA</p>
+        </div>
       </div>
 
       <div className="settings-section">
