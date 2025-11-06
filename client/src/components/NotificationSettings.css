@@ -1,0 +1,20 @@
+.notification-settings {
+  width: 100%;
+}
+
+.notification-types {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.error-box {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-left: 4px solid #ef4444;
+}
+
+.error-box p {
+  color: #ef4444 !important;
+  margin: 0;
+}

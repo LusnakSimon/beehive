@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { HiveProvider } from './context/HiveContext'
+import { NotificationProvider } from './contexts/NotificationContext'
 import Dashboard from './pages/Dashboard'
 import History from './pages/History'
 import Settings from './pages/Settings'
@@ -26,7 +27,8 @@ function App() {
   }, [])
 
   return (
-    <HiveProvider>
+    <NotificationProvider>
+      <HiveProvider>
       <div className="app">
         {!isOnline && (
           <div className="offline-banner">
@@ -47,6 +49,7 @@ function App() {
         </main>
       </div>
     </HiveProvider>
+    </NotificationProvider>
   )
 }
 

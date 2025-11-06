@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useHive } from '../context/HiveContext'
 import './Settings.css'
+import NotificationSettings from '../components/NotificationSettings'
 
 export default function Settings() {
   const { hives, addHive, updateHive, deleteHive } = useHive()
@@ -276,6 +277,11 @@ export default function Settings() {
       </div>
 
       <div className="settings-section">
+
+      <div className="settings-section">
+        <h2>🔔 Notifikácie</h2>
+        <NotificationSettings />
+      </div>
         <h2>O aplikácii</h2>
         <div className="info-box">
           <p><strong>Verzia:</strong> 1.0.0</p>

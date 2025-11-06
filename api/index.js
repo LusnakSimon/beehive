@@ -16,6 +16,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100
 })
+const notificationsRoutes = require('./routes/notifications')
 
 // Middleware
 app.use(cors())
@@ -68,6 +69,7 @@ app.use('/api/esp32', esp32Routes)
 app.use('/api/test', testDataRoutes)
 app.use('/api/lorawan', lorawanRoutes)
 app.use('/api/inspection', inspectionRoutes)
+app.use('/api/notifications', notificationsRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ 
