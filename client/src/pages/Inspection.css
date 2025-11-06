@@ -2,12 +2,15 @@
 .inspection {
   min-height: 100vh;
   background: var(--background);
-  padding: 0 0 8rem 0;
+  padding: 0;
+  padding-bottom: 8rem;
+  margin: 0;
 }
 
 @media (min-width: 768px) {
   .inspection {
-    padding: 5rem 0 2rem 0;
+    padding-top: 4.5rem;
+    padding-bottom: 2rem;
   }
 }
 
@@ -16,9 +19,14 @@
   color: white;
   padding: 1.5rem 1rem;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .inspection-header {
+    position: sticky;
+    top: 4rem;
+  }
 }
 
 .inspection-header h1 {
