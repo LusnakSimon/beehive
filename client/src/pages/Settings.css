@@ -6,11 +6,16 @@
 }
 
 .settings {
-  padding: 1rem;
-  padding-bottom: 8rem;
+  padding: 0 1rem 8rem;
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
+}
+
+@media (min-width: 768px) {
+  .settings {
+    padding: 5rem 1rem 2rem;
+  }
 }
 
 .settings h1 {
