@@ -9,6 +9,7 @@ import testDataRoutes from './routes/testData.js'
 import lorawanRoutes from './routes/lorawan.js'
 import inspectionRoutes from './routes/inspection.js'
 import notificationsRoutes from './routes/notifications.js'
+import adminRoutes from './routes/admin.js'
 
 const app = express()
 
@@ -70,6 +71,7 @@ app.use('/api/test', testDataRoutes)
 app.use('/api/lorawan', lorawanRoutes)
 app.use('/api/inspection', inspectionRoutes)
 app.use('/api/notifications', notificationsRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ 
