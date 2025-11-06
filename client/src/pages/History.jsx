@@ -72,12 +72,14 @@ export default function History() {
 
   const formatXAxis = (timestamp) => {
     const date = new Date(timestamp)
-    if (timeRange === '24h') {
+    if (timeRange === '6h' || timeRange === '24h') {
       return date.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit' })
     } else if (timeRange === '7d') {
+      return date.toLocaleDateString('sk-SK', { weekday: 'short', day: '2-digit' })
+    } else if (timeRange === '30d' || timeRange === '90d') {
       return date.toLocaleDateString('sk-SK', { day: '2-digit', month: 'short' })
     } else {
-      return date.toLocaleDateString('sk-SK', { day: '2-digit', month: '2-digit' })
+      return date.toLocaleDateString('sk-SK', { month: 'short', year: '2-digit' })
     }
   }
 
@@ -264,24 +266,48 @@ export default function History() {
       <div className="controls-panel">
         <div className="control-group">
           <label>Časové obdobie</label>
-          <div className="button-group">
+          <div className="button-group time-range-group">
+            <button 
+              className={`control-btn ${timeRange === '6h' ? 'active' : ''}`}
+              onClick={() => setTimeRange('6h')}
+            >
+              6h
+            </button>
             <button 
               className={`control-btn ${timeRange === '24h' ? 'active' : ''}`}
               onClick={() => setTimeRange('24h')}
             >
-              24h
+              1d
             </button>
             <button 
               className={`control-btn ${timeRange === '7d' ? 'active' : ''}`}
               onClick={() => setTimeRange('7d')}
             >
-              7 dní
+              1w
             </button>
             <button 
               className={`control-btn ${timeRange === '30d' ? 'active' : ''}`}
               onClick={() => setTimeRange('30d')}
             >
-              30 dní
+              1m
+            </button>
+            <button 
+              className={`control-btn ${timeRange === '90d' ? 'active' : ''}`}
+              onClick={() => setTimeRange('90d')}
+            >
+              3m
+            </button>
+            <button 
+              className={`control-btn ${timeRange === '180d' ? 'active' : ''}`}
+              onClick={() => setTimeRange('180d')}
+            >
+              6m
+            </button>
+            <button 
+              className={`control-btn ${timeRange === '365d' ? 'active' : ''}`}
+              onClick={() => setTimeRange('365d')}
+            >
+              1y
             </button>
           </div>
         </div>

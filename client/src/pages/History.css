@@ -135,6 +135,12 @@
   flex-wrap: wrap;
 }
 
+.time-range-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 0.5rem;
+}
+
 .control-btn {
   background: var(--background);
   border: 2px solid var(--border);
@@ -146,6 +152,14 @@
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+}
+
+.time-range-group .control-btn {
+  padding: 0.625rem 0.5rem;
+  font-size: 0.8125rem;
+  min-width: 50px;
+  justify-content: center;
+  text-align: center;
 }
 
 .control-btn:hover {
