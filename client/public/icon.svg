@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <!-- Background -->
+  <rect width="192" height="192" fill="#fbbf24" rx="24"/>
+  
+  <!-- Honeycomb pattern (hexagons) -->
+  <g opacity="0.3">
+    <path d="M60 50 L80 40 L100 50 L100 70 L80 80 L60 70 Z" fill="#ffffff"/>
+    <path d="M100 50 L120 40 L140 50 L140 70 L120 80 L100 70 Z" fill="#ffffff"/>
+    <path d="M80 80 L100 70 L120 80 L120 100 L100 110 L80 100 Z" fill="#ffffff"/>
+  </g>
+  
+  <!-- Beehive body -->
+  <ellipse cx="96" cy="130" rx="50" ry="45" fill="#f59e0b"/>
+  <ellipse cx="96" cy="115" rx="48" ry="12" fill="#d97706"/>
+  <ellipse cx="96" cy="130" rx="48" ry="12" fill="#d97706"/>
+  <ellipse cx="96" cy="145" rx="48" ry="12" fill="#d97706"/>
+  
+  <!-- Bee -->
+  <ellipse cx="96" cy="80" rx="18" ry="22" fill="#fbbf24"/>
+  
+  <!-- Bee stripes -->
+  <rect x="82" y="75" width="28" height="4" fill="#1f2937" rx="2"/>
+  <rect x="82" y="85" width="28" height="4" fill="#1f2937" rx="2"/>
+  
+  <!-- Bee wings -->
+  <ellipse cx="85" cy="75" rx="12" ry="18" fill="#ffffff" opacity="0.7" transform="rotate(-30 85 75)"/>
+  <ellipse cx="107" cy="75" rx="12" ry="18" fill="#ffffff" opacity="0.7" transform="rotate(30 107 75)"/>
+  
+  <!-- Bee head -->
+  <circle cx="96" cy="62" r="10" fill="#fbbf24"/>
+  
+  <!-- Bee eyes -->
+  <circle cx="92" cy="60" r="2" fill="#1f2937"/>
+  <circle cx="100" cy="60" r="2" fill="#1f2937"/>
+  
+  <!-- Bee antennae -->
+  <path d="M91 54 Q88 48 86 45" stroke="#1f2937" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M101 54 Q104 48 106 45" stroke="#1f2937" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <circle cx="86" cy="45" r="2" fill="#1f2937"/>
+  <circle cx="106" cy="45" r="2" fill="#1f2937"/>
+</svg>

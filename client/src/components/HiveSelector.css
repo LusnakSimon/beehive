@@ -69,7 +69,7 @@
   top: calc(100% + 0.5rem);
   left: 0;
   right: 0;
-  background: var(--surface);
+  background: #ffffff;
   border: 2px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -77,6 +77,12 @@
   animation: dropdownSlide 0.2s ease-out;
   z-index: 100;
   opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hive-dropdown {
+    background: #1f2937;
+  }
 }
 
 @keyframes dropdownSlide {
