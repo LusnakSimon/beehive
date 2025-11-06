@@ -48,15 +48,21 @@ export const NotificationProvider = ({ children }) => {
 
   const registerServiceWorker = async () => {
     try {
-      const reg = await navigator.serviceWorker.register('/sw.js');
+      console.log('Attempting to register Service Worker...');
+      console.log('Location:', window.location.href);
+      console.log('Is HTTPS or localhost?', window.location.protocol === 'https:' || window.location.hostname === 'localhost');
+      
+      const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
       console.log('Service Worker registered:', reg);
       setRegistration(reg);
       
       // Wait for service worker to be ready
-      await navigator.serviceWorker.ready;
-      console.log('Service Worker ready');
+      const ready = await navigator.serviceWorker.ready;
+      console.log('Service Worker ready:', ready);
+      setRegistration(ready);
     } catch (error) {
       console.error('Service Worker registration failed:', error);
+      console.error('Error details:', error.message, error.stack);
     }
   };
 

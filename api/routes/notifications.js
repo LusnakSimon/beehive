@@ -1,6 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const Reading = require('../models/Reading');
+import express from 'express'
+import Reading from '../models/Reading.js'
+
+const router = express.Router()
 
 // Check conditions and return alerts
 router.post('/check', async (req, res) => {
@@ -35,8 +36,8 @@ router.post('/check', async (req, res) => {
 
     // Check temperature
     if (settings.temperature) {
-      const tempMin = parseFloat(localStorage.getItem('tempMin') || 30);
-      const tempMax = parseFloat(localStorage.getItem('tempMax') || 36);
+      const tempMin = 30; // Default optimum range
+      const tempMax = 36;
       
       if (latest.temperature < tempMin) {
         alerts.push({
@@ -57,8 +58,8 @@ router.post('/check', async (req, res) => {
 
     // Check humidity
     if (settings.humidity) {
-      const humidityMin = parseFloat(localStorage.getItem('humidityMin') || 50);
-      const humidityMax = parseFloat(localStorage.getItem('humidityMax') || 60);
+      const humidityMin = 40; // Default optimum range
+      const humidityMax = 70;
       
       if (latest.humidity < humidityMin) {
         alerts.push({
@@ -119,4 +120,4 @@ router.post('/check', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts'
 import { useHive } from '../context/HiveContext'
+import { useNotifications } from '../contexts/NotificationContext'
 import HiveSelector from '../components/HiveSelector'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { selectedHive } = useHive()
+  const { checkConditions } = useNotifications()
   const [data, setData] = useState({
     temperature: 0,
     humidity: 0,
@@ -37,6 +39,9 @@ export default function Dashboard() {
         const result = await response.json()
         setPreviousData(data)
         setData(result)
+        
+        // Check notification conditions after fetching new data
+        await checkConditions(selectedHive)
       }
     } catch (error) {
       console.error('Chyba pri načítaní dát:', error)

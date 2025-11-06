@@ -8,6 +8,7 @@ import esp32Routes from './routes/esp32.js'
 import testDataRoutes from './routes/testData.js'
 import lorawanRoutes from './routes/lorawan.js'
 import inspectionRoutes from './routes/inspection.js'
+import notificationsRoutes from './routes/notifications.js'
 
 const app = express()
 
@@ -16,7 +17,6 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100
 })
-const notificationsRoutes = require('./routes/notifications')
 
 // Middleware
 app.use(cors())
