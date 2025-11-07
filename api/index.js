@@ -8,6 +8,7 @@ const inspectionRoutes = require('../lib/routes/inspection.js');
 const notificationsRoutes = require('../lib/routes/notifications.js');
 const adminRoutes = require('../lib/routes/admin.js');
 const testDataRoutes = require('../lib/routes/testData.js');
+const usersRoutes = require('../lib/routes/users.js');
 
 // MongoDB connection cache
 let cached = global.mongoose;
@@ -64,6 +65,9 @@ module.exports = async (req, res) => {
     } else if (path.startsWith('/admin')) {
       req.url = path.replace('/admin', '');
       return adminRoutes(req, res);
+    } else if (path.startsWith('/users')) {
+      req.url = path.replace('/users', '');
+      return usersRoutes(req, res);
     } else if (path.startsWith('/test')) {
       req.url = path.replace('/test', '');
       return testDataRoutes(req, res);

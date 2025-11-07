@@ -1,184 +1,184 @@
-import { useState } from 'react'
-import { useHive } from '../context/HiveContext'
-import './Admin.css'
+import { useState, useEffect } from 'react';
+import './Admin.css';
 
 export default function Admin() {
-  const { hives } = useHive()
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState(null)
-  const [error, setError] = useState(null)
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newHiveId, setNewHiveId] = useState('');
 
-  const generateTestData = async (days) => {
-    setLoading(true)
-    setError(null)
-    setResult(null)
+  const availableHives = ['HIVE-001', 'HIVE-002', 'HIVE-003', 'HIVE-004'];
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
     try {
-      // Get all hive IDs from context
-      const hiveIds = hives.map(hive => hive.id)
+      const response = await fetch('/api/users', {
+        credentials: 'include'
+      });
       
-      const response = await fetch('/api/test/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          days: days,
-          pointsPerDay: 24,
-          hiveIds: hiveIds
-        })
-      })
-
-      const data = await response.json()
-
       if (response.ok) {
-        setResult(data)
-      } else {
-        setError(data.error || 'Chyba pri generovaní dát')
+        const data = await response.json();
+        setUsers(data);
       }
-    } catch (err) {
-      setError('Chyba pripojenia: ' + err.message)
+    } catch (error) {
+      console.error('Error fetching users:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const clearAllData = async () => {
-    if (!confirm('Naozaj chceš vymazať všetky dáta?')) {
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-    setResult(null)
-
+  const assignHive = async (userId, hiveId) => {
     try {
-      const response = await fetch('/api/test/clear', {
-        method: 'DELETE'
-      })
-
-      const data = await response.json()
+      const response = await fetch(`/api/users/${userId}/hives`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ hiveId })
+      });
 
       if (response.ok) {
-        setResult(data)
-      } else {
-        setError(data.error || 'Chyba pri mazaní dát')
+        await fetchUsers();
+        setNewHiveId('');
       }
-    } catch (err) {
-      setError('Chyba pripojenia: ' + err.message)
-    } finally {
-      setLoading(false)
+    } catch (error) {
+      console.error('Error assigning hive:', error);
     }
+  };
+
+  const removeHive = async (userId, hiveId) => {
+    try {
+      const response = await fetch(`/api/users/${userId}/hives/${hiveId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        await fetchUsers();
+      }
+    } catch (error) {
+      console.error('Error removing hive:', error);
+    }
+  };
+
+  const toggleRole = async (userId, currentRole) => {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    
+    try {
+      const response = await fetch(`/api/users/${userId}/role`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ role: newRole })
+      });
+
+      if (response.ok) {
+        await fetchUsers();
+      }
+    } catch (error) {
+      console.error('Error updating role:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="admin-container">
+        <div className="spinner"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="admin">
-      <header className="admin-header">
-        <h1>🔧 Admin Panel</h1>
-        <p className="subtitle-admin">Správa testovacích dát</p>
-      </header>
+    <div className="admin-container">
+      <div className="admin-header">
+        <h1>Admin Panel</h1>
+        <p>Správa používateľov a úľov</p>
+      </div>
 
       <div className="admin-content">
-        <div className="admin-section">
-          <h2>📊 Generovanie testovacích dát</h2>
-          <p className="section-description">
-            Vygeneruj realistické testovacie dáta pre <strong>{hives.length} úle</strong> ({hives.map(h => h.name).join(', ')})
-            <br />s dennými cyklami teploty, vlhkosti a postupným nárastom hmotnosti.
-          </p>
+        <div className="users-grid">
+          {users.map(user => (
+            <div key={user._id} className="user-card">
+              <div className="user-header">
+                {user.image && (
+                  <img src={user.image} alt={user.name} className="user-avatar" />
+                )}
+                <div className="user-info">
+                  <h3>{user.name}</h3>
+                  <p className="user-email">{user.email}</p>
+                </div>
+                <button
+                  onClick={() => toggleRole(user._id, user.role)}
+                  className={`role-badge ${user.role}`}
+                >
+                  {user.role === 'admin' ? '👑 Admin' : '👤 User'}
+                </button>
+              </div>
 
-          <div className="button-grid">
-            <button
-              className="admin-btn btn-primary"
-              onClick={() => generateTestData(7)}
-              disabled={loading}
-            >
-              {loading ? '⏳ Generujem...' : '📅 Generuj 7 dní'}
-            </button>
+              <div className="user-hives">
+                <h4>Pridelené úle ({user.ownedHives?.length || 0})</h4>
+                <div className="hives-list">
+                  {user.ownedHives && user.ownedHives.length > 0 ? (
+                    user.ownedHives.map(hiveId => (
+                      <div key={hiveId} className="hive-tag">
+                        <span>🏠 {hiveId}</span>
+                        <button
+                          onClick={() => removeHive(user._id, hiveId)}
+                          className="remove-btn"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="no-hives">Žiadne pridelené úle</p>
+                  )}
+                </div>
 
-            <button
-              className="admin-btn btn-primary"
-              onClick={() => generateTestData(14)}
-              disabled={loading}
-            >
-              {loading ? '⏳ Generujem...' : '📅 Generuj 14 dní'}
-            </button>
+                <div className="assign-hive">
+                  <select
+                    value={newHiveId}
+                    onChange={(e) => setNewHiveId(e.target.value)}
+                    className="hive-select"
+                  >
+                    <option value="">Vyber úľ...</option>
+                    {availableHives
+                      .filter(h => !user.ownedHives?.includes(h))
+                      .map(hiveId => (
+                        <option key={hiveId} value={hiveId}>
+                          {hiveId}
+                        </option>
+                      ))}
+                  </select>
+                  <button
+                    onClick={() => {
+                      if (newHiveId) {
+                        assignHive(user._id, newHiveId);
+                      }
+                    }}
+                    disabled={!newHiveId}
+                    className="assign-btn"
+                  >
+                    + Prideliť
+                  </button>
+                </div>
+              </div>
 
-            <button
-              className="admin-btn btn-primary"
-              onClick={() => generateTestData(30)}
-              disabled={loading}
-            >
-              {loading ? '⏳ Generujem...' : '📅 Generuj 30 dní'}
-            </button>
-          </div>
-        </div>
-
-        <div className="admin-section">
-          <h2>🗑️ Vymazanie dát</h2>
-          <p className="section-description">
-            Vymaž všetky testovacie dáta z databázy. Táto akcia je nenávratná!
-          </p>
-
-          <button
-            className="admin-btn btn-danger"
-            onClick={clearAllData}
-            disabled={loading}
-          >
-            {loading ? '⏳ Mažem...' : '🗑️ Vymazať všetky dáta'}
-          </button>
-        </div>
-
-        {result && (
-          <div className="result-box success">
-            <h3>✅ Úspech!</h3>
-            <div className="result-details">
-              {result.hives && (
-                <>
-                  <p><strong>Úle:</strong> {result.hives.join(', ')}</p>
-                  <p><strong>Celkovo záznamov:</strong> {result.count}</p>
-                  <p><strong>Na úľ:</strong> {result.perHive} záznamov</p>
-                </>
-              )}
-              {result.deletedCount !== undefined && (
-                <p><strong>Vymazaných záznamov:</strong> {result.deletedCount}</p>
-              )}
+              <div className="user-meta">
+                <span>Vytvorený: {new Date(user.createdAt).toLocaleDateString('sk')}</span>
+              </div>
             </div>
-            <p className="result-hint">
-              Teraz môžeš prepínať medzi úľami a vidieť rôzne dáta v grafoch! 📈🐝
-            </p>
-          </div>
-        )}
-
-        {error && (
-          <div className="result-box error">
-            <h3>❌ Chyba</h3>
-            <p>{error}</p>
-          </div>
-        )}
-
-        <div className="info-section">
-          <h3>ℹ️ Informácie</h3>
-          <ul>
-            <li>Každý deň obsahuje 24 meraní (každú hodinu)</li>
-            <li>Teplota simuluje denný cyklus (30-36°C)</li>
-            <li>Vlhkosť kolíše medzi 40-70%</li>
-            <li>Hmotnosť postupne rastie (simulácia produkcie medu)</li>
-            <li>Batéria postupne klesá</li>
-            <li>Každý úľ má mierne odlišné hodnoty pre realistickosť</li>
-          </ul>
+          ))}
         </div>
 
-        <div className="donate-section">
-          <a 
-            href="https://ko-fi.com/dongfeng400" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="donate-link"
-          >
-            ☕ Support the project
-          </a>
-        </div>
+        {users.length === 0 && (
+          <div className="no-users">
+            <p>Zatiaľ žiadni používatelia</p>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
