@@ -1,11 +1,9 @@
-const NextAuth = require('next-auth').default;
-const GoogleProvider = require('next-auth/providers/google').default;
-const GitHubProvider = require('next-auth/providers/github').default;
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import GitHubProvider from 'next-auth/providers/github';
 
-module.exports = async (req, res) => {
+export default async function auth(req, res) {
   // NextAuth expects the full /api/auth path
-  // Vercel routing strips it, so we need to restore it
-  const originalUrl = req.url;
   if (!req.url.startsWith('/api/auth')) {
     req.url = '/api/auth' + (req.url === '/' ? '' : req.url);
   }
@@ -34,7 +32,6 @@ module.exports = async (req, res) => {
     
     callbacks: {
       async redirect({ url, baseUrl }) {
-        // Redirect to dashboard after login
         if (url.startsWith('/')) return baseUrl + url;
         else if (new URL(url).origin === baseUrl) return url;
         return baseUrl + '/';
@@ -49,7 +46,7 @@ module.exports = async (req, res) => {
         return session;
       },
       
-      async jwt({ token, user, account }) {
+      async jwt({ token, user }) {
         if (user) {
           token.role = 'user';
           token.ownedHives = [];
@@ -60,4 +57,4 @@ module.exports = async (req, res) => {
     
     debug: true,
   });
-};
+}

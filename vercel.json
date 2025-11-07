@@ -3,14 +3,6 @@
   "outputDirectory": "client/dist",
   "rewrites": [
     {
-      "source": "/api/auth/:path(.*)",
-      "destination": "/functions/auth"
-    },
-    {
-      "source": "/api/:path(.*)",
-      "destination": "/functions/api"
-    },
-    {
       "source": "/:path(.*)",
       "destination": "/:path*"
     }
