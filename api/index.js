@@ -41,6 +41,22 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
   
+  // Parse body for POST/PUT/PATCH requests
+  if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+    if (!req.body) {
+      try {
+        const buffers = [];
+        for await (const chunk of req) {
+          buffers.push(chunk);
+        }
+        const data = Buffer.concat(buffers).toString();
+        req.body = data ? JSON.parse(data) : {};
+      } catch (e) {
+        req.body = {};
+      }
+    }
+  }
+  
   try {
     await connectDB();
     
