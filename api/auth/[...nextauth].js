@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 
-export default NextAuth({
+const options = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -50,5 +50,8 @@ export default NextAuth({
   },
   
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true,
-});
+};
+
+export default async function auth(req, res) {
+  return await NextAuth(req, res, options);
+}
