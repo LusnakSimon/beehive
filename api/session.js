@@ -8,7 +8,8 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+    const secret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+    const decoded = jwt.verify(token, secret);
     res.json({
       user: {
         id: decoded.id,

@@ -93,7 +93,7 @@ export default async function handler(req, res) {
         role: 'user',
         ownedHives: [],
       },
-      process.env.NEXTAUTH_SECRET,
+      process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
 
