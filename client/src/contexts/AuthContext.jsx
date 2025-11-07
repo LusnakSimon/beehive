@@ -52,16 +52,24 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Clear state first
+      setUser(null);
+      setIsAuthenticated(false);
+      
+      // Call logout endpoint to clear cookie
       await fetch('/api/logout', {
         method: 'GET',
         credentials: 'include'
       });
-      setUser(null);
-      setIsAuthenticated(false);
+      
+      // Redirect to login
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
-      throw error;
+      // Even if API call fails, clear local state and redirect
+      setUser(null);
+      setIsAuthenticated(false);
+      window.location.href = '/login';
     }
   };
 

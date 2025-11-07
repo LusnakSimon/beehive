@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
-export default function handler(req, res) {
-  const token = req.cookies?.['auth-token'];
+module.exports = async (req, res) => {
+  const token = req.headers.cookie?.split('auth-token=')[1]?.split(';')[0];
   
   if (!token) {
     return res.json({ user: null });
@@ -23,4 +23,4 @@ export default function handler(req, res) {
   } catch (err) {
     res.json({ user: null });
   }
-}
+};
