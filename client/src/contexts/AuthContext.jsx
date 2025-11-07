@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkSession = async () => {
     try {
-      const response = await fetch('/api/auth/session', {
+      const response = await fetch('/api/session', {
         credentials: 'include'
       });
       
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (provider) => {
     try {
       // Redirect to OAuth provider
-      window.location.href = `/api/auth/signin/${provider}?callbackUrl=/`;
+      window.location.href = `/api/oauth-${provider}`;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -52,8 +52,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/signout', {
-        method: 'POST',
+      await fetch('/api/logout', {
+        method: 'GET',
         credentials: 'include'
       });
       setUser(null);
