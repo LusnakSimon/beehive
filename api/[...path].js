@@ -45,7 +45,9 @@ module.exports = async (req, res) => {
     await connectDB();
     
     // Route based on URL path
-    const path = req.url.replace('/api', '');
+    // In catch-all route, req.url might be /api/sensor/latest or just /sensor/latest
+    const fullPath = req.url || '';
+    const path = fullPath.startsWith('/api') ? fullPath.replace('/api', '') : fullPath;
     
     if (path.startsWith('/sensor')) {
       req.url = path.replace('/sensor', '');
