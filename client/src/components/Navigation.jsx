@@ -4,7 +4,7 @@ import './Navigation.css'
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth()
-
+  
   return (
     <nav className="navigation">
       <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
@@ -31,16 +31,31 @@ export default function Navigation() {
       )}
       
       {isAuthenticated ? (
-        <div className="nav-user-section">
-          <div className="nav-user-info">
-            {user?.image && <img src={user.image} alt={user.name} className="nav-avatar" />}
-            <span className="nav-username">{user?.name}</span>
+        <>
+          {/* Desktop user section */}
+          <div className="nav-user-section">
+            <div className="nav-user-info">
+              {user?.image && <img src={user.image} alt={user.name} className="nav-avatar" />}
+              <span className="nav-username">{user?.name}</span>
+            </div>
+            <button onClick={logout} className="nav-logout-btn">
+              <span className="icon">🚪</span>
+              <span>Odhlásiť</span>
+            </button>
           </div>
-          <button onClick={logout} className="nav-logout-btn">
-            <span className="icon">🚪</span>
-            <span>Odhlásiť</span>
-          </button>
-        </div>
+          
+          {/* Mobile user icon */}
+          <div className="nav-user-mobile">
+            <NavLink to="/profile" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              {user?.image ? (
+                <img src={user.image} alt={user.name} className="nav-avatar" style={{ width: '28px', height: '28px', margin: '0' }} />
+              ) : (
+                <span className="icon">👤</span>
+              )}
+              <span>Profil</span>
+            </NavLink>
+          </div>
+        </>
       ) : (
         <NavLink to="/login" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
           <span className="icon">🔑</span>

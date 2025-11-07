@@ -9,6 +9,7 @@ import Settings from './pages/Settings'
 import Admin from './pages/Admin'
 import Inspection from './pages/Inspection'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
 import Navigation from './components/Navigation'
 import './App.css'
 
@@ -42,14 +43,15 @@ function App() {
           <Navigation />
           
           <main className="main-content">
-            <Routes>
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<Dashboard />} />
               <Route path="/history" element={<History />} />
               <Route path="/inspection" element={<Inspection />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
-            </Routes>
+              </Routes>
           </main>
         </div>
       </HiveProvider>
