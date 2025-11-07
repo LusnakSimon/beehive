@@ -1,114 +1,77 @@
-import express from 'express'
-import cors from 'cors'
-import mongoose from 'mongoose'
-import rateLimit from 'express-rate-limit'
-import { waitUntil } from '@vercel/functions'
-import sensorRoutes from '../lib/routes/sensor.js'
-import esp32Routes from '../lib/routes/esp32.js'
-import testDataRoutes from '../lib/routes/testData.js'
-import lorawanRoutes from '../lib/routes/lorawan.js'
-import inspectionRoutes from '../lib/routes/inspection.js'
-import notificationsRoutes from '../lib/routes/notifications.js'
-import adminRoutes from '../lib/routes/admin.js'
+const mongoose = require('mongoose');
 
-const app = express()
+// Import route handlers
+const sensorRoutes = require('../lib/routes/sensor.js');
+const esp32Routes = require('../lib/routes/esp32.js');
+const lorawanRoutes = require('../lib/routes/lorawan.js');
+const inspectionRoutes = require('../lib/routes/inspection.js');
+const notificationsRoutes = require('../lib/routes/notifications.js');
+const adminRoutes = require('../lib/routes/admin.js');
+const testDataRoutes = require('../lib/routes/testData.js');
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100
-})
-
-// Middleware
-app.use(cors())
-app.use(express.json())
-app.use(limiter)
-
-// MongoDB connection with Vercel optimization
-let cached = global.mongoose
-
+// MongoDB connection cache
+let cached = global.mongoose;
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
+  cached = global.mongoose = { conn: null, promise: null };
 }
 
 async function connectDB() {
-  if (cached.conn) {
-    return cached.conn
-  }
-
+  if (cached.conn) return cached.conn;
+  
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    }
-
-    cached.promise = mongoose.connect(process.env.MONGODB_URI || process.env.STORE_MONGODB_URI, opts).then((mongoose) => {
-      console.log('✅ MongoDB connected')
-      return mongoose
-    }).catch((err) => {
-      console.error('❌ MongoDB connection error:', err)
-      cached.promise = null
-      throw err
-    })
+    };
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts);
   }
-
-  try {
-    cached.conn = await cached.promise
-  } catch (e) {
-    cached.promise = null
-    throw e
-  }
-
-  return cached.conn
+  
+  cached.conn = await cached.promise;
+  return cached.conn;
 }
 
-// Routes
-app.use('/api/sensor', sensorRoutes)
-app.use('/api/esp32', esp32Routes)
-app.use('/api/test', testDataRoutes)
-app.use('/api/lorawan', lorawanRoutes)
-app.use('/api/inspection', inspectionRoutes)
-app.use('/api/notifications', notificationsRoutes)
-app.use('/api/admin', adminRoutes)
-
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    env: {
-      hasMongoDB: !!(process.env.MONGODB_URI || process.env.STORE_MONGODB_URI),
-      hasAPIKey: !!process.env.ESP32_API_KEY
-    }
-  })
-})
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error('API Error:', err.stack)
-  res.status(500).json({ error: 'Server error', message: err.message })
-})
-
-// Vercel serverless handler with connection pool management
-export default async (req, res) => {
+module.exports = async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   try {
-    await connectDB()
+    await connectDB();
     
-    // Use waitUntil to keep connection alive for next invocation
-    waitUntil(
-      new Promise(resolve => {
-        setTimeout(resolve, 1000) // Keep connection warm
-      })
-    )
+    // Route based on URL path
+    const path = req.url.replace('/api', '');
     
-    return app(req, res)
+    if (path.startsWith('/sensor')) {
+      req.url = path.replace('/sensor', '');
+      return sensorRoutes(req, res);
+    } else if (path.startsWith('/esp32')) {
+      req.url = path.replace('/esp32', '');
+      return esp32Routes(req, res);
+    } else if (path.startsWith('/lorawan')) {
+      req.url = path.replace('/lorawan', '');
+      return lorawanRoutes(req, res);
+    } else if (path.startsWith('/inspection')) {
+      req.url = path.replace('/inspection', '');
+      return inspectionRoutes(req, res);
+    } else if (path.startsWith('/notifications')) {
+      req.url = path.replace('/notifications', '');
+      return notificationsRoutes(req, res);
+    } else if (path.startsWith('/admin')) {
+      req.url = path.replace('/admin', '');
+      return adminRoutes(req, res);
+    } else if (path.startsWith('/test')) {
+      req.url = path.replace('/test', '');
+      return testDataRoutes(req, res);
+    } else {
+      return res.status(404).json({ error: 'Not found' });
+    }
   } catch (error) {
-    console.error('Handler error:', error)
-    return res.status(500).json({ 
-      error: 'Database connection failed',
-      message: error.message 
-    })
+    console.error('API Error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
