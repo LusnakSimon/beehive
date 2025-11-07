@@ -1,9 +1,9 @@
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import GitHubProvider from 'next-auth/providers/github';
+const NextAuth = require('next-auth').default;
+const GoogleProvider = require('next-auth/providers/google').default;
+const GitHubProvider = require('next-auth/providers/github').default;
 
-export default async function auth(req, res) {
-  // NextAuth expects the full /api/auth path
+module.exports = async (req, res) => {
+  // Fix URL for NextAuth routing
   if (!req.url.startsWith('/api/auth')) {
     req.url = '/api/auth' + (req.url === '/' ? '' : req.url);
   }
@@ -55,6 +55,7 @@ export default async function auth(req, res) {
       },
     },
     
+    secret: process.env.NEXTAUTH_SECRET,
     debug: true,
   });
-}
+};
