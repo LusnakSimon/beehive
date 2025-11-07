@@ -5,9 +5,8 @@ const { MongoDBAdapter } = require('@next-auth/mongodb-adapter');
 const clientPromise = require('../lib/mongodb');
 const User = require('../models/User');
 
-module.exports = async (req, res) => {
+const authHandler = async (req, res) => {
   return await NextAuth(req, res, {
-    // Configure OAuth providers
     providers: [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
@@ -19,35 +18,28 @@ module.exports = async (req, res) => {
       }),
     ],
     
-    // Use MongoDB adapter for session storage
     adapter: MongoDBAdapter(clientPromise),
     
-    // Configure session strategy
     session: {
       strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
     },
     
-    // JWT configuration
     jwt: {
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
     },
     
-    // Custom pages
     pages: {
       signIn: '/login',
       error: '/login',
     },
     
-    // Callbacks for customization
     callbacks: {
       async signIn({ user, account, profile }) {
         try {
-          // Find or create user
           let dbUser = await User.findOne({ email: user.email });
           
           if (!dbUser) {
-            // Create new user
             dbUser = await User.create({
               name: user.name || profile.name,
               email: user.email,
@@ -69,7 +61,6 @@ module.exports = async (req, res) => {
               lastLogin: new Date(),
             });
           } else {
-            // Update existing user
             const accountExists = dbUser.accounts.some(
               acc => acc.provider === account.provider && 
                      acc.providerAccountId === account.providerAccountId
@@ -101,7 +92,6 @@ module.exports = async (req, res) => {
       },
       
       async jwt({ token, user, account }) {
-        // Add user info to token on first sign in
         if (user) {
           const dbUser = await User.findOne({ email: user.email });
           token.id = dbUser._id.toString();
@@ -112,7 +102,6 @@ module.exports = async (req, res) => {
       },
       
       async session({ session, token }) {
-        // Add custom fields to session
         if (token) {
           session.user.id = token.id;
           session.user.role = token.role;
@@ -122,7 +111,6 @@ module.exports = async (req, res) => {
       },
     },
     
-    // Events for logging
     events: {
       async signIn({ user }) {
         console.log(`User signed in: ${user.email}`);
@@ -132,7 +120,8 @@ module.exports = async (req, res) => {
       },
     },
     
-    // Enable debug in development
     debug: process.env.NODE_ENV === 'development',
   });
 };
+
+module.exports = authHandler;
