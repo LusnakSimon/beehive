@@ -16,7 +16,7 @@ Kompletný návod na pripojenie ESP32 zariadenia cez LoRaWAN do Beehive Monitor 
 ### Software
 - **Arduino IDE** alebo **PlatformIO**
 - **The Things Network (TTN)** account - https://www.thethingsnetwork.org/
-- **Účet na ebeehive.vercel.app**
+- Prístup na **ebeehive.vercel.app** (verejná aplikácia, zatiaľ bez autentifikácie)
 
 ---
 
