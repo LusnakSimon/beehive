@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { SessionProvider, useSession, signIn, signOut } from 'next-auth/react';
 
 const AuthContext = createContext(null);
 
@@ -12,24 +11,39 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  return (
-    <SessionProvider>
-      <AuthProviderInner>{children}</AuthProviderInner>
-    </SessionProvider>
-  );
-};
-
-const AuthProviderInner = ({ children }) => {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    setLoading(status === 'loading');
-  }, [status]);
+    // Check session on mount
+    checkSession();
+  }, []);
+
+  const checkSession = async () => {
+    try {
+      const response = await fetch('/api/auth/session', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const session = await response.json();
+        if (session && session.user) {
+          setUser(session.user);
+          setIsAuthenticated(true);
+        }
+      }
+    } catch (error) {
+      console.error('Session check failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (provider) => {
     try {
-      await signIn(provider, { callbackUrl: '/dashboard' });
+      // Redirect to OAuth provider
+      window.location.href = `/api/auth/signin/${provider}?callbackUrl=/`;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -38,7 +52,13 @@ const AuthProviderInner = ({ children }) => {
 
   const logout = async () => {
     try {
-      await signOut({ callbackUrl: '/' });
+      await fetch('/api/auth/signout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      setUser(null);
+      setIsAuthenticated(false);
+      window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
@@ -46,12 +66,11 @@ const AuthProviderInner = ({ children }) => {
   };
 
   const value = {
-    user: session?.user || null,
-    isAuthenticated: !!session,
+    user,
+    isAuthenticated,
     loading,
     login,
     logout,
-    session,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
