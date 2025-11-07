@@ -4,7 +4,11 @@
   "rewrites": [
     {
       "source": "/api/auth/:path*",
-      "destination": "/api/auth"
+      "destination": "/functions/auth"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/functions/api"
     },
     {
       "source": "/(.*)",

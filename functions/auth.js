@@ -2,8 +2,8 @@ const NextAuth = require('next-auth').default;
 const GoogleProvider = require('next-auth/providers/google').default;
 const GitHubProvider = require('next-auth/providers/github').default;
 const { MongoDBAdapter } = require('@next-auth/mongodb-adapter');
-const clientPromise = require('../lib/mongodb');
-const User = require('../models/User');
+const clientPromise = require('../api/lib/mongodb');
+const User = require('../api/models/User');
 
 const authHandler = async (req, res) => {
   return await NextAuth(req, res, {
