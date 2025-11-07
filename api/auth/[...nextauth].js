@@ -3,11 +3,6 @@ const GoogleProvider = require('next-auth/providers/google').default;
 const GitHubProvider = require('next-auth/providers/github').default;
 
 module.exports = async (req, res) => {
-  // Fix URL for NextAuth routing
-  if (!req.url.startsWith('/api/auth')) {
-    req.url = '/api/auth' + (req.url === '/' ? '' : req.url);
-  }
-  
   return await NextAuth(req, res, {
     providers: [
       GoogleProvider({
