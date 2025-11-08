@@ -382,3 +382,52 @@
 .save-btn {
   flex: 1;
 }
+
+/* Empty state for users without hives */
+.inspection-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  min-height: 50vh;
+}
+
+.inspection-empty-state .empty-state-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.inspection-empty-state h2 {
+  font-size: 1.75rem;
+  margin: 0 0 1rem 0;
+  color: var(--text);
+}
+
+.inspection-empty-state p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .inspection-empty-state {
+    padding: 3rem 1.5rem;
+  }
+  
+  .inspection-empty-state .empty-state-icon {
+    font-size: 4rem;
+  }
+  
+  .inspection-empty-state h2 {
+    font-size: 1.5rem;
+  }
+  
+  .inspection-empty-state p {
+    font-size: 0.95rem;
+  }
+}

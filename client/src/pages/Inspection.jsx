@@ -186,6 +186,30 @@ export default function Inspection() {
     return 'status-danger'
   }
 
+  // No hive selected - show empty state
+  if (!selectedHive) {
+    return (
+      <div className="inspection">
+        <header className="inspection-header">
+          <div>
+            <h1>📋 Kontrola úľa</h1>
+            <p className="subtitle-inspection">Zaznamenaj stav úľa</p>
+          </div>
+        </header>
+
+        <div className="hive-selector-container">
+          <HiveSelector />
+        </div>
+
+        <div className="inspection-empty-state">
+          <div className="empty-state-icon">🏠</div>
+          <h2>Žiadne úle</h2>
+          <p>Nemáte pridelený žiadny úľ. Kontaktujte administrátora pre pridelenie úľa k vášmu účtu.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="inspection">
       <header className="inspection-header">

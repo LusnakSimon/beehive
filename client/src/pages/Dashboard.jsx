@@ -24,9 +24,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!selectedHive) {
-      return // Skip fetching if no hive selected
+      setLoading(false) // No hive - stop loading immediately
+      return
     }
     
+    setLoading(true) // Start loading when hive is available
     fetchLatestData()
     fetch24hHistory()
     const interval = setInterval(() => {
@@ -131,6 +133,30 @@ export default function Dashboard() {
       <div className="loading-screen">
         <div className="loading-spinner"></div>
         <p>Načítavam dáta z úľa...</p>
+      </div>
+    )
+  }
+
+  // No hive selected - show empty state
+  if (!selectedHive) {
+    return (
+      <div className="dashboard">
+        <header className="dashboard-header">
+          <div className="header-content">
+            <h1>🐝 Beehive Monitor</h1>
+            <p className="subtitle">Real-time monitorovanie</p>
+          </div>
+        </header>
+
+        <div className="hive-selector-container">
+          <HiveSelector />
+        </div>
+
+        <div className="dashboard-empty-state">
+          <div className="empty-state-icon">🏠</div>
+          <h2>Žiadne úle</h2>
+          <p>Nemáte pridelený žiadny úľ. Kontaktujte administrátora pre pridelenie úľa k vášmu účtu.</p>
+        </div>
       </div>
     )
   }

@@ -358,3 +358,52 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Empty state for users without hives */
+.history-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  min-height: 50vh;
+}
+
+.history-empty-state .empty-state-icon {
+  font-size: 5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.history-empty-state h2 {
+  font-size: 1.75rem;
+  margin: 0 0 1rem 0;
+  color: var(--text);
+}
+
+.history-empty-state p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 500px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .history-empty-state {
+    padding: 3rem 1.5rem;
+  }
+  
+  .history-empty-state .empty-state-icon {
+    font-size: 4rem;
+  }
+  
+  .history-empty-state h2 {
+    font-size: 1.5rem;
+  }
+  
+  .history-empty-state p {
+    font-size: 0.95rem;
+  }
+}

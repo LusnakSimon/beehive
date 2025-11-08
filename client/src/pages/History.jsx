@@ -18,11 +18,17 @@ export default function History() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!selectedHive) {
+      setLoading(false)
+      return
+    }
     fetchHistoricalData()
     fetchStats()
   }, [timeRange, selectedHive]) // Re-fetch when hive changes
 
   const fetchHistoricalData = async () => {
+    if (!selectedHive) return
+    
     setLoading(true)
     try {
       const response = await fetch(`/api/sensor/history?range=${timeRange}&hiveId=${selectedHive}`)
@@ -38,6 +44,8 @@ export default function History() {
   }
 
   const fetchStats = async () => {
+    if (!selectedHive) return
+    
     try {
       const response = await fetch(`/api/sensor/stats?range=${timeRange}&hiveId=${selectedHive}`)
       if (response.ok) {
@@ -210,6 +218,30 @@ export default function History() {
       <div className="loading-screen">
         <div className="loading-spinner"></div>
         <p>Načítavam históriu...</p>
+      </div>
+    )
+  }
+
+  // No hive selected - show empty state
+  if (!selectedHive) {
+    return (
+      <div className="history">
+        <header className="history-header">
+          <div>
+            <h1>📊 História & Analýza</h1>
+            <p className="subtitle-history">Detailné zobrazenie historických dát</p>
+          </div>
+        </header>
+
+        <div className="hive-selector-container">
+          <HiveSelector />
+        </div>
+
+        <div className="history-empty-state">
+          <div className="empty-state-icon">🏠</div>
+          <h2>Žiadne úle</h2>
+          <p>Nemáte pridelený žiadny úľ. Kontaktujte administrátora pre pridelenie úľa k vášmu účtu.</p>
+        </div>
       </div>
     )
   }
