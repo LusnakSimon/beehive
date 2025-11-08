@@ -41,6 +41,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await fetch('/api/session', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const session = await response.json();
+        if (session && session.user) {
+          setUser(session.user);
+          setIsAuthenticated(true);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('User refresh failed:', error);
+      return false;
+    }
+  };
+
   const login = async (provider) => {
     try {
       // Redirect to OAuth provider
@@ -86,6 +107,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

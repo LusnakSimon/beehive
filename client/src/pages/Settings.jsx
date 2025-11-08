@@ -5,7 +5,7 @@ import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
 
 export default function Settings() {
-  const { user } = useAuth()
+  const { user, refreshUser } = useAuth()
   const { hives } = useHive()
   const [settings, setSettings] = useState({
     notifications: true,
@@ -67,12 +67,10 @@ export default function Settings() {
 
       if (response.ok) {
         const data = await response.json()
+        await refreshUser() // Refresh user data with new JWT
         alert(`Úľ "${newHive.name}" bol úspešne vytvorený!`)
         setNewHive({ name: '', location: '', color: '#fbbf24' })
         setShowAddHive(false)
-        
-        // Reload page to refresh hives
-        window.location.reload()
       } else {
         const error = await response.json()
         alert(`Chyba: ${error.message || 'Nepodarilo sa pridať úľ'}`)
@@ -103,8 +101,8 @@ export default function Settings() {
       })
 
       if (response.ok) {
+        await refreshUser() // Refresh user data with new JWT
         alert('Úľ vymazaný!')
-        window.location.reload()
       } else {
         const error = await response.json()
         alert(`Chyba: ${error.message || 'Nepodarilo sa vymazať úľ'}`)
@@ -166,7 +164,6 @@ export default function Settings() {
                 value={newHive.name}
                 onChange={(e) => setNewHive(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="napr. Záhradný úľ"
-              />
               />
             </div>
 
