@@ -118,7 +118,7 @@ export default async function handler(req, res) {
         name: userInfo.name,
         image: userInfo.picture || userInfo.avatar_url,
         role: 'user',
-        ownedHives: ['HIVE-001'] // Default hive
+        ownedHives: [] // No default hives - admin will assign
       });
       await dbUser.save();
     } else {
@@ -137,7 +137,7 @@ export default async function handler(req, res) {
         image: dbUser.image,
         provider: userInfo.provider,
         role: dbUser.role || 'user',
-        ownedHives: dbUser.ownedHives || ['HIVE-001'],
+        ownedHives: dbUser.ownedHives || []
       },
       process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
       { expiresIn: '30d' }
