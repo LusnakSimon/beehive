@@ -9,7 +9,7 @@ if (!cached) {
 async function connectDB() {
   if (cached.conn) return cached.conn;
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI || process.env.STORAGE_MONGODB_URI, {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
       bufferCommands: false,
       maxPoolSize: 10,
     });
