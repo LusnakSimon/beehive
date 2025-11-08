@@ -23,6 +23,10 @@ export default function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
+    if (!selectedHive) {
+      return // Skip fetching if no hive selected
+    }
+    
     fetchLatestData()
     fetch24hHistory()
     const interval = setInterval(() => {
@@ -33,6 +37,8 @@ export default function Dashboard() {
   }, [selectedHive]) // Re-fetch when hive changes
 
   const fetchLatestData = async () => {
+    if (!selectedHive) return
+    
     try {
       setIsRefreshing(true)
       const response = await fetch(`/api/sensor/latest?hiveId=${selectedHive}`)
@@ -53,6 +59,8 @@ export default function Dashboard() {
   }
 
   const fetch24hHistory = async () => {
+    if (!selectedHive) return
+    
     try {
       const response = await fetch(`/api/sensor/history?range=24h&hiveId=${selectedHive}`)
       if (response.ok) {

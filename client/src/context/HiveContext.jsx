@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { useAuth } from './AuthContext'
+import { useAuth } from '../contexts/AuthContext'
 
 const HiveContext = createContext()
 
@@ -40,6 +40,7 @@ export function HiveProvider({ children }) {
         setSelectedHive(userHives[0].id)
       }
     } else {
+      // User has no hives - set empty state
       setHives([])
       setSelectedHive(null)
     }

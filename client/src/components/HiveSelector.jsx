@@ -6,6 +6,21 @@ export default function HiveSelector() {
   const { selectedHive, setSelectedHive, hives } = useHive()
   const [isOpen, setIsOpen] = useState(false)
 
+  // No hives assigned - show empty state
+  if (!hives || hives.length === 0) {
+    return (
+      <div className="hive-selector">
+        <div className="hive-selector-empty">
+          <div className="empty-icon">🏠</div>
+          <div className="empty-text">
+            <div className="empty-title">Žiadne úle</div>
+            <div className="empty-subtitle">Kontaktujte administrátora pre pridelenie úľa</div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const currentHive = hives.find(h => h.id === selectedHive) || hives[0]
 
   const handleSelect = (hiveId) => {

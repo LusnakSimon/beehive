@@ -23,10 +23,14 @@ export default function Inspection() {
   const [editingId, setEditingId] = useState(null)
 
   useEffect(() => {
-    fetchInspectionHistory()
+    if (selectedHive) {
+      fetchInspectionHistory()
+    }
   }, [selectedHive]) // Re-fetch when hive changes
 
   const fetchInspectionHistory = async () => {
+    if (!selectedHive) return
+    
     try {
       const response = await fetch(`/api/inspection/history?limit=10&hiveId=${selectedHive}`)
       if (response.ok) {
