@@ -1,0 +1,135 @@
+.varroa-reminder {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  max-width: 400px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.varroa-reminder-content {
+  padding: 20px;
+  color: white;
+}
+
+.varroa-icon {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.varroa-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.varroa-text p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+.varroa-info {
+  font-size: 13px !important;
+  opacity: 0.85 !important;
+  font-style: italic;
+  border-left: 3px solid rgba(255, 255, 255, 0.5);
+  padding-left: 12px;
+  margin-top: 12px !important;
+}
+
+.varroa-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.varroa-actions .btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.varroa-actions .btn-primary {
+  background: white;
+  color: #667eea;
+}
+
+.varroa-actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.varroa-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.varroa-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.varroa-actions .btn-text {
+  background: transparent;
+  color: white;
+  opacity: 0.8;
+  font-size: 13px;
+}
+
+.varroa-actions .btn-text:hover {
+  opacity: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .varroa-reminder {
+    bottom: 70px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+  
+  .varroa-reminder-content {
+    padding: 16px;
+  }
+  
+  .varroa-icon {
+    font-size: 40px;
+  }
+  
+  .varroa-text h3 {
+    font-size: 16px;
+  }
+  
+  .varroa-text p {
+    font-size: 13px;
+  }
+}

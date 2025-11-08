@@ -274,19 +274,42 @@ export default function Settings() {
             />
           </div>
         </div>
-      </div>
-
-      <div className="settings-section">
 
       <div className="settings-section">
         <h2>🔔 Notifikácie</h2>
         <NotificationSettings />
       </div>
+
+      <div className="settings-section">
         <h2>O aplikácii</h2>
         <div className="info-box">
           <p><strong>Verzia:</strong> 1.0.0</p>
           <p><strong>Zariadenie:</strong> ESP32-C3</p>
           <p><strong>Režim:</strong> {navigator.onLine ? '🟢 Online' : '🔴 Offline'}</p>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <h2>💝 Podpora projektu</h2>
+        <div className="info-box">
+          <p>Páči sa vám táto aplikácia? Podporte jej vývoj!</p>
+          <a 
+            href="https://www.paypal.com/donate/?hosted_button_id=YOUR_BUTTON_ID" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              marginTop: '12px',
+              textDecoration: 'none',
+              backgroundColor: '#0070ba'
+            }}
+          >
+            <span>💳</span>
+            <span>Podporiť cez PayPal</span>
+          </a>
         </div>
       </div>
 

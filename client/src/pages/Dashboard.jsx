@@ -3,6 +3,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts'
 import { useHive } from '../context/HiveContext'
 import { useNotifications } from '../contexts/NotificationContext'
 import HiveSelector from '../components/HiveSelector'
+import VarroaReminder from '../components/VarroaReminder'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -356,6 +357,8 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      
+      <VarroaReminder />
     </div>
   )
 }
