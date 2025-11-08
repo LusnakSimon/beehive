@@ -13,7 +13,7 @@ export default function Admin() {
   const [simulatorInterval, setSimulatorInterval] = useState(null);
   const [lastReading, setLastReading] = useState(null);
 
-  const availableHives = ['HIVE-001', 'HIVE-002', 'HIVE-003', 'HIVE-004'];
+  const availableHives = ['HIVE-001', 'HIVE-002', 'HIVE-003'];
 
   useEffect(() => {
     fetchUsers();
@@ -68,6 +68,30 @@ export default function Admin() {
       console.error('Error removing hive:', error);
     }
   };
+  
+  const deleteUser = async (userId, userName) => {
+    if (!confirm(`Naozaj chcete vymazať používateľa ${userName}?`)) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        await fetchUsers();
+        alert('Používateľ bol úspešne vymazaný');
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Nepodarilo sa vymazať používateľa');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Chyba pri mazaní používateľa');
+    }
+  };
 
   const toggleRole = async (userId, currentRole) => {
     const newRole = currentRole === 'admin' ? 'user' : 'admin';
@@ -89,7 +113,7 @@ export default function Admin() {
   };
   
   // LoRaWAN Simulator functions
-  const generateReading = () => {
+  const generateReading = (hiveId) => {
     // Simulate realistic beehive readings
     const baseTemp = 35; // °C
     const baseHumidity = 60; // %
@@ -100,7 +124,7 @@ export default function Admin() {
       humidity: baseHumidity + (Math.random() * 10 - 5), // 55-65%
       weight: baseWeight + (Math.random() * 2 - 1), // 44-46kg
       battery: 100 - Math.floor(Math.random() * 20), // 80-100%
-      hiveId: simulatorHive,
+      hiveId: hiveId,
       metadata: {
         source: 'LoRaWAN Simulator',
         rssi: -80 - Math.floor(Math.random() * 40), // Signal strength
@@ -109,9 +133,11 @@ export default function Admin() {
     };
   };
   
-  const sendReading = async () => {
-    const reading = generateReading();
+  const sendReading = async (hiveId) => {
+    const reading = generateReading(hiveId);
     setLastReading(reading);
+    
+    console.log('📡 Sending reading:', reading);
     
     try {
       const response = await fetch('/api/sensor', {
@@ -120,43 +146,72 @@ export default function Admin() {
         body: JSON.stringify(reading)
       });
       
-      if (!response.ok) {
-        console.error('Failed to send reading');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Reading sent successfully:', data);
+      } else {
+        console.error('❌ Failed to send reading:', response.status);
       }
     } catch (error) {
-      console.error('Error sending reading:', error);
+      console.error('❌ Error sending reading:', error);
     }
   };
   
   const startSimulator = () => {
     if (simulatorRunning) return;
     
+    console.log('▶️ Starting LoRaWAN simulator for', simulatorHive);
     setSimulatorRunning(true);
-    sendReading(); // Send first reading immediately
+    localStorage.setItem('simulatorRunning', 'true');
+    localStorage.setItem('simulatorHive', simulatorHive);
+    
+    sendReading(simulatorHive); // Send first reading immediately
     
     const interval = setInterval(() => {
-      sendReading();
+      const currentHive = localStorage.getItem('simulatorHive') || 'HIVE-001';
+      sendReading(currentHive);
     }, 10000); // Every 10 seconds
     
     setSimulatorInterval(interval);
   };
   
   const stopSimulator = () => {
+    console.log('⏸️ Stopping LoRaWAN simulator');
     setSimulatorRunning(false);
+    localStorage.removeItem('simulatorRunning');
+    localStorage.removeItem('simulatorHive');
+    
     if (simulatorInterval) {
       clearInterval(simulatorInterval);
       setSimulatorInterval(null);
     }
   };
   
-  // Cleanup on unmount
+  // Restore simulator state on mount
   useEffect(() => {
+    const wasRunning = localStorage.getItem('simulatorRunning') === 'true';
+    const savedHive = localStorage.getItem('simulatorHive');
+    
+    if (wasRunning && savedHive) {
+      console.log('🔄 Restoring simulator state for', savedHive);
+      setSimulatorHive(savedHive);
+      setSimulatorRunning(true);
+      
+      sendReading(savedHive); // Send immediately
+      
+      const interval = setInterval(() => {
+        const currentHive = localStorage.getItem('simulatorHive') || savedHive;
+        sendReading(currentHive);
+      }, 10000);
+      
+      setSimulatorInterval(interval);
+    }
+    
     return () => {
-      if (simulatorInterval) {
-        clearInterval(simulatorInterval);
-      }
+      // Don't clear interval on unmount if simulator is running
+      // It will be cleared when user explicitly stops it
     };
-  }, [simulatorInterval]);
+  }, []); // Empty dependency array - run only on mount
 
   if (loading) {
     return (
@@ -174,6 +229,43 @@ export default function Admin() {
       </div>
 
       <div className="admin-content">
+        {/* Statistics */}
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon">👥</div>
+            <div className="stat-info">
+              <p className="stat-label">Celkovo používateľov</p>
+              <p className="stat-value">{users.length}</p>
+            </div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">👑</div>
+            <div className="stat-info">
+              <p className="stat-label">Administrátori</p>
+              <p className="stat-value">{users.filter(u => u.role === 'admin').length}</p>
+            </div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">🏠</div>
+            <div className="stat-info">
+              <p className="stat-label">Pridelené úle</p>
+              <p className="stat-value">
+                {users.reduce((sum, u) => sum + (u.ownedHives?.length || 0), 0)}
+              </p>
+            </div>
+          </div>
+          
+          <div className="stat-card">
+            <div className="stat-icon">📊</div>
+            <div className="stat-info">
+              <p className="stat-label">Dostupné úle</p>
+              <p className="stat-value">{availableHives.length}</p>
+            </div>
+          </div>
+        </div>
+        
         {/* LoRaWAN Simulator */}
         <div className="simulator-panel">
           <h2>📡 LoRaWAN Simulátor</h2>
@@ -293,6 +385,13 @@ export default function Admin() {
 
               <div className="user-meta">
                 <span>Vytvorený: {new Date(user.createdAt).toLocaleDateString('sk')}</span>
+                <button 
+                  className="delete-user-btn"
+                  onClick={() => deleteUser(user._id, user.name)}
+                  title="Vymazať používateľa"
+                >
+                  🗑️ Vymazať
+                </button>
               </div>
             </div>
           ))}
