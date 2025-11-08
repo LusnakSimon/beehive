@@ -23,28 +23,43 @@ export function HiveProvider({ children }) {
   
   useEffect(() => {
     if (user && user.ownedHives && user.ownedHives.length > 0) {
-      const userHives = user.ownedHives.map((hiveId, index) => {
-        const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6']
-        const number = hiveId.replace('HIVE-', '')
-        return {
-          id: hiveId,
-          name: `Úľ ${number}`,
-          location: `Záhrada ${String.fromCharCode(65 + index)}`, // A, B, C...
-          color: colors[index % colors.length]
+      // Map user's hives - they come as objects from DB now
+      const userHives = user.ownedHives.map(hive => {
+        // Handle both old format (string) and new format (object)
+        if (typeof hive === 'string') {
+          // Old format - generate default metadata
+          const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+          const number = hive.replace('HIVE-', '');
+          const index = user.ownedHives.indexOf(hive);
+          return {
+            id: hive,
+            name: `Úľ ${number}`,
+            location: `Záhrada ${String.fromCharCode(65 + index)}`,
+            color: colors[index % colors.length]
+          };
+        } else {
+          // New format - use metadata from DB
+          return {
+            id: hive.id,
+            name: hive.name,
+            location: hive.location || '',
+            color: hive.color || '#fbbf24'
+          };
         }
-      })
-      setHives(userHives)
+      });
+      setHives(userHives);
       
       // Set first hive as selected if none selected or selected hive not in user's hives
-      if (!selectedHive || !user.ownedHives.includes(selectedHive)) {
-        setSelectedHive(userHives[0].id)
+      const hiveIds = userHives.map(h => h.id);
+      if (!selectedHive || !hiveIds.includes(selectedHive)) {
+        setSelectedHive(userHives[0].id);
       }
     } else {
       // User has no hives - set empty state
-      setHives([])
-      setSelectedHive(null)
+      setHives([]);
+      setSelectedHive(null);
     }
-  }, [user])
+  }, [user]);
 
   useEffect(() => {
     if (selectedHive) {

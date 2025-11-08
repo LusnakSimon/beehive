@@ -345,17 +345,22 @@ export default function Admin() {
                 <h4>Pridelené úle ({user.ownedHives?.length || 0})</h4>
                 <div className="hives-list">
                   {user.ownedHives && user.ownedHives.length > 0 ? (
-                    user.ownedHives.map(hiveId => (
-                      <div key={hiveId} className="hive-tag">
-                        <span>🏠 {hiveId}</span>
-                        <button
-                          onClick={() => removeHive(user._id, hiveId)}
-                          className="remove-btn"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))
+                    user.ownedHives.map(hive => {
+                      // Handle both old format (string) and new format (object)
+                      const hiveId = typeof hive === 'string' ? hive : hive.id;
+                      const hiveName = typeof hive === 'string' ? hive : `${hive.name} (${hive.id})`;
+                      return (
+                        <div key={hiveId} className="hive-tag">
+                          <span>🏠 {hiveName}</span>
+                          <button
+                            onClick={() => removeHive(user._id, hiveId)}
+                            className="remove-btn"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })
                   ) : (
                     <p className="no-hives">Žiadne pridelené úle</p>
                   )}
@@ -369,7 +374,12 @@ export default function Admin() {
                   >
                     <option value="">Vyber úľ...</option>
                     {availableHives
-                      .filter(h => !user.ownedHives?.includes(h))
+                      .filter(h => {
+                        // Check if user already has this hive (handle both formats)
+                        return !user.ownedHives?.some(owned => {
+                          return typeof owned === 'string' ? owned === h : owned.id === h;
+                        });
+                      })
                       .map(hiveId => (
                         <option key={hiveId} value={hiveId}>
                           {hiveId}

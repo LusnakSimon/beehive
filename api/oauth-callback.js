@@ -28,9 +28,12 @@ async function generateUniqueHiveId(User) {
   const allUsers = await User.find({}, 'ownedHives');
   const allHives = allUsers.flatMap(u => u.ownedHives || []);
   
-  // Extract numbers from HIVE-XXX format
+  // Extract numbers from HIVE-XXX format (handle both string and object format)
   const hiveNumbers = allHives
-    .map(h => parseInt(h.replace('HIVE-', '')))
+    .map(h => {
+      const hiveId = typeof h === 'string' ? h : h.id;
+      return parseInt(hiveId.replace('HIVE-', ''));
+    })
     .filter(n => !isNaN(n));
   
   // Find next available number
@@ -138,7 +141,12 @@ export default async function handler(req, res) {
         name: userInfo.name,
         image: userInfo.picture || userInfo.avatar_url,
         role: 'user',
-        ownedHives: [firstHiveId]
+        ownedHives: [{
+          id: firstHiveId,
+          name: `Úľ ${firstHiveId.replace('HIVE-', '')}`,
+          location: 'Domov',
+          color: '#fbbf24'
+        }]
       });
       await dbUser.save();
       console.log(`✅ New user created: ${userInfo.email} with hive: ${firstHiveId}`);
@@ -150,7 +158,12 @@ export default async function handler(req, res) {
       // If existing user has no hives, assign unique hive
       if (!dbUser.ownedHives || dbUser.ownedHives.length === 0) {
         const firstHiveId = await generateUniqueHiveId(User);
-        dbUser.ownedHives = [firstHiveId];
+        dbUser.ownedHives = [{
+          id: firstHiveId,
+          name: `Úľ ${firstHiveId.replace('HIVE-', '')}`,
+          location: 'Domov',
+          color: '#fbbf24'
+        }];
         console.log(`✅ Assigned hive to existing user: ${userInfo.email} - ${firstHiveId}`);
       }
       
