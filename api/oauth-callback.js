@@ -31,7 +31,8 @@ async function generateUniqueHiveId(User) {
   // Extract numbers from HIVE-XXX format (handle both string and object format)
   const hiveNumbers = allHives
     .map(h => {
-      const hiveId = typeof h === 'string' ? h : h.id;
+      const hiveId = typeof h === 'string' ? h : h?.id;
+      if (!hiveId || typeof hiveId !== 'string') return NaN;
       return parseInt(hiveId.replace('HIVE-', ''));
     })
     .filter(n => !isNaN(n));
