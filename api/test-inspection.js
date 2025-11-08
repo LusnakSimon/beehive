@@ -25,6 +25,15 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   
   try {
+    // Debug: Check available env vars
+    const envVars = {
+      hasMONGODB_URI: !!process.env.MONGODB_URI,
+      hasSTORAGE_MONGODB_URI: !!process.env.STORAGE_MONGODB_URI,
+      keys: Object.keys(process.env).filter(k => k.includes('MONGO'))
+    };
+    
+    console.log('Environment check:', envVars);
+    
     // Test MongoDB connection
     await connectDB();
     
@@ -40,6 +49,7 @@ module.exports = async (req, res) => {
       count,
       mongooseState: mongoose.connection.readyState,
       hasMongoUri: !!process.env.MONGODB_URI,
+      hasStorageUri: !!process.env.STORAGE_MONGODB_URI,
       reqUrl: req.url,
       reqMethod: req.method
     });
@@ -49,7 +59,8 @@ module.exports = async (req, res) => {
       success: false,
       error: error.message,
       stack: error.stack,
-      hasMongoUri: !!process.env.MONGODB_URI
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasStorageUri: !!process.env.STORAGE_MONGODB_URI
     });
   }
 };
