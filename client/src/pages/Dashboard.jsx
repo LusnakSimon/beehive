@@ -307,7 +307,7 @@ export default function Dashboard() {
         </div>
 
         {/* Signal Strength Card - Only for LoRaWAN */}
-        {data.metadata?.source === 'lorawan' && data.metadata?.rssi && (
+        {data.metadata?.rssi && data.metadata?.snr && (
           <div className="metric-card-modern">
             <div className="metric-header">
               <span className="metric-icon-modern">📡</span>
@@ -343,13 +343,19 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            {data.metadata.gatewayId && (
+            {data.metadata?.source && (
+              <div className="gateway-info">
+                <div className="gateway-label">Zdroj</div>
+                <div className="gateway-id">{data.metadata.source}</div>
+              </div>
+            )}
+            {data.metadata?.gatewayId && (
               <div className="gateway-info">
                 <div className="gateway-label">Gateway</div>
                 <div className="gateway-id">{data.metadata.gatewayId}</div>
               </div>
             )}
-            {data.metadata.spreadingFactor && (
+            {data.metadata?.spreadingFactor && (
               <div className="metric-range-modern">
                 SF{data.metadata.spreadingFactor} @ {(data.metadata.frequency / 1000000).toFixed(1)} MHz
               </div>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { useAuth } from './AuthContext'
 
 const HiveContext = createContext()
 
@@ -11,18 +12,43 @@ export function useHive() {
 }
 
 export function HiveProvider({ children }) {
+  const { user } = useAuth()
+  
   const [selectedHive, setSelectedHive] = useState(() => {
-    return localStorage.getItem('selectedHive') || 'HIVE-001'
+    return localStorage.getItem('selectedHive') || null
   })
   
-  const [hives, setHives] = useState([
-    { id: 'HIVE-001', name: 'Úľ 1', location: 'Záhrada A', color: '#fbbf24' },
-    { id: 'HIVE-002', name: 'Úľ 2', location: 'Záhrada B', color: '#3b82f6' },
-    { id: 'HIVE-003', name: 'Úľ 3', location: 'Záhrada C', color: '#10b981' }
-  ])
+  // Generate hives from user's ownedHives
+  const [hives, setHives] = useState([])
+  
+  useEffect(() => {
+    if (user && user.ownedHives && user.ownedHives.length > 0) {
+      const userHives = user.ownedHives.map((hiveId, index) => {
+        const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6']
+        const number = hiveId.replace('HIVE-', '')
+        return {
+          id: hiveId,
+          name: `Úľ ${number}`,
+          location: `Záhrada ${String.fromCharCode(65 + index)}`, // A, B, C...
+          color: colors[index % colors.length]
+        }
+      })
+      setHives(userHives)
+      
+      // Set first hive as selected if none selected or selected hive not in user's hives
+      if (!selectedHive || !user.ownedHives.includes(selectedHive)) {
+        setSelectedHive(userHives[0].id)
+      }
+    } else {
+      setHives([])
+      setSelectedHive(null)
+    }
+  }, [user])
 
   useEffect(() => {
-    localStorage.setItem('selectedHive', selectedHive)
+    if (selectedHive) {
+      localStorage.setItem('selectedHive', selectedHive)
+    }
   }, [selectedHive])
 
   const getCurrentHive = () => {
