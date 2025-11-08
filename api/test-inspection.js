@@ -8,7 +8,7 @@ if (!cached) {
 async function connectDB() {
   if (cached.conn) return cached.conn;
   if (!cached.promise) {
-    const uri = process.env.MONGODB_URI;
+    const uri = process.env.MONGODB_URI || process.env.STORAGE_MONGODB_URI;
     if (!uri) {
       throw new Error('MONGODB_URI not found in environment variables');
     }

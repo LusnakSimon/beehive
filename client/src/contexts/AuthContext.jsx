@@ -14,13 +14,14 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
   useEffect(() => {
-    // Check session on mount
-    checkSession();
-  }, []);
-
-  const checkSession = async () => {
+    // Check session on mount, but skip if logging out
+    if (!isLoggingOut) {
+      checkSession();
+    }
+  }, [isLoggingOut]);  const checkSession = async () => {
     try {
       const response = await fetch('/api/session', {
         credentials: 'include'
@@ -52,15 +53,21 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Set logout flag to prevent checkSession from running
+      setIsLoggingOut(true);
+      
       // Clear state first
       setUser(null);
       setIsAuthenticated(false);
       
       // Call logout endpoint to clear cookie
       await fetch('/api/logout', {
-        method: 'GET',
+        method: 'POST',
         credentials: 'include'
       });
+      
+      // Wait a bit for cookie to clear
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Redirect to login
       window.location.href = '/login';
