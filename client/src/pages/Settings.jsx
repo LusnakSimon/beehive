@@ -20,9 +20,12 @@ export default function Settings() {
   const [newHive, setNewHive] = useState({
     name: '',
     location: '',
-    color: '#fbbf24'
+    color: '#fbbf24',
+    coordinates: { lat: '', lng: '' },
+    visibility: 'private'
   })
   const [isAddingHive, setIsAddingHive] = useState(false)
+  const [gettingLocation, setGettingLocation] = useState(false)
 
   useEffect(() => {
     loadSettings()
@@ -44,6 +47,34 @@ export default function Settings() {
     setSettings(prev => ({ ...prev, [field]: value }))
   }
 
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Tvoj prehliadač nepodporuje geolokáciu')
+      return
+    }
+
+    setGettingLocation(true)
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setNewHive(prev => ({
+          ...prev,
+          coordinates: {
+            lat: position.coords.latitude.toFixed(6),
+            lng: position.coords.longitude.toFixed(6)
+          }
+        }))
+        setGettingLocation(false)
+        alert('GPS súradnice získané!')
+      },
+      (error) => {
+        console.error('Geolocation error:', error)
+        alert('Nepodarilo sa získať polohu. Skontroluj povolenia prehliadača.')
+        setGettingLocation(false)
+      }
+    )
+  }
+
   const handleAddHive = async () => {
     if (!newHive.name) {
       alert('Vyplň názov úľa')
@@ -53,23 +84,39 @@ export default function Settings() {
     setIsAddingHive(true)
     
     try {
-      // Generate next hive ID on backend
+      const hiveData = {
+        name: newHive.name,
+        location: newHive.location,
+        color: newHive.color,
+        visibility: newHive.visibility
+      }
+
+      // Only include coordinates if both lat and lng are provided
+      if (newHive.coordinates.lat && newHive.coordinates.lng) {
+        hiveData.coordinates = {
+          lat: parseFloat(newHive.coordinates.lat),
+          lng: parseFloat(newHive.coordinates.lng)
+        }
+      }
+
       const response = await fetch('/api/users/me/hives', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          name: newHive.name,
-          location: newHive.location,
-          color: newHive.color
-        })
+        body: JSON.stringify(hiveData)
       })
 
       if (response.ok) {
         const data = await response.json()
         await refreshUser() // Refresh user data with new JWT
         alert(`Úľ "${newHive.name}" bol úspešne vytvorený!`)
-        setNewHive({ name: '', location: '', color: '#fbbf24' })
+        setNewHive({ 
+          name: '', 
+          location: '', 
+          color: '#fbbf24',
+          coordinates: { lat: '', lng: '' },
+          visibility: 'private'
+        })
         setShowAddHive(false)
       } else {
         const error = await response.json()
@@ -190,6 +237,61 @@ export default function Settings() {
                   />
                 ))}
               </div>
+            </div>
+
+            <div className="form-group">
+              <label>GPS Súradnice (voliteľné)</label>
+              <button 
+                type="button"
+                className="btn-get-location"
+                onClick={getCurrentLocation}
+                disabled={gettingLocation}
+              >
+                {gettingLocation ? '📍 Získavam polohu...' : '📍 Použiť moju aktuálnu polohu'}
+              </button>
+              
+              <div className="coordinates-inputs">
+                <div className="coordinate-input">
+                  <label htmlFor="lat">Šírka (Latitude)</label>
+                  <input
+                    id="lat"
+                    type="number"
+                    step="0.000001"
+                    value={newHive.coordinates.lat}
+                    onChange={(e) => setNewHive(prev => ({ 
+                      ...prev, 
+                      coordinates: { ...prev.coordinates, lat: e.target.value }
+                    }))}
+                    placeholder="48.716"
+                  />
+                </div>
+                <div className="coordinate-input">
+                  <label htmlFor="lng">Dĺžka (Longitude)</label>
+                  <input
+                    id="lng"
+                    type="number"
+                    step="0.000001"
+                    value={newHive.coordinates.lng}
+                    onChange={(e) => setNewHive(prev => ({ 
+                      ...prev, 
+                      coordinates: { ...prev.coordinates, lng: e.target.value }
+                    }))}
+                    placeholder="21.261"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="visibility">Viditeľnosť na mape</label>
+              <select
+                id="visibility"
+                value={newHive.visibility}
+                onChange={(e) => setNewHive(prev => ({ ...prev, visibility: e.target.value }))}
+              >
+                <option value="private">🔒 Súkromný (len ja)</option>
+                <option value="public">🌍 Verejný (všetci užívatelia)</option>
+              </select>
             </div>
 
             <div className="form-actions">

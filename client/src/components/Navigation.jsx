@@ -19,6 +19,10 @@ export default function Navigation() {
         <span className="icon">📋</span>
         <span>Kontrola</span>
       </NavLink>
+      <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        <span className="icon">🗺️</span>
+        <span>Mapa</span>
+      </NavLink>
       <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
         <span className="icon">⚙️</span>
         <span>Nastavenia</span>
