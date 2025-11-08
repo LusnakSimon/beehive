@@ -274,6 +274,7 @@ export default function Settings() {
             />
           </div>
         </div>
+      </div>
 
       <div className="settings-section">
         <h2>🔔 Notifikácie</h2>
