@@ -29,6 +29,7 @@
     "@vercel/functions": "^3.2.0",
     "cookie-parser": "^1.4.7",
     "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0",
     "next-auth": "^4.24.13"
   }
 }
