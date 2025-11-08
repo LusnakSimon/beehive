@@ -6,16 +6,13 @@ export default function HiveSelector() {
   const { selectedHive, setSelectedHive, hives } = useHive()
   const [isOpen, setIsOpen] = useState(false)
 
-  // No hives assigned - show empty state
+  // Loading state - hives not yet loaded
   if (!hives || hives.length === 0) {
     return (
       <div className="hive-selector">
-        <div className="hive-selector-empty">
-          <div className="empty-icon">🏠</div>
-          <div className="empty-text">
-            <div className="empty-title">Žiadne úle</div>
-            <div className="empty-subtitle">Kontaktujte administrátora pre pridelenie úľa</div>
-          </div>
+        <div className="hive-selector-loading">
+          <div className="loading-spinner-small"></div>
+          <span>Načítavam úle...</span>
         </div>
       </div>
     )

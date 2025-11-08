@@ -137,30 +137,6 @@ export default function Dashboard() {
     )
   }
 
-  // No hive selected - show empty state
-  if (!selectedHive) {
-    return (
-      <div className="dashboard">
-        <header className="dashboard-header">
-          <div className="header-content">
-            <h1>🐝 Beehive Monitor</h1>
-            <p className="subtitle">Real-time monitorovanie</p>
-          </div>
-        </header>
-
-        <div className="hive-selector-container">
-          <HiveSelector />
-        </div>
-
-        <div className="dashboard-empty-state">
-          <div className="empty-state-icon">🏠</div>
-          <h2>Žiadne úle</h2>
-          <p>Nemáte pridelený žiadny úľ. Kontaktujte administrátora pre pridelenie úľa k vášmu účtu.</p>
-        </div>
-      </div>
-    )
-  }
-
   const overallStatus = getOverallStatus()
 
   return (

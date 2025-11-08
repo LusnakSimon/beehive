@@ -22,6 +22,24 @@ async function connectDB() {
   return cached.conn;
 }
 
+// Generate unique hive ID for new user
+async function generateUniqueHiveId(User) {
+  // Find highest hive number in use
+  const allUsers = await User.find({}, 'ownedHives');
+  const allHives = allUsers.flatMap(u => u.ownedHives || []);
+  
+  // Extract numbers from HIVE-XXX format
+  const hiveNumbers = allHives
+    .map(h => parseInt(h.replace('HIVE-', '')))
+    .filter(n => !isNaN(n));
+  
+  // Find next available number
+  const maxNumber = hiveNumbers.length > 0 ? Math.max(...hiveNumbers) : 0;
+  const nextNumber = maxNumber + 1;
+  
+  return `HIVE-${String(nextNumber).padStart(3, '0')}`;
+}
+
 export default async function handler(req, res) {
   const { code, error } = req.query;
 
@@ -112,19 +130,30 @@ export default async function handler(req, res) {
     let dbUser = await User.findOne({ email: userInfo.email });
     
     if (!dbUser) {
-      // Create new user
+      // Create new user with unique hive
+      const firstHiveId = await generateUniqueHiveId(User);
+      
       dbUser = new User({
         email: userInfo.email,
         name: userInfo.name,
         image: userInfo.picture || userInfo.avatar_url,
         role: 'user',
-        ownedHives: [] // No default hives - admin will assign
+        ownedHives: [firstHiveId]
       });
       await dbUser.save();
+      console.log(`✅ New user created: ${userInfo.email} with hive: ${firstHiveId}`);
     } else {
       // Update existing user info
       dbUser.name = userInfo.name;
       dbUser.image = userInfo.picture || userInfo.avatar_url;
+      
+      // If existing user has no hives, assign unique hive
+      if (!dbUser.ownedHives || dbUser.ownedHives.length === 0) {
+        const firstHiveId = await generateUniqueHiveId(User);
+        dbUser.ownedHives = [firstHiveId];
+        console.log(`✅ Assigned hive to existing user: ${userInfo.email} - ${firstHiveId}`);
+      }
+      
       await dbUser.save();
     }
 
