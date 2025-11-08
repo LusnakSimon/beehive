@@ -385,6 +385,7 @@ export default function Inspection() {
                     {item.checklist.eggs && <span className="check-badge">🥚 Eggs</span>}
                     {item.checklist.queenSeen && <span className="check-badge">👑 Queen</span>}
                     {item.checklist.queenbeeCell && <span className="check-badge">🏠 Cell</span>}
+                    {item.checklist.inspectionNeeded && <span className="check-badge" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#dc2626' }}>⚠️ Inspection Needed</span>}
                   </div>
                   
                   {item.notes && (
