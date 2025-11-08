@@ -12,6 +12,7 @@ import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
+import VarroaReminder from './components/VarroaReminder'
 import './App.css'
 
 function App() {
@@ -54,6 +55,8 @@ function App() {
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
           </main>
+          
+          <VarroaReminder />
         </div>
       </HiveProvider>
       </NotificationProvider>
