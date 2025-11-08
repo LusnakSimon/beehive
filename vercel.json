@@ -3,8 +3,32 @@
   "outputDirectory": "client/dist",
   "rewrites": [
     {
-      "source": "/:path(.*)",
-      "destination": "/:path*"
+      "source": "/api/users",
+      "destination": "/api/users/[...path]"
+    },
+    {
+      "source": "/api/users/:path*",
+      "destination": "/api/users/[...path]"
+    },
+    {
+      "source": "/api/sensor",
+      "destination": "/api/sensor/[...path]"
+    },
+    {
+      "source": "/api/sensor/:path*",
+      "destination": "/api/sensor/[...path]"
+    },
+    {
+      "source": "/api/inspection",
+      "destination": "/api/inspection/[...path]"
+    },
+    {
+      "source": "/api/inspection/:path*",
+      "destination": "/api/inspection/[...path]"
+    },
+    {
+      "source": "/:path((?!api).*)",
+      "destination": "/index.html"
     }
   ]
 }
