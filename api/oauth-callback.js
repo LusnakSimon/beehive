@@ -118,16 +118,11 @@ export default async function handler(req, res) {
         name: userInfo.name,
         image: userInfo.picture || userInfo.avatar_url,
         role: 'user',
-        ownedHives: ['HIVE-001'], // Default hive
-        accounts: [{
-          provider: userInfo.provider,
-          providerAccountId: userInfo.id,
-          type: 'oauth'
-        }]
+        ownedHives: ['HIVE-001'] // Default hive
       });
       await dbUser.save();
     } else {
-      // Update existing user
+      // Update existing user info
       dbUser.name = userInfo.name;
       dbUser.image = userInfo.picture || userInfo.avatar_url;
       await dbUser.save();
