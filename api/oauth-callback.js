@@ -1,4 +1,26 @@
 import jwt from 'jsonwebtoken';
+const mongoose = require('mongoose');
+
+let cached = global.mongoose;
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+  if (!cached.promise) {
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      throw new Error('MONGODB_URI not found');
+    }
+    cached.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+      maxPoolSize: 10,
+    });
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
 export default async function handler(req, res) {
   const { code, error } = req.query;
@@ -82,16 +104,45 @@ export default async function handler(req, res) {
       };
     }
 
-    // Create JWT token
-    const token = jwt.sign(
-      {
-        id: userInfo.id,
+    // Connect to MongoDB
+    await connectDB();
+    const User = require('../lib/models/User.js');
+
+    // Find or create user in database
+    let dbUser = await User.findOne({ email: userInfo.email });
+    
+    if (!dbUser) {
+      // Create new user
+      dbUser = new User({
         email: userInfo.email,
         name: userInfo.name,
         image: userInfo.picture || userInfo.avatar_url,
-        provider: userInfo.provider,
         role: 'user',
-        ownedHives: [],
+        ownedHives: ['HIVE-001'], // Default hive
+        accounts: [{
+          provider: userInfo.provider,
+          providerAccountId: userInfo.id,
+          type: 'oauth'
+        }]
+      });
+      await dbUser.save();
+    } else {
+      // Update existing user
+      dbUser.name = userInfo.name;
+      dbUser.image = userInfo.picture || userInfo.avatar_url;
+      await dbUser.save();
+    }
+
+    // Create JWT token
+    const token = jwt.sign(
+      {
+        id: dbUser._id.toString(),
+        email: dbUser.email,
+        name: dbUser.name,
+        image: dbUser.image,
+        provider: userInfo.provider,
+        role: dbUser.role || 'user',
+        ownedHives: dbUser.ownedHives || ['HIVE-001'],
       },
       process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
       { expiresIn: '30d' }
