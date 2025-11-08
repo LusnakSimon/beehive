@@ -1,29 +1,28 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import { useHive } from '../context/HiveContext'
 import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
 
 export default function Settings() {
-  const { hives, addHive, updateHive, deleteHive } = useHive()
+  const { user } = useAuth()
+  const { hives } = useHive()
   const [settings, setSettings] = useState({
     notifications: true,
     tempMin: 30,
     tempMax: 36,
     humidityMin: 50,
     humidityMax: 60,
-    updateInterval: 30,
-    loraDevEUI: '',
-    loraAppEUI: '',
-    loraAppKey: ''
+    updateInterval: 30
   })
 
   const [showAddHive, setShowAddHive] = useState(false)
   const [newHive, setNewHive] = useState({
-    id: '',
     name: '',
     location: '',
     color: '#fbbf24'
   })
+  const [isAddingHive, setIsAddingHive] = useState(false)
 
   useEffect(() => {
     loadSettings()
@@ -45,22 +44,74 @@ export default function Settings() {
     setSettings(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleAddHive = () => {
-    if (!newHive.id || !newHive.name) {
-      alert('Vyplň ID a názov úľa')
+  const handleAddHive = async () => {
+    if (!newHive.name) {
+      alert('Vyplň názov úľa')
       return
     }
     
-    addHive(newHive)
-    setNewHive({ id: '', name: '', location: '', color: '#fbbf24' })
-    setShowAddHive(false)
-    alert('Úľ pridaný!')
+    setIsAddingHive(true)
+    
+    try {
+      // Generate next hive ID on backend
+      const response = await fetch('/api/users/me/hives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: newHive.name,
+          location: newHive.location,
+          color: newHive.color
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        alert(`Úľ "${newHive.name}" bol úspešne vytvorený!`)
+        setNewHive({ name: '', location: '', color: '#fbbf24' })
+        setShowAddHive(false)
+        
+        // Reload page to refresh hives
+        window.location.reload()
+      } else {
+        const error = await response.json()
+        alert(`Chyba: ${error.message || 'Nepodarilo sa pridať úľ'}`)
+      }
+    } catch (error) {
+      console.error('Error adding hive:', error)
+      alert('Chyba pri pridávaní úľa')
+    } finally {
+      setIsAddingHive(false)
+    }
   }
 
-  const handleDeleteHive = (id) => {
-    if (confirm('Naozaj chceš vymazať tento úľ?')) {
-      deleteHive(id)
-      alert('Úľ vymazaný!')
+  const handleDeleteHive = async (hiveId) => {
+    if (hives.length === 1) {
+      alert('Nemôžeš vymazať posledný úľ!')
+      return
+    }
+    
+    const hiveName = hives.find(h => h.id === hiveId)?.name
+    if (!confirm(`Naozaj chceš vymazať úľ "${hiveName}"?`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/users/me/hives/${hiveId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        alert('Úľ vymazaný!')
+        window.location.reload()
+      } else {
+        const error = await response.json()
+        alert(`Chyba: ${error.message || 'Nepodarilo sa vymazať úľ'}`)
+      }
+    } catch (error) {
+      console.error('Error deleting hive:', error)
+      alert('Chyba pri mazaní úľa')
     }
   }
 
@@ -103,15 +154,8 @@ export default function Settings() {
           </button>
         ) : (
           <div className="add-hive-form">
-            <div className="form-group">
-              <label htmlFor="hiveId">ID úľa *</label>
-              <input
-                id="hiveId"
-                type="text"
-                value={newHive.id}
-                onChange={(e) => setNewHive(prev => ({ ...prev, id: e.target.value }))}
-                placeholder="napr. HIVE-004"
-              />
+            <div className="info-box" style={{ marginBottom: '1rem' }}>
+              <p>💡 ID úľa sa vygeneruje automaticky</p>
             </div>
 
             <div className="form-group">
@@ -121,7 +165,8 @@ export default function Settings() {
                 type="text"
                 value={newHive.name}
                 onChange={(e) => setNewHive(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="napr. Úľ 4"
+                placeholder="napr. Záhradný úľ"
+              />
               />
             </div>
 
@@ -151,61 +196,23 @@ export default function Settings() {
             </div>
 
             <div className="form-actions">
-              <button className="btn-secondary" onClick={() => setShowAddHive(false)}>
+              <button 
+                className="btn-secondary" 
+                onClick={() => setShowAddHive(false)}
+                disabled={isAddingHive}
+              >
                 Zrušiť
               </button>
-              <button className="btn-primary" onClick={handleAddHive}>
-                Pridať úľ
+              <button 
+                className="btn-primary" 
+                onClick={handleAddHive}
+                disabled={isAddingHive}
+              >
+                {isAddingHive ? 'Pridávam...' : 'Pridať úľ'}
               </button>
             </div>
           </div>
         )}
-      </div>
-
-      <div className="settings-section">
-        <h2>📡 LoRaWAN konfigurácia</h2>
-        
-        <div className="form-group">
-          <label htmlFor="loraDevEUI">Device EUI</label>
-          <input
-            id="loraDevEUI"
-            type="text"
-            value={settings.loraDevEUI}
-            onChange={(e) => handleChange('loraDevEUI', e.target.value)}
-            placeholder="0000000000000000"
-            maxLength="16"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="loraAppEUI">Application EUI</label>
-          <input
-            id="loraAppEUI"
-            type="text"
-            value={settings.loraAppEUI}
-            onChange={(e) => handleChange('loraAppEUI', e.target.value)}
-            placeholder="0000000000000000"
-            maxLength="16"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="loraAppKey">Application Key</label>
-          <input
-            id="loraAppKey"
-            type="text"
-            value={settings.loraAppKey}
-            onChange={(e) => handleChange('loraAppKey', e.target.value)}
-            placeholder="00000000000000000000000000000000"
-            maxLength="32"
-          />
-        </div>
-
-        <div className="info-box">
-          <p>💡 Tieto hodnoty získaš z The Things Network konzoly</p>
-          <p>🔒 Údaje sa ukladajú len lokálne vo tvojom telefóne</p>
-          <p>📶 Frekvencia: EU868, Metóda: OTAA</p>
-        </div>
       </div>
 
       <div className="settings-section">
