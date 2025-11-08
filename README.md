@@ -350,6 +350,68 @@ See [NOTIFICATIONS.md](NOTIFICATIONS.md) for troubleshooting and details.
 
 ---
 
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- MongoDB Atlas account (or local MongoDB)
+- Google OAuth credentials (for authentication)
+
+### Local Development
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/LusnakSimon/beehive.git
+cd beehive-monitor
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Set up environment variables**
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Required environment variables:
+- `MONGODB_URI` - MongoDB connection string with `/beehive` database
+- `JWT_SECRET` / `NEXTAUTH_SECRET` - Secret key for JWT tokens (use same value for both)
+- `GOOGLE_CLIENT_ID` - Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
+- `NEXTAUTH_URL` - Your app URL (http://localhost:3000 for local dev)
+
+4. **Run the development server**
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+### MongoDB Setup
+
+1. Create a MongoDB Atlas cluster at https://mongodb.com/atlas
+2. Create a database named `beehive`
+3. Add your IP to the whitelist (or allow access from anywhere for Vercel)
+4. Create a database user with read/write permissions
+5. Copy the connection string and add it to your environment variables
+
+### Google OAuth Setup
+
+1. Go to Google Cloud Console: https://console.cloud.google.com
+2. Create a new project or select existing
+3. Enable Google+ API
+4. Create OAuth 2.0 credentials (Web application)
+5. Add authorized redirect URIs:
+   - `http://localhost:3000/api/oauth-callback` (for local dev)
+   - `https://your-app.vercel.app/api/oauth-callback` (for production)
+6. Copy Client ID and Client Secret to your environment variables
+
 ## 🌐 Deployment (Vercel)
 
 ### Deploy Frontend + API
@@ -366,9 +428,15 @@ git push -u origin main
    - Framework: Other (auto-detected)
 
 3. **Environment Variables**:
+```bash
+# Required
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/beehive?retryWrites=true&w=majority
+JWT_SECRET=your-secure-jwt-secret
+NEXTAUTH_SECRET=your-secure-jwt-secret
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+NEXTAUTH_URL=https://your-app.vercel.app
 ```
-MONGODB_URI = mongodb+srv://username:password@cluster.mongodb.net/beehive-monitor
-ESP32_API_KEY = beehive-secret-key-2024
 ```
 
 4. **Deploy!**
