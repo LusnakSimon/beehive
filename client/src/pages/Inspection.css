@@ -324,3 +324,61 @@
     margin: 0 auto;
   }
 }
+
+/* Action Buttons */
+.history-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.edit-btn, .delete-btn, .cancel-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+
+.edit-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+.cancel-btn {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4b5563;
+}
+
+.cancel-btn:hover {
+  background: rgba(107, 114, 128, 0.2);
+  transform: translateY(-1px);
+}
+
+.edit-btn:active, .delete-btn:active, .cancel-btn:active {
+  transform: translateY(0);
+}
+
+/* Update save button container for edit mode */
+.save-btn {
+  flex: 1;
+}

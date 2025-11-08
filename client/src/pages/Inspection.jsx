@@ -20,6 +20,7 @@ export default function Inspection() {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [editingId, setEditingId] = useState(null)
 
   useEffect(() => {
     fetchInspectionHistory()
@@ -84,6 +85,92 @@ export default function Inspection() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleDelete = async (inspectionId) => {
+    if (!confirm('Naozaj chcete vymazať túto kontrolu?')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/inspection/${inspectionId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        fetchInspectionHistory()
+      } else {
+        alert('Nepodarilo sa vymazať kontrolu')
+      }
+    } catch (error) {
+      console.error('Chyba pri mazaní kontroly:', error)
+      alert('Nepodarilo sa vymazať kontrolu')
+    }
+  }
+
+  const handleEdit = (inspection) => {
+    setEditingId(inspection._id)
+    setChecklist(inspection.checklist)
+    setNotes(inspection.notes || '')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleUpdate = async () => {
+    if (!editingId) return
+
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/inspection/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          checklist,
+          notes
+        })
+      })
+
+      if (response.ok) {
+        setShowSuccess(true)
+        setTimeout(() => setShowSuccess(false), 3000)
+        
+        // Reset form and editing state
+        setEditingId(null)
+        setChecklist({
+          pollen: false,
+          capped: false,
+          opened: false,
+          eggs: false,
+          queenSeen: false,
+          queenbeeCell: false,
+          queenbeeCellCapped: false,
+          inspectionNeeded: false
+        })
+        setNotes('')
+        
+        // Refresh history
+        fetchInspectionHistory()
+      }
+    } catch (error) {
+      console.error('Chyba pri aktualizácii kontroly:', error)
+      alert('Nepodarilo sa aktualizovať kontrolu')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingId(null)
+    setChecklist({
+      pollen: false,
+      capped: false,
+      opened: false,
+      eggs: false,
+      queenSeen: false,
+      queenbeeCell: false,
+      queenbeeCellCapped: false,
+      inspectionNeeded: false
+    })
+    setNotes('')
   }
 
   const getStatusColor = (item) => {
@@ -235,13 +322,32 @@ export default function Inspection() {
             />
           </div>
 
-          <button 
-            className="save-btn"
-            onClick={handleSave}
-            disabled={loading}
-          >
-            {loading ? 'Ukladám...' : '💾 Uložiť kontrolu'}
-          </button>
+          {editingId ? (
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                className="save-btn"
+                onClick={handleUpdate}
+                disabled={loading}
+              >
+                {loading ? 'Aktualizujem...' : '✏️ Aktualizovať kontrolu'}
+              </button>
+              <button 
+                className="cancel-btn"
+                onClick={handleCancelEdit}
+                disabled={loading}
+              >
+                ✕ Zrušiť
+              </button>
+            </div>
+          ) : (
+            <button 
+              className="save-btn"
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? 'Ukladám...' : '💾 Uložiť kontrolu'}
+            </button>
+          )}
         </div>
 
         <div className="history-section">
@@ -286,6 +392,23 @@ export default function Inspection() {
                       📝 {item.notes}
                     </div>
                   )}
+                  
+                  <div className="history-actions">
+                    <button 
+                      className="edit-btn"
+                      onClick={() => handleEdit(item)}
+                      title="Upraviť kontrolu"
+                    >
+                      ✏️ Upraviť
+                    </button>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => handleDelete(item._id)}
+                      title="Vymazať kontrolu"
+                    >
+                      🗑️ Vymazať
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
