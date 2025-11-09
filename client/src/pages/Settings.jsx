@@ -16,6 +16,12 @@ export default function Settings() {
     updateInterval: 30
   })
 
+  const [lorawanConfig, setLorawanConfig] = useState({
+    devEUI: '',
+    appEUI: '',
+    appKey: ''
+  })
+
   const [showAddHive, setShowAddHive] = useState(false)
   const [newHive, setNewHive] = useState({
     name: '',
@@ -36,15 +42,60 @@ export default function Settings() {
     if (saved) {
       setSettings(JSON.parse(saved))
     }
+    
+    const lorawanSaved = localStorage.getItem('lorawan-config')
+    if (lorawanSaved) {
+      setLorawanConfig(JSON.parse(lorawanSaved))
+    }
   }
 
   const saveSettings = () => {
     localStorage.setItem('beehive-settings', JSON.stringify(settings))
+    localStorage.setItem('lorawan-config', JSON.stringify(lorawanConfig))
     alert('Nastavenia uložené!')
   }
 
   const handleChange = (field, value) => {
     setSettings(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleLorawanChange = (field, value) => {
+    // Validate hex format (only allow 0-9, A-F, a-f)
+    if (value && !/^[0-9A-Fa-f]*$/.test(value)) {
+      return // Invalid character, don't update
+    }
+    
+    // Length limits
+    const maxLengths = {
+      devEUI: 16,
+      appEUI: 16,
+      appKey: 32
+    }
+    
+    if (value.length > maxLengths[field]) {
+      return // Too long, don't update
+    }
+    
+    setLorawanConfig(prev => ({ ...prev, [field]: value.toUpperCase() }))
+  }
+
+  const copyLorawanConfig = () => {
+    const config = `// LoRaWAN Configuration
+const char* devEUI = "${lorawanConfig.devEUI}";
+const char* appEUI = "${lorawanConfig.appEUI}";
+const char* appKey = "${lorawanConfig.appKey}";`;
+    
+    navigator.clipboard.writeText(config).then(() => {
+      alert('✅ Konfigurácia skopírovaná do schránky!\n\nMôžeš ju vložiť do svojho ESP32 kódu.')
+    }).catch(() => {
+      alert('❌ Nepodarilo sa skopírovať. Skús manuálne.')
+    })
+  }
+
+  const isLorawanConfigComplete = () => {
+    return lorawanConfig.devEUI.length === 16 && 
+           lorawanConfig.appEUI.length === 16 && 
+           lorawanConfig.appKey.length === 32
   }
 
   const getCurrentLocation = () => {
@@ -398,10 +449,13 @@ export default function Settings() {
           <input
             id="devEUI"
             type="text"
+            value={lorawanConfig.devEUI}
+            onChange={(e) => handleLorawanChange('devEUI', e.target.value)}
             placeholder="70B3D57ED005XXXX"
             className="monospace-input"
+            maxLength={16}
           />
-          <small>Unikátny identifikátor zariadenia (16 hex znakov)</small>
+          <small>Unikátny identifikátor zariadenia (16 hex znakov) - {lorawanConfig.devEUI.length}/16</small>
         </div>
 
         <div className="form-group">
@@ -409,10 +463,13 @@ export default function Settings() {
           <input
             id="appEUI"
             type="text"
+            value={lorawanConfig.appEUI}
+            onChange={(e) => handleLorawanChange('appEUI', e.target.value)}
             placeholder="0000000000000000"
             className="monospace-input"
+            maxLength={16}
           />
-          <small>Identifikátor aplikácie (16 hex znakov)</small>
+          <small>Identifikátor aplikácie (16 hex znakov) - {lorawanConfig.appEUI.length}/16</small>
         </div>
 
         <div className="form-group">
@@ -420,15 +477,29 @@ export default function Settings() {
           <input
             id="appKey"
             type="password"
+            value={lorawanConfig.appKey}
+            onChange={(e) => handleLorawanChange('appKey', e.target.value)}
             placeholder="********************************"
             className="monospace-input"
+            maxLength={32}
           />
-          <small>Šifrovací kľúč (32 hex znakov) - udržuj v tajnosti</small>
+          <small>Šifrovací kľúč (32 hex znakov) - udržuj v tajnosti - {lorawanConfig.appKey.length}/32</small>
         </div>
 
         <div className="info-box" style={{ marginTop: '15px' }}>
           <p>💡 <strong>Tip:</strong> Tieto údaje získaš z TTN (The Things Network) konzoly po registrácii zariadenia.</p>
         </div>
+
+        {isLorawanConfigComplete() && (
+          <button 
+            type="button"
+            onClick={copyLorawanConfig}
+            className="btn-copy-lorawan"
+            style={{ marginTop: '15px', width: '100%' }}
+          >
+            📋 Kopírovať konfiguráciu pre ESP32
+          </button>
+        )}
       </div>
 
       <div className="settings-section">
