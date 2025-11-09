@@ -48,7 +48,15 @@ export default function Profile() {
           {user.ownedHives && user.ownedHives.length > 0 && (
             <div className="info-item">
               <span className="info-label">Moje úle</span>
-              <span className="info-value">{user.ownedHives.join(', ')}</span>
+              <span className="info-value">
+                {user.ownedHives.map(h => {
+                  // Handle both old format (string) and new format (object)
+                  if (typeof h === 'string') {
+                    return h;
+                  }
+                  return `${h.name} (${h.id})`;
+                }).join(', ')}
+              </span>
             </div>
           )}
         </div>

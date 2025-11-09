@@ -31,7 +31,8 @@ async function generateUniqueHiveId(User) {
   // Extract numbers from HIVE-XXX format (handle both string and object format)
   const hiveNumbers = allHives
     .map(h => {
-      const hiveId = typeof h === 'string' ? h : h.id;
+      const hiveId = typeof h === 'string' ? h : h?.id;
+      if (!hiveId || typeof hiveId !== 'string') return NaN;
       return parseInt(hiveId.replace('HIVE-', ''));
     })
     .filter(n => !isNaN(n));
@@ -154,6 +155,25 @@ export default async function handler(req, res) {
       // Update existing user info
       dbUser.name = userInfo.name;
       dbUser.image = userInfo.picture || userInfo.avatar_url;
+      
+      // Migrate old string array format to new object format
+      if (dbUser.ownedHives && dbUser.ownedHives.length > 0) {
+        const needsMigration = dbUser.ownedHives.some(h => typeof h === 'string');
+        if (needsMigration) {
+          dbUser.ownedHives = dbUser.ownedHives.map((h, index) => {
+            if (typeof h === 'string') {
+              return {
+                id: h,
+                name: `Úľ ${h.replace('HIVE-', '')}`,
+                location: index === 0 ? 'Domov' : `Lokalita ${index + 1}`,
+                color: ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'][index % 5]
+              };
+            }
+            return h;
+          });
+          console.log(`✅ Migrated hives for user: ${userInfo.email}`);
+        }
+      }
       
       // If existing user has no hives, assign unique hive
       if (!dbUser.ownedHives || dbUser.ownedHives.length === 0) {

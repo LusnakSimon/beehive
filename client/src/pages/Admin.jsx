@@ -377,7 +377,7 @@ export default function Admin() {
                       .filter(h => {
                         // Check if user already has this hive (handle both formats)
                         return !user.ownedHives?.some(owned => {
-                          return typeof owned === 'string' ? owned === h : owned.id === h;
+                          return typeof owned === 'string' ? owned === h : owned?.id === h;
                         });
                       })
                       .map(hiveId => (
