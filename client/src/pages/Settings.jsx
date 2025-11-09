@@ -151,6 +151,8 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         }
       }
 
+      console.log('🐝 Adding hive with data:', hiveData)
+
       const response = await fetch('/api/users/me/hives', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -205,6 +207,8 @@ const char* appKey = "${lorawanConfig.appKey}";`;
           lng: parseFloat(editingHive.coordinates.lng)
         }
       }
+
+      console.log('✏️ Editing hive with data:', hiveData)
 
       const response = await fetch(`/api/users/me/hives/${editingHive.id}`, {
         method: 'PATCH',

@@ -88,16 +88,28 @@ export default function HiveMap() {
 
       if (response.ok) {
         const data = await response.json()
-        setHives(data.hives)
+        console.log('📍 Map API response:', data)
+        console.log('📍 Hives received:', data.hives?.length || 0)
         
-        // Center map on user's first hive if available
-        const myHive = data.hives.find(h => h.isOwner)
-        if (myHive) {
-          setMapCenter([myHive.coordinates.lat, myHive.coordinates.lng])
+        if (data.hives) {
+          setHives(data.hives)
+          
+          // Center map on user's first hive if available
+          const myHive = data.hives.find(h => h.isOwner)
+          if (myHive) {
+            setMapCenter([myHive.coordinates.lat, myHive.coordinates.lng])
+          }
+        } else {
+          console.error('❌ No hives array in response:', data)
+          setHives([])
         }
+      } else {
+        console.error('❌ Map API error:', response.status, await response.text())
+        setHives([])
       }
     } catch (error) {
-      console.error('Error fetching hives:', error)
+      console.error('❌ Error fetching hives:', error)
+      setHives([])
     } finally {
       setLoading(false)
     }
