@@ -36,6 +36,7 @@ export default function HiveMap() {
   const [mapCenter, setMapCenter] = useState([48.7164, 21.2611]) // Default: Košice
   const [mapZoom, setMapZoom] = useState(13)
   const [lastUpdate, setLastUpdate] = useState(Date.now())
+  const [error, setError] = useState(null)
 
   // Fetch hives on mount and when user's hives change
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function HiveMap() {
 
   const fetchHives = async () => {
     try {
+      setError(null) // Clear previous errors
       const response = await fetch('/api/users/hives/map', {
         credentials: 'include'
       })
@@ -103,12 +105,19 @@ export default function HiveMap() {
           console.error('❌ No hives array in response:', data)
           setHives([])
         }
+      } else if (response.status === 401) {
+        setError('Nie si prihlásený. Prosím prihlás sa.')
+        console.error('❌ Map API error: 401 Unauthorized')
+        setHives([])
       } else {
-        console.error('❌ Map API error:', response.status, await response.text())
+        const errorText = await response.text()
+        setError(`API chyba: ${response.status}. ${errorText}`)
+        console.error('❌ Map API error:', response.status, errorText)
         setHives([])
       }
     } catch (error) {
       console.error('❌ Error fetching hives:', error)
+      setError(`Chyba pripojenia: ${error.message}. Skontroluj či backend beží.`)
       setHives([])
     } finally {
       setLoading(false)
@@ -166,6 +175,35 @@ export default function HiveMap() {
     return (
       <div className="hive-map-page">
         <div className="loading">Načítavam mapu...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="hive-map-page">
+        <div className="map-error">
+          <h2>⚠️ Chyba pri načítavaní mapy</h2>
+          <p>{error}</p>
+          <button 
+            className="btn-refresh-map" 
+            onClick={() => {
+              setLoading(true)
+              setLastUpdate(Date.now())
+            }}
+          >
+            🔄 Skúsiť znova
+          </button>
+          <div className="error-hint">
+            <p><strong>Tipy na riešenie:</strong></p>
+            <ul>
+              <li>Skontroluj či si prihlásený</li>
+              <li>Skontroluj browser console (F12) pre viac detailov</li>
+              <li>Pre lokálny development pozri <code>LOCAL_DEVELOPMENT.md</code></li>
+              <li>Alebo testuj na production: <a href="https://sbeehive.vercel.app" target="_blank">sbeehive.vercel.app</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
     )
   }
