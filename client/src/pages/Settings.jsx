@@ -219,7 +219,12 @@ const char* appKey = "${lorawanConfig.appKey}";`;
 
       if (response.ok) {
         const data = await response.json()
+        console.log('✅ Hive edited successfully, response:', data)
+        console.log('🔄 Calling refreshUser()...')
         await refreshUser() // Refresh user data with new JWT
+        console.log('✅ refreshUser() completed')
+        console.log('👤 User after refresh:', user)
+        console.log('🐝 Hives from context:', hives)
         alert(`Úľ "${editingHive.name}" bol úspešne upravený!`)
         setEditingHive(null)
       } else {
