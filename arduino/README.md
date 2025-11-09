@@ -1,12 +1,34 @@
 # Beehive Monitor - ESP32 Arduino
 
+ESP32-C3 firmware pre monitorovanie úľov s podporou WiFi a LoRaWAN.
+
+## 📁 Verzie firmwaru
+
+### WiFi verziam (beehive_monitor/)
+Štandardná verzia s WiFi pripojením a HTTP komunikáciou.
+
+### LoRaWAN verzia (beehive_lorawan/)
+Verzia pre dlhý dosah s nízkou spotrebou energie.
+- Dosah: až 10+ km v otvorenom teréne
+- Batéria: mesiace až roky
+- Vyžaduje: LoRaWAN gateway + The Things Network účet
+
 ## Potrebné knižnice
 
+### Pre WiFi verziu:
 Nainštalujte v Arduino IDE cez Library Manager:
 
 - **DHT sensor library** (by Adafruit) - pre DHT22 senzor
 - **Adafruit Unified Sensor** - závislosť pre DHT
 - **HX711 Arduino Library** (by Bogdan Necula) - pre váhu
+
+### Pre LoRaWAN verziu:
+Dodatočne k vyššie uvedeným:
+
+- **MCCI LoRaWAN LMIC library** - pre LoRaWAN komunikáciu
+- **MCCI Arduino LoRaWAN Library** - higher-level LoRaWAN API
+
+Pozri `beehive_lorawan/README.md` pre detailné inštrukcie.
 
 ## Zapojenie senzorov
 
@@ -34,6 +56,7 @@ Nainštalujte v Arduino IDE cez Library Manager:
 
 ## Konfigurácia
 
+### WiFi verzia
 V kóde upravte:
 
 ```cpp
@@ -43,6 +66,14 @@ const char* serverUrl = "http://your-server.com/api/esp32/data";
 const char* apiKey = "beehive-secret-key-2024";
 #define HIVE_ID "HIVE-001"
 ```
+
+### LoRaWAN verzia
+V web aplikácii prejdite do **Nastavenia → LoRaWAN Configuration**:
+1. Zadajte DevEUI, AppEUI, AppKey z The Things Network
+2. Kliknite "Copy ESP32 Code" pre vygenerovaný kód
+3. Skopírujte kód do `beehive_lorawan.ino`
+
+Viac info v `LORAWAN_SETUP.md` v root adresári.
 
 ## Nahratie do ESP32-C3
 

@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# Beehive Monitor - Frontend (PWA)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React-based Progressive Web App for beehive monitoring with offline support and push notifications.
 
-Currently, two official plugins are available:
+## 🛠️ Technology Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 18.2** - UI library with hooks
+- **Vite 5** - Fast build tool and dev server
+- **React Router 6** - Client-side routing
+- **Recharts 2.10** - Data visualization charts
+- **React Leaflet 4.2** - Interactive maps
+- **Leaflet 1.9** - Mapping library
+- **Service Worker** - Offline caching & push notifications
 
-## React Compiler
+## 📁 Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+client/src/
+├── components/           # Reusable React components
+│   ├── Navigation.jsx    # App navigation (mobile bottom bar)
+│   ├── HiveSelector.jsx  # Multi-hive dropdown selector
+│   ├── ProtectedRoute.jsx # Auth guard for routes
+│   ├── VarroaReminder.jsx # Varroa treatment reminder
+│   └── NotificationSettings.jsx # Push notification config
+│
+├── contexts/             # React Context providers
+│   ├── AuthContext.jsx   # OAuth authentication state
+│   ├── HiveContext.jsx   # Current selected hive
+│   └── NotificationContext.jsx # Push notification state
+│
+├── pages/                # Page components (routes)
+│   ├── Login.jsx         # OAuth login page
+│   ├── Dashboard.jsx     # Real-time sensor dashboard
+│   ├── History.jsx       # Historical data charts
+│   ├── Inspection.jsx    # Inspection checklist tracker
+│   ├── HiveMap.jsx       # GPS hive map view
+│   ├── Profile.jsx       # User profile page
+│   ├── Admin.jsx         # Admin panel (role=admin only)
+│   └── Settings.jsx      # App settings & hive management
+│
+├── App.jsx               # Main app with routing
+├── main.jsx              # Entry point
+└── index.css             # Global styles
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Install Dependencies
+```bash
+npm install
 ```
+
+### Run Development Server
+```bash
+npm run dev
+```
+App runs on `http://localhost:5173`
+
+### Build for Production
+```bash
+npm run build
+```
+Output in `dist/` directory
+
+## 📱 PWA Features
+
+### Service Worker
+- Caches static assets
+- Caches API responses for offline use
+- Push notifications
+
+### Installation
+Users can install the app from browser:
+- Chrome/Edge: "Install app" button
+- Safari iOS: "Add to Home Screen"
+
+## 📄 License
+
+MIT License - Part of beehive-monitor project

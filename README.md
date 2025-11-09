@@ -12,14 +12,47 @@ Inteligentný IoT systém na monitorovanie včelieho úľa | Bachelor's Thesis P
 
 ## ✨ Features
 
-- 📊 **Real-time Monitoring** - Live temperature, humidity & weight tracking
-- 📱 **Progressive Web App** - Installable mobile app with offline support
-- 📈 **Data Visualization** - Interactive charts with historical trends (Recharts)
-- 🔔 **Smart Alerts** - Notifications for abnormal readings
-- 📴 **Offline Mode** - Service Worker caching for no-internet usage
-- 🌡️ **ESP32-C3 IoT** - Wi-Fi enabled with DHT22 + HX711 sensors
-- ☁️ **Cloud Database** - MongoDB Atlas with real-time sync
-- 🔋 **Battery Monitor** - Power/solar panel status tracking
+### � Multi-User Authentication
+- **OAuth Login** - Sign in with Google or GitHub
+- **User Profiles** - Personal dashboard with owned hives
+- **Role-Based Access** - Admin panel for user management
+- **Secure Sessions** - JWT-based authentication with HTTP-only cookies
+
+### 🐝 Multi-Hive Management
+- **Multiple Hives** - Monitor unlimited number of hives per account
+- **Custom Names** - Personalize each hive with names and locations
+- **Color Coding** - Visual identification with customizable colors
+- **Hive Switching** - Easy navigation between your hives
+
+### 🗺️ GPS Hive Mapping
+- **Interactive Map** - View all your hives on OpenStreetMap
+- **GPS Tracking** - Add coordinates manually or auto-detect location
+- **Distance Calculation** - See distances between hives
+- **Privacy Controls** - Set hives as private or public
+- **Community View** - Discover public hives from other beekeepers
+
+### 📊 Real-time Monitoring
+- **Live Data** - Temperature, humidity & weight tracking from ESP32
+- **Historical Charts** - Interactive graphs with Recharts
+- **Smart Alerts** - Notifications for abnormal readings
+- **Battery Monitor** - Track power/solar panel status
+
+### 📝 Inspection Tracking
+- **Digital Checklists** - Track pollen, brood, queen sightings
+- **Inspection History** - View past inspections with timestamps
+- **Notes System** - Add custom observations for each inspection
+- **Per-Hive Records** - Separate inspection logs for each hive
+
+### 📱 Progressive Web App
+- **Installable** - Add to home screen on mobile
+- **Offline Mode** - Service Worker caching
+- **Push Notifications** - Real-time alerts
+- **Responsive Design** - Works on all devices
+
+### 🌐 LoRaWAN Support
+- **Long-Range** - Monitor hives kilometers away
+- **Low Power** - Months on battery
+- **ESP32 Configuration** - Easy setup wizard in settings
 
 ---
 
@@ -30,17 +63,19 @@ Inteligentný IoT systém na monitorovanie včelieho úľa | Bachelor's Thesis P
 - **Vite 5** - Build tool & Dev server  
 - **React Router 6** - Client-side routing
 - **Recharts 2.10** - Data visualization
+- **React Leaflet 4.2** - Interactive maps with GPS
+- **Leaflet 1.9** - Open-source mapping library
 - **Service Worker** - Offline caching & Push notifications
-- **Notification API** - Real-time alerts
 - **Manifest.json** - PWA installability
 
 ### Backend (API)
-- **Node.js 20+** + Express 4
+- **Node.js 20+** + Express (development only)
+- **Vercel Serverless Functions** - Production API
 - **MongoDB Atlas** - Cloud database
 - **Mongoose 8** - ODM for MongoDB
-- **Express Rate Limit** - API protection
+- **JWT** - Secure authentication
+- **OAuth 2.0** - Google & GitHub login
 - **CORS** - Cross-origin support
-- **Vercel Functions** - Serverless deployment
 
 ### IoT Hardware
 - **ESP32-C3** - Wi-Fi microcontroller
@@ -60,11 +95,23 @@ beehive-monitor/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Navigation.jsx   # Bottom/Top navigation bar
-│   │   │   └── Navigation.css
+│   │   │   ├── HiveSelector.jsx # Multi-hive switcher
+│   │   │   ├── ProtectedRoute.jsx # Auth guard
+│   │   │   ├── VarroaReminder.jsx # Treatment alerts
+│   │   │   └── NotificationSettings.jsx
+│   │   ├── contexts/
+│   │   │   ├── AuthContext.jsx  # OAuth authentication
+│   │   │   ├── HiveContext.jsx  # Multi-hive state
+│   │   │   └── NotificationContext.jsx
 │   │   ├── pages/
-│   │   │   ├── Dashboard.jsx    # 🏠 Real-time metrics display
+│   │   │   ├── Login.jsx        # 🔐 OAuth login
+│   │   │   ├── Dashboard.jsx    # 🏠 Real-time metrics
 │   │   │   ├── History.jsx      # 📊 Historical charts
-│   │   │   └── Settings.jsx     # ⚙️ Configuration & alerts
+│   │   │   ├── Inspection.jsx   # 📝 Inspection tracking
+│   │   │   ├── HiveMap.jsx      # 🗺️ GPS hive map
+│   │   │   ├── Profile.jsx      # 👤 User profile
+│   │   │   ├── Admin.jsx        # 👨‍💼 Admin panel
+│   │   │   └── Settings.jsx     # ⚙️ Configuration
 │   │   ├── App.jsx              # Main app with routing
 │   │   ├── main.jsx             # Entry point + SW registration
 │   │   └── index.css            # Global styles
@@ -75,26 +122,40 @@ beehive-monitor/
 │   └── package.json
 │
 ├── api/                         # Vercel Serverless Functions
-│   ├── index.js                 # Main API handler
-│   ├── routes/
-│   │   ├── sensor.js            # Sensor data endpoints
-│   │   └── esp32.js             # ESP32 data ingestion
-│   └── models/
-│       └── Reading.js           # MongoDB schema
+│   ├── oauth-google.js          # Google OAuth
+│   ├── oauth-github.js          # GitHub OAuth
+│   ├── oauth-callback.js        # OAuth handler
+│   ├── session.js               # Session check
+│   ├── logout.js                # User logout
+│   ├── sensor/[...path].js      # Sensor data endpoints
+│   ├── inspection/[...path].js  # Inspection endpoints
+│   └── users/[...path].js       # User/hive management
 │
-├── server/                      # Development server (local only)
-│   ├── index.js
-│   └── ...
+├── lib/                         # Shared Backend Logic
+│   ├── models/
+│   │   ├── User.js              # User schema with OAuth
+│   │   ├── Reading.js           # Sensor data schema
+│   │   └── Inspection.js        # Inspection schema
+│   └── routes/
+│       ├── users.js             # User & hive CRUD
+│       ├── sensor.js            # Sensor data API
+│       ├── inspection.js        # Inspection API
+│       ├── esp32.js             # ESP32 data ingestion
+│       └── lorawan.js           # LoRaWAN webhook
 │
-├── arduino/                     # ESP32-C3 Firmware
+├── arduino/                     # ESP32 Firmware
 │   ├── beehive_monitor/
-│   │   └── beehive_monitor.ino  # Main Arduino sketch
+│   │   └── beehive_monitor.ino  # WiFi version
+│   ├── beehive_lorawan/
+│   │   └── beehive_lorawan.ino  # LoRaWAN version
 │   └── README.md
 │
+├── scripts/
+│   └── simulate-esp32.js        # Device simulator
+│
 ├── vercel.json                  # Vercel config
-├── DEPLOYMENT.md                # Full deployment guide
-├── QUICKSTART.md                # Quick start guide
-└── CHECKLIST.md                 # Pre-deployment checklist
+├── .env.example                 # Environment template
+└── README.md                    # This file
 ```
 
 ---
@@ -103,59 +164,170 @@ beehive-monitor/
 
 ### Prerequisites
 - Node.js 20+
-- MongoDB Atlas account (free tier)
-- Git
+- MongoDB Atlas account (or local MongoDB)
+- Google OAuth credentials (for authentication)
 
-### 1. Clone Repository
+### Local Development
+
+1. **Clone the repository**
 ```bash
 git clone https://github.com/LusnakSimon/beehive.git
 cd beehive-monitor
 ```
 
-### 2. Backend Setup (Local Development)
+2. **Install dependencies**
 ```bash
-cd server
 npm install
-
-# Create .env file
-echo "MONGODB_URI=your_mongodb_connection_string" > .env
-echo "PORT=5000" >> .env
-echo "ESP32_API_KEY=beehive-secret-key-2024" >> .env
-
-npm run dev
-# Server running on http://localhost:5000
 ```
 
-### 3. Frontend Setup
+3. **Set up environment variables**
+
+Copy `.env.example` to `.env` and fill in your values:
+
 ```bash
-cd client
-npm install
-npm run dev
-# PWA running on http://localhost:3000
+cp .env.example .env
 ```
 
-### 4. Test API
+Required environment variables:
+- `MONGODB_URI` - MongoDB connection string with `/beehive` database
+- `JWT_SECRET` / `NEXTAUTH_SECRET` - Secret key for JWT tokens (use same value for both)
+- `GOOGLE_CLIENT_ID` - Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
+- `NEXTAUTH_URL` - Your app URL (http://localhost:3000 for local dev)
+
+4. **Run the development server**
 ```bash
-curl -X POST http://localhost:5000/api/esp32/data \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: beehive-secret-key-2024" \
-  -d '{
-    "temperature": 32.5,
-    "humidity": 55.2,
-    "weight": 48.75,
-    "battery": 85
-  }'
+npm run dev
 ```
+
+The app will be available at `http://localhost:5173`
+
+### MongoDB Setup
+
+1. Create a MongoDB Atlas cluster at https://mongodb.com/atlas
+2. Create a database named `beehive`
+3. Add your IP to the whitelist (or allow access from anywhere for Vercel)
+4. Create a database user with read/write permissions
+5. Copy the connection string and add it to your environment variables
+
+### Google OAuth Setup
+
+1. Go to Google Cloud Console: https://console.cloud.google.com
+2. Create a new project or select existing
+3. Enable Google+ API
+4. Create OAuth 2.0 credentials (Web application)
+5. Add authorized redirect URIs:
+   - `http://localhost:3000/api/oauth-callback` (for local dev)
+   - `https://your-app.vercel.app/api/oauth-callback` (for production)
+6. Copy Client ID and Client Secret to your environment variables
 
 ---
 
 ## 📡 API Documentation
 
+### Authentication Endpoints
+
+#### Google OAuth Login
+```http
+GET /api/oauth-google
+```
+Redirects to Google OAuth consent screen.
+
+#### GitHub OAuth Login  
+```http
+GET /api/oauth-github
+```
+Redirects to GitHub OAuth authorization.
+
+#### OAuth Callback
+```http
+GET /api/oauth-callback?code=xxx&state=google|github
+```
+Handles OAuth callback and sets JWT cookie.
+
+#### Check Session
+```http
+GET /api/session
+```
+**Response:**
+```json
+{
+  "authenticated": true,
+  "user": {
+    "id": "507f1f77bcf86cd799439011",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "role": "user",
+    "ownedHives": [...]
+  }
+}
+```
+
+#### Logout
+```http
+POST /api/logout
+```
+Clears authentication cookie.
+
+### User & Hive Management
+
+#### Get All Users (Admin only)
+```http
+GET /api/users
+```
+
+#### Get User Profile
+```http
+GET /api/users/me
+```
+
+#### Add Hive to Account
+```http
+POST /api/users/me/hives
+```
+**Body:**
+```json
+{
+  "name": "Záhradný úľ",
+  "location": "Záhrada A",
+  "color": "#fbbf24",
+  "coordinates": {
+    "lat": 48.716,
+    "lng": 21.261
+  },
+  "visibility": "private"
+}
+```
+
+#### Update Hive Details
+```http
+PATCH /api/users/me/hives/:hiveId
+```
+**Body:**
+```json
+{
+  "name": "Updated name",
+  "coordinates": { "lat": 48.716, "lng": 21.261 },
+  "visibility": "public"
+}
+```
+
+#### Delete Hive
+```http
+DELETE /api/users/me/hives/:hiveId
+```
+
+#### Get Map View (All Hives with GPS)
+```http
+GET /api/users/hives/map
+```
+Returns your private hives + all public hives from other users.
+
 ### Sensor Data (Public)
 
 #### Get Latest Reading
 ```http
-GET /api/sensor/latest
+GET /api/sensor/latest?hiveId=HIVE-001
 ```
 **Response:**
 ```json
@@ -170,10 +342,11 @@ GET /api/sensor/latest
 
 #### Get Historical Data
 ```http
-GET /api/sensor/history?range=24h
+GET /api/sensor/history?range=24h&hiveId=HIVE-001
 ```
 **Query Params:**
 - `range`: `24h` | `7d` | `30d`
+- `hiveId`: Hive identifier
 
 **Response:**
 ```json
@@ -191,7 +364,7 @@ GET /api/sensor/history?range=24h
 
 #### Get Statistics
 ```http
-GET /api/sensor/stats
+GET /api/sensor/stats?hiveId=HIVE-001
 ```
 **Response:**
 ```json
@@ -202,6 +375,41 @@ GET /api/sensor/stats
   "avgHumidity": 54.3,
   "count": 248
 }
+```
+
+### Inspection Tracking
+
+#### Save Inspection
+```http
+POST /api/inspection/save
+```
+**Body:**
+```json
+{
+  "hiveId": "HIVE-001",
+  "checklist": {
+    "pollen": true,
+    "eggs": true,
+    "queenSeen": false,
+    "capped": true
+  },
+  "notes": "Strong colony, lots of brood"
+}
+```
+
+#### Get Inspection History
+```http
+GET /api/inspection/history?hiveId=HIVE-001&limit=10
+```
+
+#### Update Inspection
+```http
+PATCH /api/inspection/:inspectionId
+```
+
+#### Delete Inspection
+```http
+DELETE /api/inspection/:inspectionId
 ```
 
 ### ESP32 Data Ingestion (Protected)
@@ -351,72 +559,6 @@ See [NOTIFICATIONS.md](NOTIFICATIONS.md) for troubleshooting and details.
 ---
 
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 20+
-- MongoDB Atlas account (or local MongoDB)
-- Google OAuth credentials (for authentication)
-
-### Local Development
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/LusnakSimon/beehive.git
-cd beehive-monitor
-```
-
-2. **Install dependencies**
-```bash
-npm install
-```
-
-3. **Set up environment variables**
-
-Copy `.env.example` to `.env` and fill in your values:
-
-```bash
-cp .env.example .env
-```
-
-Required environment variables:
-- `MONGODB_URI` - MongoDB connection string with `/beehive` database
-- `JWT_SECRET` / `NEXTAUTH_SECRET` - Secret key for JWT tokens (use same value for both)
-- `GOOGLE_CLIENT_ID` - Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
-- `NEXTAUTH_URL` - Your app URL (http://localhost:3000 for local dev)
-
-4. **Run the development server**
-```bash
-npm run dev
-```
-
-The app will be available at `http://localhost:5173`
-
-### MongoDB Setup
-
-1. Create a MongoDB Atlas cluster at https://mongodb.com/atlas
-2. Create a database named `beehive`
-3. Add your IP to the whitelist (or allow access from anywhere for Vercel)
-4. Create a database user with read/write permissions
-5. Copy the connection string and add it to your environment variables
-
-### Google OAuth Setup
-
-1. Go to Google Cloud Console: https://console.cloud.google.com
-2. Create a new project or select existing
-3. Enable Google+ API
-4. Create OAuth 2.0 credentials (Web application)
-5. Add authorized redirect URIs:
-   - `http://localhost:3000/api/oauth-callback` (for local dev)
-   - `https://your-app.vercel.app/api/oauth-callback` (for production)
-6. Copy Client ID and Client Secret to your environment variables
-
-## 🌐 Deployment (Vercel)
-
-### Deploy Frontend + API
-
-1. **Push to GitHub** (already done):
 ```bash
 git remote add origin https://github.com/LusnakSimon/beehive.git
 git push -u origin main

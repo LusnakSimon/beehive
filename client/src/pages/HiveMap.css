@@ -17,7 +17,8 @@
 .map-header h1 {
   margin: 0;
   font-size: 28px;
-  color: var(--text-primary, #333);
+  color: #000;
+  font-weight: 700;
 }
 
 .map-stats {
@@ -27,14 +28,16 @@
 
 .stat {
   padding: 8px 16px;
-  background: var(--bg-secondary, #f0f0f0);
-  color: var(--text-primary, #333);
+  background: #fff;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
   font-size: 14px;
+  color: #000;
+  font-weight: 600;
 }
 
 .stat strong {
-  color: #fbbf24;
+  color: #d97706;
   font-size: 18px;
   margin-right: 5px;
 }
@@ -42,8 +45,9 @@
 .map-controls {
   margin-bottom: 15px;
   padding: 15px;
-  background: var(--bg-primary, white);
-  color: var(--text-primary, #333);
+  background: #fff;
+  color: #000;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -54,6 +58,8 @@
   gap: 10px;
   cursor: pointer;
   user-select: none;
+  font-weight: 600;
+  color: #000;
 }
 
 .toggle-control input[type="checkbox"] {
@@ -73,6 +79,7 @@
   text-align: center;
   padding: 60px 20px;
   background: white;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
@@ -80,11 +87,14 @@
 .no-hives-map p:first-child {
   font-size: 20px;
   margin-bottom: 10px;
+  color: #000;
+  font-weight: 700;
 }
 
 .no-hives-map p:last-child {
-  color: #666;
+  color: #374151;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .custom-hive-marker {
@@ -125,8 +135,9 @@
 }
 
 .distance-panel {
-  background: var(--bg-primary, white);
-  color: var(--text-primary, #333);
+  background: #fff;
+  color: #000;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -135,9 +146,9 @@
 
 .distance-panel h3 {
   margin: 0 0 15px 0;
-  color: var(--text-primary, #333);
+  color: #000;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .distances-list {
@@ -153,14 +164,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: var(--bg-secondary, #f9f9f9);
-  color: var(--text-primary, #333);
+  background: #f9fafb;
+  color: #000;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
   transition: background 0.2s;
 }
 
 .distance-item:hover {
-  background: var(--bg-hover, #f0f0f0);
+  background: #f3f4f6;
+  border-color: #d1d5db;
 }
 
 .distance-hive {
@@ -174,6 +187,11 @@
   font-size: 20px;
 }
 
+.distance-hive > div {
+  color: #000;
+  font-weight: 600;
+}
+
 .owner-badge {
   background: #fbbf24;
   color: white;
@@ -184,14 +202,15 @@
 }
 
 .distance-value {
-  font-weight: 600;
-  color: var(--text-primary, #333);
+  font-weight: 700;
+  color: #000;
   font-size: 15px;
 }
 
 .map-legend {
-  background: var(--bg-primary, white);
-  color: var(--text-primary, #333);
+  background: #fff;
+  color: #000;
+  border: 2px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -199,8 +218,8 @@
 
 .map-legend h4 {
   margin: 0 0 15px 0;
-  color: var(--text-primary, #333);
-  font-weight: 600;
+  color: #000;
+  font-weight: 700;
 }
 
 .legend-item {
@@ -208,6 +227,8 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 10px;
+  color: #000;
+  font-weight: 600;
 }
 
 .legend-marker {
@@ -226,7 +247,8 @@
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #666;
+  color: #000;
+  font-weight: 600;
 }
 
 /* Mobile responsive */
