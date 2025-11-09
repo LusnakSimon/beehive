@@ -1,5 +1,5 @@
 .hive-map-page {
-  padding: 20px;
+  padding: 80px 20px 20px 20px; /* Top padding for desktop navbar */
   padding-bottom: 120px; /* Extra padding for mobile nav */
   max-width: 1400px;
   margin: 0 auto;
