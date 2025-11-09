@@ -35,10 +35,50 @@ export default function HiveMap() {
   const [showDistances, setShowDistances] = useState(false)
   const [mapCenter, setMapCenter] = useState([48.7164, 21.2611]) // Default: Košice
   const [mapZoom, setMapZoom] = useState(13)
+  const [lastUpdate, setLastUpdate] = useState(Date.now())
 
+  // Fetch hives on mount and when user's hives change
   useEffect(() => {
-    fetchHives()
-  }, [])
+    if (user) {
+      fetchHives()
+    }
+  }, [user, lastUpdate]) // Re-fetch when lastUpdate changes
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (user && !document.hidden) {
+        setLastUpdate(Date.now())
+      }
+    }, 30000) // 30 seconds
+
+    return () => clearInterval(interval)
+  }, [user])
+
+  // Also refresh when page becomes visible (user returns from Settings)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user) {
+        setLastUpdate(Date.now()) // Trigger refresh
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    // Also refresh when window gains focus
+    const handleFocus = () => {
+      if (user) {
+        setLastUpdate(Date.now()) // Trigger refresh
+      }
+    }
+    
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [user])
 
   const fetchHives = async () => {
     try {
@@ -129,6 +169,16 @@ export default function HiveMap() {
           <span className="stat">
             <strong>{publicHives.length}</strong> verejných úľov
           </span>
+          <button 
+            className="btn-refresh-map"
+            onClick={() => {
+              setLoading(true)
+              setLastUpdate(Date.now()) // Trigger refresh
+            }}
+            title="Obnoviť mapu"
+          >
+            🔄 Obnoviť
+          </button>
         </div>
       </div>
 
