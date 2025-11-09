@@ -388,6 +388,50 @@ export default function Settings() {
       </div>
 
       <div className="settings-section">
+        <h2>📡 LoRaWAN Konfigurácia</h2>
+        <p className="section-description">
+          Nastav parametre pre pripojenie úľa cez LoRaWAN sieť
+        </p>
+        
+        <div className="form-group">
+          <label htmlFor="devEUI">Device EUI</label>
+          <input
+            id="devEUI"
+            type="text"
+            placeholder="70B3D57ED005XXXX"
+            className="monospace-input"
+          />
+          <small>Unikátny identifikátor zariadenia (16 hex znakov)</small>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="appEUI">Application EUI</label>
+          <input
+            id="appEUI"
+            type="text"
+            placeholder="0000000000000000"
+            className="monospace-input"
+          />
+          <small>Identifikátor aplikácie (16 hex znakov)</small>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="appKey">Application Key</label>
+          <input
+            id="appKey"
+            type="password"
+            placeholder="********************************"
+            className="monospace-input"
+          />
+          <small>Šifrovací kľúč (32 hex znakov) - udržuj v tajnosti</small>
+        </div>
+
+        <div className="info-box" style={{ marginTop: '15px' }}>
+          <p>💡 <strong>Tip:</strong> Tieto údaje získaš z TTN (The Things Network) konzoly po registrácii zariadenia.</p>
+        </div>
+      </div>
+
+      <div className="settings-section">
         <h2>O aplikácii</h2>
         <div className="info-box">
           <p><strong>Verzia:</strong> 1.0.0</p>
