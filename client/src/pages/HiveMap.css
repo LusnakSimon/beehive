@@ -1,5 +1,6 @@
 .hive-map-page {
   padding: 20px;
+  padding-bottom: 120px; /* Extra padding for mobile nav */
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -16,7 +17,7 @@
 .map-header h1 {
   margin: 0;
   font-size: 28px;
-  color: #333;
+  color: var(--text-primary, #333);
 }
 
 .map-stats {
@@ -26,7 +27,8 @@
 
 .stat {
   padding: 8px 16px;
-  background: #f0f0f0;
+  background: var(--bg-secondary, #f0f0f0);
+  color: var(--text-primary, #333);
   border-radius: 8px;
   font-size: 14px;
 }
@@ -40,7 +42,8 @@
 .map-controls {
   margin-bottom: 15px;
   padding: 15px;
-  background: white;
+  background: var(--bg-primary, white);
+  color: var(--text-primary, #333);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -95,31 +98,35 @@
 
 .hive-popup h3 {
   margin: 0 0 8px 0;
-  color: #333;
+  color: #1a1a1a;
   font-size: 16px;
+  font-weight: 600;
 }
 
 .hive-id {
   font-size: 12px;
-  color: #666;
+  color: #333;
   margin: 4px 0;
   font-family: monospace;
+  font-weight: 500;
 }
 
 .hive-owner {
   margin: 8px 0;
   font-weight: 600;
-  color: #fbbf24;
+  color: #d97706;
 }
 
 .hive-visibility {
   margin: 8px 0;
   font-size: 13px;
-  color: #666;
+  color: #333;
+  font-weight: 500;
 }
 
 .distance-panel {
-  background: white;
+  background: var(--bg-primary, white);
+  color: var(--text-primary, #333);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -128,8 +135,9 @@
 
 .distance-panel h3 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: var(--text-primary, #333);
   font-size: 18px;
+  font-weight: 600;
 }
 
 .distances-list {
@@ -145,13 +153,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: #f9f9f9;
+  background: var(--bg-secondary, #f9f9f9);
+  color: var(--text-primary, #333);
   border-radius: 8px;
   transition: background 0.2s;
 }
 
 .distance-item:hover {
-  background: #f0f0f0;
+  background: var(--bg-hover, #f0f0f0);
 }
 
 .distance-hive {
@@ -176,12 +185,13 @@
 
 .distance-value {
   font-weight: 600;
-  color: #555;
+  color: var(--text-primary, #333);
   font-size: 15px;
 }
 
 .map-legend {
-  background: white;
+  background: var(--bg-primary, white);
+  color: var(--text-primary, #333);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -189,7 +199,8 @@
 
 .map-legend h4 {
   margin: 0 0 15px 0;
-  color: #333;
+  color: var(--text-primary, #333);
+  font-weight: 600;
 }
 
 .legend-item {
@@ -222,6 +233,7 @@
 @media (max-width: 768px) {
   .hive-map-page {
     padding: 15px;
+    padding-bottom: 120px; /* Extra space for mobile bottom nav */
   }
 
   .map-header {

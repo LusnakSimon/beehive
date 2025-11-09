@@ -23,6 +23,7 @@ export default function Settings() {
   })
 
   const [showAddHive, setShowAddHive] = useState(false)
+  const [editingHive, setEditingHive] = useState(null)
   const [newHive, setNewHive] = useState({
     name: '',
     location: '',
@@ -171,11 +172,59 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         setShowAddHive(false)
       } else {
         const error = await response.json()
-        alert(`Chyba: ${error.message || 'Nepodarilo sa pridať úľ'}`)
+        alert(`Chyba: ${error.message}`)
       }
     } catch (error) {
       console.error('Error adding hive:', error)
-      alert('Chyba pri pridávaní úľa')
+      alert('Nepodarilo sa pridať úľ')
+    } finally {
+      setIsAddingHive(false)
+    }
+  }
+
+  const handleEditHive = async () => {
+    if (!editingHive || !editingHive.name) {
+      alert('Vyplň názov úľa')
+      return
+    }
+    
+    setIsAddingHive(true)
+    
+    try {
+      const hiveData = {
+        name: editingHive.name,
+        location: editingHive.location,
+        color: editingHive.color,
+        visibility: editingHive.visibility
+      }
+
+      // Only include coordinates if both lat and lng are provided
+      if (editingHive.coordinates?.lat && editingHive.coordinates?.lng) {
+        hiveData.coordinates = {
+          lat: parseFloat(editingHive.coordinates.lat),
+          lng: parseFloat(editingHive.coordinates.lng)
+        }
+      }
+
+      const response = await fetch(`/api/users/me/hives/${editingHive.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(hiveData)
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        await refreshUser() // Refresh user data with new JWT
+        alert(`Úľ "${editingHive.name}" bol úspešne upravený!`)
+        setEditingHive(null)
+      } else {
+        const error = await response.json()
+        alert(`Chyba: ${error.message}`)
+      }
+    } catch (error) {
+      console.error('Error editing hive:', error)
+      alert('Nepodarilo sa upraviť úľ')
     } finally {
       setIsAddingHive(false)
     }
@@ -233,13 +282,28 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                   <div className="hive-item-location">📍 {hive.location}</div>
                 )}
               </div>
-              <button 
-                className="btn-delete-hive"
-                onClick={() => handleDeleteHive(hive.id)}
-                disabled={hives.length === 1}
-              >
-                🗑️
-              </button>
+              <div className="hive-item-actions">
+                <button 
+                  className="btn-edit-hive"
+                  onClick={() => setEditingHive({
+                    id: hive.id,
+                    name: hive.name,
+                    location: hive.location || '',
+                    color: hive.color || '#fbbf24',
+                    coordinates: hive.coordinates || { lat: '', lng: '' },
+                    visibility: hive.visibility || 'private'
+                  })}
+                >
+                  ✏️
+                </button>
+                <button 
+                  className="btn-delete-hive"
+                  onClick={() => handleDeleteHive(hive.id)}
+                  disabled={hives.length === 1}
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -360,6 +424,138 @@ const char* appKey = "${lorawanConfig.appKey}";`;
               >
                 {isAddingHive ? 'Pridávam...' : 'Pridať úľ'}
               </button>
+            </div>
+          </div>
+        )}
+
+        {editingHive && (
+          <div className="modal-overlay" onClick={() => setEditingHive(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>✏️ Upraviť úľ</h3>
+              
+              <div className="form-group">
+                <label htmlFor="editHiveName">Názov úľa *</label>
+                <input
+                  id="editHiveName"
+                  type="text"
+                  value={editingHive.name}
+                  onChange={(e) => setEditingHive(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="napr. Záhradný úľ"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="editHiveLocation">Lokalita (voliteľné)</label>
+                <input
+                  id="editHiveLocation"
+                  type="text"
+                  value={editingHive.location}
+                  onChange={(e) => setEditingHive(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="napr. Záhrada D"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Farba</label>
+                <div className="color-picker">
+                  {colors.map(color => (
+                    <button
+                      key={color}
+                      className={`color-option ${editingHive.color === color ? 'active' : ''}`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => setEditingHive(prev => ({ ...prev, color }))}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>GPS Súradnice (voliteľné)</label>
+                <button 
+                  type="button"
+                  className="btn-get-location"
+                  onClick={() => {
+                    if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                          setEditingHive(prev => ({
+                            ...prev,
+                            coordinates: {
+                              lat: position.coords.latitude.toString(),
+                              lng: position.coords.longitude.toString()
+                            }
+                          }))
+                        },
+                        (error) => {
+                          alert('Nepodarilo sa získať polohu: ' + error.message)
+                        }
+                      )
+                    }
+                  }}
+                >
+                  📍 Použiť moju aktuálnu polohu
+                </button>
+                
+                <div className="coordinates-inputs">
+                  <div className="coordinate-input">
+                    <label htmlFor="editLat">Šírka (Latitude)</label>
+                    <input
+                      id="editLat"
+                      type="number"
+                      step="0.000001"
+                      value={editingHive.coordinates?.lat || ''}
+                      onChange={(e) => setEditingHive(prev => ({ 
+                        ...prev, 
+                        coordinates: { ...prev.coordinates, lat: e.target.value }
+                      }))}
+                      placeholder="48.716"
+                    />
+                  </div>
+                  <div className="coordinate-input">
+                    <label htmlFor="editLng">Dĺžka (Longitude)</label>
+                    <input
+                      id="editLng"
+                      type="number"
+                      step="0.000001"
+                      value={editingHive.coordinates?.lng || ''}
+                      onChange={(e) => setEditingHive(prev => ({ 
+                        ...prev, 
+                        coordinates: { ...prev.coordinates, lng: e.target.value }
+                      }))}
+                      placeholder="21.261"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="editVisibility">Viditeľnosť na mape</label>
+                <select
+                  id="editVisibility"
+                  value={editingHive.visibility}
+                  onChange={(e) => setEditingHive(prev => ({ ...prev, visibility: e.target.value }))}
+                >
+                  <option value="private">🔒 Súkromný (len ja)</option>
+                  <option value="public">🌍 Verejný (všetci užívatelia)</option>
+                </select>
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  className="btn-secondary" 
+                  onClick={() => setEditingHive(null)}
+                  disabled={isAddingHive}
+                >
+                  Zrušiť
+                </button>
+                <button 
+                  className="btn-primary" 
+                  onClick={handleEditHive}
+                  disabled={isAddingHive}
+                >
+                  {isAddingHive ? 'Ukladám...' : 'Uložiť zmeny'}
+                </button>
+              </div>
             </div>
           </div>
         )}
