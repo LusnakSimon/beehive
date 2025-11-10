@@ -11,7 +11,7 @@ export default function Messages() {
   const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-    if (user) {
+    if (currentUser) {
       fetchConversations()
       
       // Poll every 10 seconds
@@ -28,7 +28,7 @@ export default function Messages() {
         window.removeEventListener('messagesRead', handleMessagesRead)
       }
     }
-  }, [user])
+  }, [currentUser])
 
   const fetchConversations = async () => {
     try {
