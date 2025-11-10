@@ -29,9 +29,17 @@ module.exports = async (req, res) => {
   
   try {
     await connectDB();
-    return friendsRoutes(req, res);
+    return await friendsRoutes(req, res);
   } catch (error) {
     console.error('Friends API Error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Error stack:', error.stack);
+    console.error('Request URL:', req.url);
+    console.error('Request method:', req.method);
+    console.error('Request body:', req.body);
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
