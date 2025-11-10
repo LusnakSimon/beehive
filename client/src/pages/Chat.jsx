@@ -259,7 +259,8 @@ const Chat = () => {
               {messages.map((message, index) => {
                 // API returns sender.id (not sender._id) and message.id (not message._id)
                 const senderId = message.sender?.id || message.sender?._id || message.sender;
-                const isOwn = senderId === user._id;
+                const currentUserId = user?.id || user?._id;
+                const isOwn = senderId === currentUserId;
                 
                 const prevSenderId = index > 0 
                   ? (messages[index - 1].sender?.id || messages[index - 1].sender?._id || messages[index - 1].sender)
@@ -272,14 +273,6 @@ const Chat = () => {
                 const showTimestamp = index === messages.length - 1 || 
                   nextSenderId !== senderId ||
                   (messages[index + 1] && (new Date(messages[index + 1].createdAt) - new Date(message.createdAt)) > 300000); // 5 min
-                
-                console.log('Message debug:', {
-                  text: message.text?.substring(0, 20),
-                  senderId,
-                  userId: user._id,
-                  isOwn,
-                  senderObj: message.sender
-                });
                 
                 return (
                   <div 
