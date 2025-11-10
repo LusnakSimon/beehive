@@ -31,7 +31,17 @@ export default function Navigation() {
       
       // Poll for new messages every 30 seconds
       const interval = setInterval(fetchUnreadCount, 30000)
-      return () => clearInterval(interval)
+      
+      // Listen for custom event when messages are read
+      const handleMessagesRead = () => {
+        fetchUnreadCount()
+      }
+      window.addEventListener('messagesRead', handleMessagesRead)
+      
+      return () => {
+        clearInterval(interval)
+        window.removeEventListener('messagesRead', handleMessagesRead)
+      }
     }
   }, [isAuthenticated])
   

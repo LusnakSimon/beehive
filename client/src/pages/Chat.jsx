@@ -40,9 +40,16 @@ const Chat = () => {
       const data = await response.json();
       setConversation(data.conversation);
       
-      // Find the other user
-      const other = data.conversation.participants.find(p => p._id !== user._id);
-      setOtherUser(other);
+      // Use otherUser from API response (already filtered by backend)
+      if (data.conversation.otherUser) {
+        setOtherUser(data.conversation.otherUser);
+      } else {
+        // Fallback: find the other user manually
+        const other = data.conversation.participants.find(p => p._id.toString() !== user._id.toString());
+        setOtherUser(other);
+      }
+      
+      console.log('Fetched conversation - otherUser:', data.conversation.otherUser);
     } catch (err) {
       console.error('Error fetching conversation:', err);
     }
@@ -76,10 +83,15 @@ const Chat = () => {
 
   const markAsRead = async () => {
     try {
-      await fetch(`/api/conversations/${conversationId}/read`, {
+      const response = await fetch(`/api/conversations/${conversationId}/read`, {
         method: 'PATCH',
         credentials: 'include'
       });
+      
+      if (response.ok) {
+        // Trigger navigation update by dispatching custom event
+        window.dispatchEvent(new CustomEvent('messagesRead'));
+      }
     } catch (err) {
       console.error('Error marking as read:', err);
     }
@@ -127,6 +139,9 @@ const Chat = () => {
         });
       }
 
+      // Notify other components about new message
+      window.dispatchEvent(new CustomEvent('messagesRead'));
+      
       scrollToBottom();
     } catch (err) {
       console.error('Error sending message:', err);

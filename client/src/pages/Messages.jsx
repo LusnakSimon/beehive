@@ -10,12 +10,25 @@ export default function Messages() {
   const [conversations, setConversations] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchConversations()
-    // Poll for new messages every 10 seconds
-    const interval = setInterval(fetchConversations, 10000)
-    return () => clearInterval(interval)
-  }, [])
+    useEffect(() => {
+    if (user) {
+      fetchConversations()
+      
+      // Poll every 10 seconds
+      const interval = setInterval(fetchConversations, 10000)
+      
+      // Listen for messages read event
+      const handleMessagesRead = () => {
+        fetchConversations()
+      }
+      window.addEventListener('messagesRead', handleMessagesRead)
+      
+      return () => {
+        clearInterval(interval)
+        window.removeEventListener('messagesRead', handleMessagesRead)
+      }
+    }
+  }, [user])
 
   const fetchConversations = async () => {
     try {
