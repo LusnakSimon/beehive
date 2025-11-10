@@ -25,6 +25,10 @@ export default function Navigation() {
             <span className="icon">🗺️</span>
             <span>Mapa</span>
           </NavLink>
+          <NavLink to="/search" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">🔍</span>
+            <span>Hľadať</span>
+          </NavLink>
           <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <span className="icon">⚙️</span>
             <span>Nastavenia</span>

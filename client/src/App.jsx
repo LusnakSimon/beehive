@@ -13,6 +13,7 @@ import Profile from './pages/Profile'
 import ProfileEdit from './pages/ProfileEdit'
 import FriendRequests from './pages/FriendRequests'
 import Friends from './pages/Friends'
+import UserSearch from './pages/UserSearch'
 import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -55,6 +56,7 @@ function App() {
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/inspection" element={<ProtectedRoute><Inspection /></ProtectedRoute>} />
               <Route path="/map" element={<ProtectedRoute><HiveMap /></ProtectedRoute>} />
+              <Route path="/search" element={<ProtectedRoute><UserSearch /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
