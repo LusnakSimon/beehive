@@ -7,31 +7,34 @@ export default function Navigation() {
   
   return (
     <nav className="navigation">
-      <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-        <span className="icon">🏠</span>
-        <span>Dashboard</span>
-      </NavLink>
-      <NavLink to="/history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-        <span className="icon">📊</span>
-        <span>História</span>
-      </NavLink>
-      <NavLink to="/inspection" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-        <span className="icon">📋</span>
-        <span>Kontrola</span>
-      </NavLink>
-      <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-        <span className="icon">⚙️</span>
-        <span>Nastavenia</span>
-      </NavLink>
-      {user?.role === 'admin' && (
-        <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <span className="icon">🔧</span>
-          <span>Admin</span>
-        </NavLink>
-      )}
-      
       {isAuthenticated ? (
         <>
+          <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">🏠</span>
+            <span>Dashboard</span>
+          </NavLink>
+          <NavLink to="/history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">📊</span>
+            <span>História</span>
+          </NavLink>
+          <NavLink to="/inspection" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">📋</span>
+            <span>Kontrola</span>
+          </NavLink>
+          <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">🗺️</span>
+            <span>Mapa</span>
+          </NavLink>
+          <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">⚙️</span>
+            <span>Nastavenia</span>
+          </NavLink>
+          {user?.role === 'admin' && (
+            <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <span className="icon">🔧</span>
+              <span>Admin</span>
+            </NavLink>
+          )}
           {/* Desktop user section */}
           <div className="nav-user-section">
             <div className="nav-user-info">

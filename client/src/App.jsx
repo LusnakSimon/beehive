@@ -10,6 +10,7 @@ import Admin from './pages/Admin'
 import Inspection from './pages/Inspection'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
+import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
 import VarroaReminder from './components/VarroaReminder'
@@ -50,6 +51,7 @@ function App() {
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/inspection" element={<ProtectedRoute><Inspection /></ProtectedRoute>} />
+              <Route path="/map" element={<ProtectedRoute><HiveMap /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
