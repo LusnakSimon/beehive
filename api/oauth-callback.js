@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
 let cached = global.mongoose;
@@ -44,7 +44,7 @@ async function generateUniqueHiveId(User) {
   return `HIVE-${String(nextNumber).padStart(3, '0')}`;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const { code, error } = req.query;
 
   if (error) {
