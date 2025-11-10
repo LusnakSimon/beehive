@@ -35,6 +35,14 @@
       "destination": "/api/friends/[...path]"
     },
     {
+      "source": "/api/conversations",
+      "destination": "/api/conversations/[...path]"
+    },
+    {
+      "source": "/api/conversations/:path*",
+      "destination": "/api/conversations/[...path]"
+    },
+    {
       "source": "/:path((?!api).*)",
       "destination": "/index.html"
     }

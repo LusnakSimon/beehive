@@ -1,9 +1,39 @@
 import { NavLink } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import './Navigation.css'
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth()
+  const [totalUnread, setTotalUnread] = useState(0)
+
+  const fetchUnreadCount = async () => {
+    if (!isAuthenticated) return
+    
+    try {
+      const response = await fetch('/api/conversations', {
+        credentials: 'include'
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        const total = data.conversations.reduce((sum, conv) => sum + conv.unreadCount, 0)
+        setTotalUnread(total)
+      }
+    } catch (err) {
+      console.error('Error fetching unread count:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUnreadCount()
+      
+      // Poll for new messages every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [isAuthenticated])
   
   return (
     <nav className="navigation">
@@ -28,6 +58,11 @@ export default function Navigation() {
           <NavLink to="/search" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <span className="icon">🔍</span>
             <span>Hľadať</span>
+          </NavLink>
+          <NavLink to="/messages" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <span className="icon">💬</span>
+            <span>Správy</span>
+            {totalUnread > 0 && <span className="nav-badge">{totalUnread}</span>}
           </NavLink>
           <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
             <span className="icon">⚙️</span>
