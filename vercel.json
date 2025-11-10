@@ -27,6 +27,14 @@
       "destination": "/api/inspection/[...path]"
     },
     {
+      "source": "/api/friends",
+      "destination": "/api/friends/[...path]"
+    },
+    {
+      "source": "/api/friends/:path*",
+      "destination": "/api/friends/[...path]"
+    },
+    {
       "source": "/:path((?!api).*)",
       "destination": "/index.html"
     }
