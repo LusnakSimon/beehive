@@ -259,6 +259,9 @@ const Chat = () => {
               {messages.map((message, index) => {
                 const isOwn = message.sender._id === user._id;
                 const showAvatar = index === 0 || messages[index - 1].sender._id !== message.sender._id;
+                const showTimestamp = index === messages.length - 1 || 
+                  messages[index + 1].sender._id !== message.sender._id ||
+                  (new Date(messages[index + 1].createdAt) - new Date(message.createdAt)) > 300000; // 5 min
                 
                 return (
                   <div 
@@ -274,10 +277,23 @@ const Chat = () => {
                     )}
                     {!isOwn && !showAvatar && <div className="message-avatar-spacer" />}
                     
-                    <div className="message-bubble">
-                      <p className="message-text">{message.text}</p>
-                      <span className="message-time">{formatMessageTime(message.createdAt)}</span>
+                    <div className="message-content">
+                      <div className="message-bubble">
+                        <p className="message-text">{message.text}</p>
+                      </div>
+                      {showTimestamp && (
+                        <span className="message-time">{formatMessageTime(message.createdAt)}</span>
+                      )}
                     </div>
+
+                    {isOwn && showAvatar && (
+                      <img 
+                        src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=3b82f6&color=fff&size=128`} 
+                        alt={user.name}
+                        className="message-avatar"
+                      />
+                    )}
+                    {isOwn && !showAvatar && <div className="message-avatar-spacer" />}
                   </div>
                 );
               })}
@@ -288,35 +304,38 @@ const Chat = () => {
 
         {/* Input */}
         <form className="message-input-area" onSubmit={sendMessage}>
-          {error && <div className="input-error">{error}</div>}
+          {error && <div className="input-error">⚠️ {error}</div>}
           <div className="message-input-wrapper">
-            <textarea
-              value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
-              placeholder="Napíšte správu..."
-              className="message-input"
-              rows="1"
-              maxLength="5000"
-              disabled={sending}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage(e);
-                }
-              }}
-            />
-            <div className="input-footer">
-              <span className="char-count">
-                {messageText.length}/5000
-              </span>
-              <button 
-                type="submit" 
-                className="send-button"
-                disabled={!messageText.trim() || sending}
-              >
-                {sending ? '⏳' : '➤'}
-              </button>
+            <div className="message-input-container">
+              <textarea
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                placeholder="Napíšte správu..."
+                className="message-input"
+                rows="1"
+                maxLength="5000"
+                disabled={sending}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage(e);
+                  }
+                }}
+              />
+              <div className="input-footer">
+                <span className="char-count">
+                  {messageText.length}/5000
+                </span>
+              </div>
             </div>
+            <button 
+              type="submit" 
+              className="send-button"
+              disabled={!messageText.trim() || sending}
+              title={sending ? 'Odosielam...' : 'Odoslať správu'}
+            >
+              {sending ? '⏳' : '➤'}
+            </button>
           </div>
         </form>
       </div>
