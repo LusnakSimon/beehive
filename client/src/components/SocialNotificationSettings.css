@@ -1,0 +1,164 @@
+.social-notification-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settings-info-box {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.settings-info-box strong {
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.settings-info-box p {
+  margin: 0.25rem 0;
+}
+
+.social-setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.social-setting-item:hover {
+  border-color: #fbbf24;
+  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);
+}
+
+.social-setting-info {
+  flex: 1;
+}
+
+.social-setting-info label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 0.25rem;
+  cursor: pointer;
+}
+
+.social-setting-desc {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+.social-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.social-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.social-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.3s;
+  border-radius: 34px;
+}
+
+.social-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.social-toggle-switch input:checked + .social-toggle-slider {
+  background-color: #fbbf24;
+}
+
+.social-toggle-switch input:checked + .social-toggle-slider:before {
+  transform: translateX(24px);
+}
+
+.social-toggle-slider:hover {
+  background-color: #999;
+}
+
+.social-toggle-switch input:checked + .social-toggle-slider:hover {
+  background-color: #f59e0b;
+}
+
+.social-settings-note {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #1e40af;
+  line-height: 1.5;
+}
+
+.social-note-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.social-settings-note p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .social-setting-item {
+    padding: 0.75rem;
+  }
+
+  .social-setting-info label {
+    font-size: 0.9375rem;
+  }
+
+  .social-setting-desc {
+    font-size: 0.8125rem;
+  }
+
+  .social-toggle-switch {
+    width: 48px;
+    height: 26px;
+    margin-left: 0.5rem;
+  }
+
+  .social-toggle-slider:before {
+    height: 20px;
+    width: 20px;
+  }
+
+  .social-toggle-switch input:checked + .social-toggle-slider:before {
+    transform: translateX(22px);
+  }
+}

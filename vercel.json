@@ -43,6 +43,14 @@
       "destination": "/api/conversations/[...path]"
     },
     {
+      "source": "/api/social-notifications",
+      "destination": "/api/social-notifications/[...path]"
+    },
+    {
+      "source": "/api/social-notifications/:path*",
+      "destination": "/api/social-notifications/[...path]"
+    },
+    {
       "source": "/:path((?!api).*)",
       "destination": "/index.html"
     }

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useHive } from '../context/HiveContext'
 import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
+import SocialNotificationSettings from '../components/SocialNotificationSettings'
 
 export default function Settings() {
   const { user, refreshUser } = useAuth()
@@ -639,8 +640,13 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       </div>
 
       <div className="settings-section">
-        <h2>🔔 Notifikácie</h2>
+        <h2>🔔 Sensor Notifikácie</h2>
         <NotificationSettings />
+      </section>
+
+      <section className="settings-section">
+        <h2>👥 Sociálne Notifikácie</h2>
+        <SocialNotificationSettings />
       </div>
 
       <div className="settings-section">
