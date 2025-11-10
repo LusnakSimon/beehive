@@ -195,3 +195,13 @@
     display: none;
   }
 }
+
+.nav-profile-link {
+  text-decoration: none;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.nav-profile-link:hover {
+  opacity: 0.8;
+}

@@ -10,6 +10,7 @@ import Admin from './pages/Admin'
 import Inspection from './pages/Inspection'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
+import ProfileEdit from './pages/ProfileEdit'
 import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -54,6 +55,7 @@ function App() {
               <Route path="/map" element={<ProtectedRoute><HiveMap /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
               <Route path="/profile/:userId" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>

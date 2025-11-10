@@ -37,10 +37,10 @@ export default function Navigation() {
           )}
           {/* Desktop user section */}
           <div className="nav-user-section">
-            <div className="nav-user-info">
+            <NavLink to="/profile" className="nav-user-info nav-profile-link">
               {user?.image && <img src={user.image} alt={user.name} className="nav-avatar" />}
               <span className="nav-username">{user?.name}</span>
-            </div>
+            </NavLink>
             <button onClick={logout} className="nav-logout-btn">
               <span className="icon">🚪</span>
               <span>Odhlásiť</span>
