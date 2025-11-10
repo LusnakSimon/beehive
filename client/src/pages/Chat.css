@@ -320,6 +320,11 @@
   overflow-y: auto;
   transition: all 0.2s;
   background: white;
+  color: #1f2937;
+}
+
+.message-input::placeholder {
+  color: #9ca3af;
 }
 
 .message-input:focus {

@@ -21,6 +21,7 @@ import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
 import VarroaReminder from './components/VarroaReminder'
+import './colors.css'
 import './App.css'
 
 function App() {

@@ -257,11 +257,20 @@ const Chat = () => {
           ) : (
             <div className="messages-list">
               {messages.map((message, index) => {
-                const isOwn = message.sender._id === user._id;
-                const showAvatar = index === 0 || messages[index - 1].sender._id !== message.sender._id;
+                // Handle both populated and unpopulated sender
+                const senderId = typeof message.sender === 'object' ? message.sender._id : message.sender;
+                const isOwn = senderId === user._id;
+                const prevSenderId = index > 0 
+                  ? (typeof messages[index - 1].sender === 'object' ? messages[index - 1].sender._id : messages[index - 1].sender)
+                  : null;
+                const nextSenderId = index < messages.length - 1
+                  ? (typeof messages[index + 1].sender === 'object' ? messages[index + 1].sender._id : messages[index + 1].sender)
+                  : null;
+                
+                const showAvatar = index === 0 || prevSenderId !== senderId;
                 const showTimestamp = index === messages.length - 1 || 
-                  messages[index + 1].sender._id !== message.sender._id ||
-                  (new Date(messages[index + 1].createdAt) - new Date(message.createdAt)) > 300000; // 5 min
+                  nextSenderId !== senderId ||
+                  (messages[index + 1] && (new Date(messages[index + 1].createdAt) - new Date(message.createdAt)) > 300000); // 5 min
                 
                 return (
                   <div 

@@ -5,14 +5,21 @@ export default function SocialNotificationSettings() {
   const [settings, setSettings] = useState({
     friendRequests: true,
     friendRequestAccepted: true,
-    newMessages: false  // Using badge instead by default
+    newMessages: true
   })
+  const [pushEnabled, setPushEnabled] = useState(false)
+  const [saveStatus, setSaveStatus] = useState('')
 
   // Load settings from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('socialNotificationSettings')
+    const saved = localStorage.getItem('socialPushNotifications')
     if (saved) {
       setSettings(JSON.parse(saved))
+    }
+    
+    // Check if push notifications are supported and enabled
+    if ('Notification' in window) {
+      setPushEnabled(Notification.permission === 'granted')
     }
   }, [])
 
@@ -22,22 +29,51 @@ export default function SocialNotificationSettings() {
       [key]: !settings[key]
     }
     setSettings(newSettings)
-    localStorage.setItem('socialNotificationSettings', JSON.stringify(newSettings))
+    localStorage.setItem('socialPushNotifications', JSON.stringify(newSettings))
+    
+    // Show save confirmation
+    setSaveStatus('Uložené ✓')
+    setTimeout(() => setSaveStatus(''), 2000)
+  }
+
+  const requestPushPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission()
+      setPushEnabled(permission === 'granted')
+      
+      if (permission === 'granted') {
+        setSaveStatus('Push notifikácie povolené ✓')
+        setTimeout(() => setSaveStatus(''), 3000)
+      }
+    }
   }
 
   return (
     <div className="social-notification-settings">
       <div className="settings-info-box">
-        <p><strong>Sociálne upozornenia:</strong></p>
-        <p>• Žiadosti o priateľstvo</p>
-        <p>• Prijaté žiadosti</p>
-        <p>• Nové správy (voliteľné)</p>
+        <p><strong>📬 Push Notifikácie</strong></p>
+        <p>Dostávajte upozornenia aj keď nie ste na stránke</p>
       </div>
+
+      {!pushEnabled && (
+        <div className="push-permission-prompt">
+          <p>⚠️ Push notifikácie nie sú povolené</p>
+          <button onClick={requestPushPermission} className="enable-push-btn">
+            Povoliť Push Notifikácie
+          </button>
+        </div>
+      )}
+
+      {saveStatus && (
+        <div className="save-status">
+          {saveStatus}
+        </div>
+      )}
 
       <div className="social-setting-item">
         <div className="social-setting-info">
           <label htmlFor="friendRequests">👥 Žiadosti o priateľstvo</label>
-          <p className="social-setting-desc">Upozornenie keď vám niekto pošle žiadosť</p>
+          <p className="social-setting-desc">Push notifikácia keď vám niekto pošle žiadosť</p>
         </div>
         <label className="social-toggle-switch">
           <input
@@ -53,7 +89,7 @@ export default function SocialNotificationSettings() {
       <div className="social-setting-item">
         <div className="social-setting-info">
           <label htmlFor="friendRequestAccepted">✅ Prijaté žiadosti</label>
-          <p className="social-setting-desc">Upozornenie keď niekto príjme vašu žiadosť</p>
+          <p className="social-setting-desc">Push notifikácia keď niekto príjme vašu žiadosť</p>
         </div>
         <label className="social-toggle-switch">
           <input
@@ -69,7 +105,7 @@ export default function SocialNotificationSettings() {
       <div className="social-setting-item">
         <div className="social-setting-info">
           <label htmlFor="newMessages">💬 Nové správy</label>
-          <p className="social-setting-desc">Upozornenie pri novej správe (okrem badge)</p>
+          <p className="social-setting-desc">Push notifikácia pri novej správe</p>
         </div>
         <label className="social-toggle-switch">
           <input
@@ -84,7 +120,7 @@ export default function SocialNotificationSettings() {
 
       <div className="social-settings-note">
         <span className="social-note-icon">ℹ️</span>
-        <p>Badge pri ikonách v navigácii sa zobrazuje vždy. Tieto nastavenia ovplyvňujú len in-app notifikácie v zozname upozornení.</p>
+        <p>Push notifikácie vás upozornia aj keď nie ste na stránke. In-app upozornenia (zoznam) a badge počítadlá zostávajú vždy aktívne. Nastavenia sa ukladajú automaticky.</p>
       </div>
     </div>
   )

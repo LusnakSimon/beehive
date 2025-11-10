@@ -1,0 +1,122 @@
+/* Modern Blue Color Scheme - Global Variables */
+:root {
+  /* Primary Colors - Blue */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+  --primary-bg: rgba(59, 130, 246, 0.1);
+  --primary-hover: rgba(59, 130, 246, 0.15);
+  
+  /* Secondary Colors - Purple */
+  --secondary: #8b5cf6;
+  --secondary-dark: #7c3aed;
+  --secondary-light: #a78bfa;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --success-dark: #059669;
+  --success-light: #34d399;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  
+  --warning: #f59e0b;
+  --warning-dark: #d97706;
+  --warning-light: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --danger-light: #f87171;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  
+  --info: #06b6d4;
+  --info-dark: #0891b2;
+  --info-light: #22d3ee;
+  
+  /* Text Colors */
+  --text: #1f2937;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  --text-disabled: #d1d5db;
+  
+  /* Background Colors */
+  --bg: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* Border Colors */
+  --border: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-dark: #d1d5db;
+  
+  /* Card & Components */
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --card-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --card-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  
+  /* Navigation */
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: #e5e7eb;
+  --nav-link: #6b7280;
+  --nav-link-active: #3b82f6;
+  --nav-link-hover-bg: rgba(59, 130, 246, 0.1);
+  
+  /* Input & Form */
+  --input-bg: #ffffff;
+  --input-border: #e5e7eb;
+  --input-border-focus: #3b82f6;
+  --input-placeholder: #9ca3af;
+  --input-disabled-bg: #f3f4f6;
+  --input-disabled-text: #9ca3af;
+  
+  /* Button Gradients */
+  --btn-primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  --btn-success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --btn-danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --btn-secondary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Text Colors - Dark Mode */
+    --text: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-light: #9ca3af;
+    --text-disabled: #6b7280;
+    
+    /* Background Colors - Dark Mode */
+    --bg: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+    
+    /* Border Colors - Dark Mode */
+    --border: #374151;
+    --border-light: #4b5563;
+    --border-dark: #1f2937;
+    
+    /* Card & Components - Dark Mode */
+    --card-bg: #1f2937;
+    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --card-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --card-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+    
+    /* Navigation - Dark Mode */
+    --nav-bg: rgba(31, 41, 55, 0.95);
+    --nav-border: #374151;
+    --nav-link: #9ca3af;
+    --nav-link-active: #60a5fa;
+    --nav-link-hover-bg: rgba(59, 130, 246, 0.15);
+    
+    /* Input & Form - Dark Mode */
+    --input-bg: #374151;
+    --input-border: #4b5563;
+    --input-border-focus: #60a5fa;
+    --input-placeholder: #6b7280;
+    --input-disabled-bg: #1f2937;
+    --input-disabled-text: #6b7280;
+  }
+}
