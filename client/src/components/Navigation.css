@@ -37,6 +37,7 @@
   min-width: 60px;
   flex-shrink: 0;
   white-space: nowrap;
+  position: relative;
 }
 
 .nav-link .icon {
