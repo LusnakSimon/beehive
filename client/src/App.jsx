@@ -11,6 +11,8 @@ import Inspection from './pages/Inspection'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
 import ProfileEdit from './pages/ProfileEdit'
+import FriendRequests from './pages/FriendRequests'
+import Friends from './pages/Friends'
 import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -57,6 +59,8 @@ function App() {
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
               <Route path="/profile/:userId" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+              <Route path="/friends/requests" element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
           </main>

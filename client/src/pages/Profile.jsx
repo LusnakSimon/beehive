@@ -12,11 +12,16 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [hives, setHives] = useState([])
+  const [friendshipStatus, setFriendshipStatus] = useState(null)
+  const [actionLoading, setActionLoading] = useState(false)
   
   const isOwnProfile = currentUser && (!userId || userId === currentUser.id)
 
   useEffect(() => {
     fetchProfile()
+    if (!isOwnProfile && userId) {
+      fetchFriendshipStatus()
+    }
   }, [userId, currentUser])
 
   const fetchProfile = async () => {
@@ -51,6 +56,107 @@ export default function Profile() {
       setError('Failed to load profile')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchFriendshipStatus = async () => {
+    try {
+      const response = await fetch(`/api/friends/status/${userId}`, {
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setFriendshipStatus(data)
+      }
+    } catch (err) {
+      console.error('Error fetching friendship status:', err)
+    }
+  }
+
+  const handleSendFriendRequest = async () => {
+    setActionLoading(true)
+    try {
+      const response = await fetch('/api/friends/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ toUserId: userId })
+      })
+
+      if (response.ok) {
+        await fetchFriendshipStatus()
+        alert('Friend request sent!')
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to send friend request')
+      }
+    } catch (err) {
+      console.error('Error sending friend request:', err)
+      alert('Failed to send friend request')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleCancelRequest = async () => {
+    if (!friendshipStatus?.requestId) return
+    setActionLoading(true)
+    try {
+      const response = await fetch(`/api/friends/requests/${friendshipStatus.requestId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        await fetchFriendshipStatus()
+        alert('Friend request cancelled')
+      }
+    } catch (err) {
+      console.error('Error cancelling request:', err)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleAcceptRequest = async () => {
+    if (!friendshipStatus?.requestId) return
+    setActionLoading(true)
+    try {
+      const response = await fetch(`/api/friends/requests/${friendshipStatus.requestId}/accept`, {
+        method: 'PATCH',
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        await fetchFriendshipStatus()
+        await fetchProfile()
+        alert('Friend request accepted!')
+      }
+    } catch (err) {
+      console.error('Error accepting request:', err)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleRemoveFriend = async () => {
+    if (!confirm('Are you sure you want to remove this friend?')) return
+    setActionLoading(true)
+    try {
+      const response = await fetch(`/api/friends/${userId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      if (response.ok) {
+        await fetchFriendshipStatus()
+        await fetchProfile()
+        alert('Friend removed')
+      }
+    } catch (err) {
+      console.error('Error removing friend:', err)
+    } finally {
+      setActionLoading(false)
     }
   }
 
@@ -136,9 +242,39 @@ export default function Profile() {
               </>
             ) : (
               <>
-                <button className="btn-add-friend" disabled>
-                  👥 Pridať priateľa
-                </button>
+                {friendshipStatus?.status === 'friends' ? (
+                  <button 
+                    onClick={handleRemoveFriend}
+                    className="btn-remove-friend"
+                    disabled={actionLoading}
+                  >
+                    ✅ Priatelia
+                  </button>
+                ) : friendshipStatus?.status === 'pending' && friendshipStatus?.direction === 'outgoing' ? (
+                  <button 
+                    onClick={handleCancelRequest}
+                    className="btn-pending"
+                    disabled={actionLoading}
+                  >
+                    ⏳ Čaká sa
+                  </button>
+                ) : friendshipStatus?.status === 'pending' && friendshipStatus?.direction === 'incoming' ? (
+                  <button 
+                    onClick={handleAcceptRequest}
+                    className="btn-accept-friend"
+                    disabled={actionLoading}
+                  >
+                    ✅ Prijať žiadosť
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleSendFriendRequest}
+                    className="btn-add-friend"
+                    disabled={actionLoading}
+                  >
+                    👥 Pridať priateľa
+                  </button>
+                )}
                 <button className="btn-message" disabled>
                   💬 Napísať
                 </button>
