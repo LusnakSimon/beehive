@@ -217,14 +217,14 @@ const Chat = () => {
             <span className="back-arrow">←</span>
           </button>
           <img 
-            src={otherUser.avatar || '/default-avatar.png'} 
+            src={otherUser.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}&background=fbbf24&color=fff&size=128`} 
             alt={otherUser.name}
             className="chat-user-avatar"
           />
           <div className="chat-user-info">
             <h2>{otherUser.name}</h2>
-            {otherUser.location && (
-              <span className="user-location">📍 {otherUser.location}</span>
+            {otherUser.profile?.location && (
+              <span className="user-location">📍 {otherUser.profile.location}</span>
             )}
           </div>
         </div>
@@ -252,7 +252,7 @@ const Chat = () => {
                   >
                     {!isOwn && showAvatar && (
                       <img 
-                        src={otherUser.avatar || '/default-avatar.png'} 
+                        src={otherUser.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}&background=fbbf24&color=fff&size=128`} 
                         alt={otherUser.name}
                         className="message-avatar"
                       />

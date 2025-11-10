@@ -87,11 +87,13 @@
   font-size: 1.25rem;
   margin: 0 0 0.25rem;
   color: #1a1a1a;
+  font-weight: 600;
 }
 
 .user-location {
   font-size: 0.875rem;
   color: #666;
+  font-weight: 500;
 }
 
 .messages-area {
@@ -194,13 +196,28 @@
   font-size: 1rem;
   line-height: 1.5;
   white-space: pre-wrap;
+  font-weight: 500;
+}
+
+.message.own .message-text {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.message.other .message-text {
+  color: #1a1a1a;
 }
 
 .message-time {
   font-size: 0.75rem;
-  opacity: 0.7;
+  opacity: 0.8;
   display: block;
   text-align: right;
+  font-weight: 500;
+}
+
+.message.own .message-time {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .message.other .message-time {
