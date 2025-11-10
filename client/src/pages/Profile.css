@@ -47,6 +47,7 @@
 
 .profile-info {
   flex: 1;
+  padding-top: 0.5rem;
 }
 
 .profile-info h1 {
@@ -60,6 +61,9 @@
   font-size: 1rem;
   color: #666;
   margin: 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .profile-actions {
@@ -319,6 +323,10 @@
     padding-bottom: 8rem;
   }
 
+  .profile-container {
+    padding: 0 1rem;
+  }
+
   .profile-cover {
     height: 150px;
     margin-bottom: -60px;
@@ -358,6 +366,7 @@
 
   .profile-stats {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
 
   .hives-grid {
