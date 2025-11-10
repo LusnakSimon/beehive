@@ -642,9 +642,9 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       <div className="settings-section">
         <h2>🔔 Sensor Notifikácie</h2>
         <NotificationSettings />
-      </section>
+      </div>
 
-      <section className="settings-section">
+      <div className="settings-section">
         <h2>👥 Sociálne Notifikácie</h2>
         <SocialNotificationSettings />
       </div>
