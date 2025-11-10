@@ -271,3 +271,43 @@
     padding-top: 6.5rem;
   }
 }
+
+/* Message button on friend cards */
+.friend-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.friend-card-content {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  cursor: pointer;
+}
+
+.btn-message-friend {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  border: none;
+  border-radius: 0 0 12px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.btn-message-friend:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+}
+
+@media (max-width: 768px) {
+  .btn-message-friend {
+    font-size: 0.8125rem;
+    padding: 0.625rem;
+  }
+}

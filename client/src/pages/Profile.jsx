@@ -160,6 +160,33 @@ export default function Profile() {
     }
   }
 
+  const handleSendMessage = async () => {
+    if (!userId || friendshipStatus?.status !== 'friends') return
+
+    setActionLoading(true)
+    try {
+      // Create or find conversation
+      const response = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ userId })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Navigate to chat with this conversation
+        navigate(`/messages/${data.conversation.id}`)
+      } else {
+        console.error('Failed to create conversation')
+      }
+    } catch (err) {
+      console.error('Error creating conversation:', err)
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   const handleLogout = async () => {
     await logout()
     navigate('/login')
@@ -275,9 +302,15 @@ export default function Profile() {
                     👥 Pridať priateľa
                   </button>
                 )}
-                <button className="btn-message" disabled>
-                  💬 Napísať
-                </button>
+                {friendshipStatus?.status === 'friends' && (
+                  <button 
+                    onClick={handleSendMessage}
+                    className="btn-message"
+                    disabled={actionLoading}
+                  >
+                    💬 Napísať
+                  </button>
+                )}
               </>
             )}
           </div>

@@ -103,44 +103,71 @@ export default function Friends() {
                 <div 
                   key={friend._id} 
                   className="friend-card"
-                  onClick={() => navigate(`/profile/${friend._id}`)}
                 >
-                  <img
-                    src={avatarUrl}
-                    alt={friend.name}
-                    className="friend-avatar"
-                  />
+                  <div 
+                    className="friend-card-content"
+                    onClick={() => navigate(`/profile/${friend._id}`)}
+                  >
+                    <img
+                      src={avatarUrl}
+                      alt={friend.name}
+                      className="friend-avatar"
+                    />
+                    
+                    <div className="friend-info">
+                      <h3>{friend.name}</h3>
+                      
+                      {friend.profile?.location && (
+                        <p className="friend-location">
+                          📍 {friend.profile.location}
+                        </p>
+                      )}
+                      
+                      {friend.profile?.experienceYears > 0 && (
+                        <p className="friend-experience">
+                          🐝 {friend.profile.experienceYears} rokov skúseností
+                        </p>
+                      )}
+
+                      {friend.profile?.bio && (
+                        <p className="friend-bio">{friend.profile.bio}</p>
+                      )}
+                    </div>
+
+                    <div className="friend-stats">
+                      <div className="friend-stat">
+                        <span className="stat-value">{friend.stats?.totalHives || 0}</span>
+                        <span className="stat-label">úľov</span>
+                      </div>
+                      <div className="friend-stat">
+                        <span className="stat-value">{friend.stats?.friendsCount || 0}</span>
+                        <span className="stat-label">priateľov</span>
+                      </div>
+                    </div>
+                  </div>
                   
-                  <div className="friend-info">
-                    <h3>{friend.name}</h3>
-                    
-                    {friend.profile?.location && (
-                      <p className="friend-location">
-                        📍 {friend.profile.location}
-                      </p>
-                    )}
-                    
-                    {friend.profile?.experienceYears > 0 && (
-                      <p className="friend-experience">
-                        🐝 {friend.profile.experienceYears} rokov skúseností
-                      </p>
-                    )}
-
-                    {friend.profile?.bio && (
-                      <p className="friend-bio">{friend.profile.bio}</p>
-                    )}
-                  </div>
-
-                  <div className="friend-stats">
-                    <div className="friend-stat">
-                      <span className="stat-value">{friend.stats?.totalHives || 0}</span>
-                      <span className="stat-label">úľov</span>
-                    </div>
-                    <div className="friend-stat">
-                      <span className="stat-value">{friend.stats?.friendsCount || 0}</span>
-                      <span className="stat-label">priateľov</span>
-                    </div>
-                  </div>
+                  <button
+                    className="btn-message-friend"
+                    onClick={async (e) => {
+                      e.stopPropagation()
+                      try {
+                        const response = await fetch('/api/conversations', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                          body: JSON.stringify({ userId: friend._id })
+                        })
+                        if (response.ok) {
+                          const data = await response.json()
+                          navigate(`/messages/${data.conversation.id}`)
+                        }
+                      } catch (err) {
+                        console.error('Error creating conversation:', err)
+                      }
+                    }}
+                  >
+                    💬 Napísať správu
+                  </button>
                 </div>
               )
             })}
