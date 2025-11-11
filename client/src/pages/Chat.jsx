@@ -262,6 +262,19 @@ const Chat = () => {
                 const currentUserId = user?.id || user?._id;
                 const isOwn = senderId === currentUserId;
                 
+                // Debug first message
+                if (index === 0) {
+                  console.log('First message comparison:', {
+                    senderId,
+                    currentUserId,
+                    isOwn,
+                    senderType: typeof message.sender,
+                    userType: typeof user,
+                    senderFull: message.sender,
+                    userFull: user
+                  });
+                }
+                
                 const prevSenderId = index > 0 
                   ? (messages[index - 1].sender?.id || messages[index - 1].sender?._id || messages[index - 1].sender)
                   : null;
@@ -278,6 +291,7 @@ const Chat = () => {
                   <div 
                     key={message.id || message._id} 
                     className={`message ${isOwn ? 'own' : 'other'}`}
+                    data-is-own={isOwn}
                   >
                     {!isOwn && showAvatar && (
                       <img 

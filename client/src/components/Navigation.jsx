@@ -1,13 +1,16 @@
-import { NavLink } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { handleInAppNotification } from '../utils/pushNotifications'
 import './Navigation.css'
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
   const [totalUnread, setTotalUnread] = useState(0)
   const [notificationUnread, setNotificationUnread] = useState(0)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const lastNotificationCheck = useRef(new Set())
 
   const fetchUnreadCount = async () => {
     if (!isAuthenticated) return
@@ -31,16 +34,45 @@ export default function Navigation() {
     if (!isAuthenticated) return
     
     try {
-      const response = await fetch('/api/social-notifications/unread-count', {
+      // Fetch unread count
+      const countResponse = await fetch('/api/social-notifications/unread-count', {
         credentials: 'include'
       })
       
-      if (response.ok) {
-        const data = await response.json()
-        setNotificationUnread(data.unreadCount || 0)
+      if (countResponse.ok) {
+        const countData = await countResponse.json()
+        setNotificationUnread(countData.unreadCount || 0)
+      }
+
+      // Fetch recent unread notifications for push
+      const notifResponse = await fetch('/api/social-notifications?limit=10&unreadOnly=true', {
+        credentials: 'include'
+      })
+      
+      if (notifResponse.ok) {
+        const notifData = await notifResponse.json()
+        
+        // Show push notifications for new notifications
+        notifData.notifications?.forEach(notification => {
+          const notifId = notification._id || notification.id
+          
+          // Only show push if we haven't seen this notification yet
+          if (!lastNotificationCheck.current.has(notifId)) {
+            lastNotificationCheck.current.add(notifId)
+            
+            // Show push notification
+            handleInAppNotification(notification, navigate)
+          }
+        })
+
+        // Keep only recent 50 notification IDs in memory
+        if (lastNotificationCheck.current.size > 50) {
+          const arr = Array.from(lastNotificationCheck.current)
+          lastNotificationCheck.current = new Set(arr.slice(-50))
+        }
       }
     } catch (err) {
-      console.error('Error fetching notification count:', err)
+      console.error('Error fetching notifications:', err)
     }
   }
 
