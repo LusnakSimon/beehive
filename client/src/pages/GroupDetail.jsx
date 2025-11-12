@@ -160,6 +160,15 @@ const GroupDetail = () => {
           </div>
 
           <div className="group-header-actions">
+            {group.isMember && (
+              <button
+                className="btn-chat"
+                onClick={() => navigate(`/groups/${groupId}/chat`)}
+              >
+                💬 Chat
+              </button>
+            )}
+            
             {!group.isMember && !group.isCreator && (
               <button
                 className="btn-join"
