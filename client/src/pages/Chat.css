@@ -591,6 +591,7 @@
   .chat-container {
     border-radius: 0;
     height: 100vh;
+    padding-bottom: 5rem; /* Add space for bottom navigation */
   }
 
   .chat-header {
@@ -616,6 +617,7 @@
 
   .message-input-area {
     padding: 0.75rem 1rem;
+    padding-bottom: 1rem; /* Extra space from bottom navbar */
   }
 }
 
