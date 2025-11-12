@@ -98,6 +98,44 @@ Vytvoriť sociálnu platformu pre včelárov s priateľskými spojeniami, chatom
   sender: ObjectId,
   text: String,
   images: [String],          // URLs to uploaded images
+  files: [{                  // File attachments
+    url: String,
+    name: String,
+    type: String,            // MIME type
+    size: Number             // File size in bytes
+  }],
+  type: String,              // 'text', 'image', 'file', 'system'
+  readBy: [ObjectId],
+  createdAt: Date,
+  editedAt: Date,
+  deletedAt: Date
+}
+```
+
+**Technology:**
+- WebSocket (Socket.io) for real-time messaging
+- OR polling approach (simpler for MVP)
+- Message persistence in MongoDB
+- **File uploads:** Multer + Cloudinary/AWS S3
+- **Supported formats:** Images (jpg, png, gif), Documents (pdf), Archives (zip)
+
+**API Endpoints:**
+- `GET /api/conversations` - Get all conversations
+- `POST /api/conversations` - Start new conversation
+- `GET /api/conversations/:id/messages` - Get messages
+- `POST /api/conversations/:id/messages` - Send message
+- `POST /api/conversations/:id/upload` - Upload file/image
+- `PATCH /api/messages/:id/read` - Mark as read
+- `DELETE /api/messages/:id` - Delete message
+
+**UI:**
+- `/messages` - Chat inbox (list of conversations)
+- `/messages/:conversationId` - Chat window
+- **File upload button** - Attach images/files
+- **Image preview** - Show thumbnails in chat
+- **File download** - Download attached files
+- Chat bubble in navbar (unread count)
+- Mobile-optimized chat interface// URLs to uploaded images
   type: String,              // 'text', 'image', 'system'
   readBy: [ObjectId],
   createdAt: Date,
@@ -333,6 +371,8 @@ Vytvoriť sociálnu platformu pre včelárov s priateľskými spojeniami, chatom
 - [ ] Chat inbox UI
 - [ ] Chat window UI
 - [ ] Send/receive messages
+- [ ] File upload component (images)
+- [ ] Image preview in chat
 
 ### Sprint 3 (Týždeň 5-6): Notifikácie
 - [ ] Notification model & API
