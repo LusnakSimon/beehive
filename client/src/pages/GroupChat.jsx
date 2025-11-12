@@ -195,27 +195,28 @@ function GroupChat() {
 
   return (
     <div className="group-chat-container">
-      {/* Header */}
-      <div className="group-chat-header">
-        <button className="back-button" onClick={() => navigate(`/groups/${groupId}`)}>
-          ← Späť
-        </button>
-        <div className="group-header-info">
-          {group.icon && <img src={group.icon} alt={group.name} className="group-icon-small" />}
-          <div>
-            <h2>{group.name}</h2>
-            <p>{group.memberCount} členov</p>
+      <div className="group-chat-wrapper">
+        {/* Header */}
+        <div className="group-chat-header">
+          <button className="back-button" onClick={() => navigate(`/groups/${groupId}`)}>
+            ←
+          </button>
+          <div className="group-header-info">
+            {group.icon && <img src={group.icon} alt={group.name} className="group-icon-small" />}
+            <div>
+              <h2>{group.name}</h2>
+              <p>{group.memberCount} členov</p>
+            </div>
           </div>
+          <button 
+            className="members-toggle"
+            onClick={() => setShowMembers(!showMembers)}
+          >
+            👥 Členovia
+          </button>
         </div>
-        <button 
-          className="members-toggle"
-          onClick={() => setShowMembers(!showMembers)}
-        >
-          👥 Členovia
-        </button>
-      </div>
 
-      <div className="group-chat-content">
+        <div className="group-chat-content">
         {/* Messages */}
         <div className="group-messages-container">
           {Object.keys(groupedMessages).length === 0 ? (
@@ -338,6 +339,7 @@ function GroupChat() {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 }
