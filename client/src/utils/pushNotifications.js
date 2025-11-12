@@ -45,11 +45,11 @@ export function getPushSettings() {
 }
 
 /**
- * Show a push notification
+ * Show a push notification using service worker
  * @param {string} title - Notification title
  * @param {object} options - Notification options
  */
-export function showPushNotification(title, options = {}) {
+export async function showPushNotification(title, options = {}) {
   if (!areNotificationsEnabled()) {
     console.log('Notifications not enabled');
     return null;
@@ -64,7 +64,14 @@ export function showPushNotification(title, options = {}) {
   };
 
   try {
-    return new Notification(title, defaultOptions);
+    // Use service worker if available for better notification support
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      return await registration.showNotification(title, defaultOptions);
+    } else {
+      // Fallback to regular Notification API
+      return new Notification(title, defaultOptions);
+    }
   } catch (error) {
     console.error('Error showing notification:', error);
     return null;
@@ -74,13 +81,13 @@ export function showPushNotification(title, options = {}) {
 /**
  * Show notification for friend request
  */
-export function showFriendRequestNotification(fromUser, requestId) {
+export async function showFriendRequestNotification(fromUser, requestId) {
   const settings = getPushSettings();
   if (!settings.friendRequests) {
     return null;
   }
 
-  return showPushNotification('Nová žiadosť o priateľstvo', {
+  return await showPushNotification('Nová žiadosť o priateľstvo', {
     body: `${fromUser.name} vám poslal žiadosť o priateľstvo`,
     icon: fromUser.image || '/icon-192.png',
     tag: `friend-request-${requestId}`,
@@ -95,13 +102,13 @@ export function showFriendRequestNotification(fromUser, requestId) {
 /**
  * Show notification for accepted friend request
  */
-export function showFriendRequestAcceptedNotification(fromUser) {
+export async function showFriendRequestAcceptedNotification(fromUser) {
   const settings = getPushSettings();
   if (!settings.friendRequestAccepted) {
     return null;
   }
 
-  return showPushNotification('Žiadosť bola prijatá', {
+  return await showPushNotification('Žiadosť bola prijatá', {
     body: `${fromUser.name} prijal vašu žiadosť o priateľstvo`,
     icon: fromUser.image || '/icon-192.png',
     tag: `friend-accepted-${fromUser.id}`,
@@ -116,13 +123,13 @@ export function showFriendRequestAcceptedNotification(fromUser) {
 /**
  * Show notification for new message
  */
-export function showNewMessageNotification(fromUser, messagePreview, conversationId) {
+export async function showNewMessageNotification(fromUser, messagePreview, conversationId) {
   const settings = getPushSettings();
   if (!settings.newMessages) {
     return null;
   }
 
-  return showPushNotification(`Nová správa od ${fromUser.name}`, {
+  return await showPushNotification(`Nová správa od ${fromUser.name}`, {
     body: messagePreview,
     icon: fromUser.image || '/icon-192.png',
     tag: `message-${conversationId}`,
@@ -157,7 +164,7 @@ export function setupNotificationClickHandler(navigate) {
 /**
  * Handle notification from server (in-app notification to push notification)
  */
-export function handleInAppNotification(notification, navigate) {
+export async function handleInAppNotification(notification, navigate) {
   if (!areNotificationsEnabled()) {
     return;
   }
@@ -179,30 +186,22 @@ export function handleInAppNotification(notification, navigate) {
   let pushNotif = null;
   
   if (notification.type === 'friend_request') {
-    pushNotif = showFriendRequestNotification(
+    pushNotif = await showFriendRequestNotification(
       notification.from,
       notification.content.friendRequestId
     );
   } else if (notification.type === 'friend_request_accepted') {
-    pushNotif = showFriendRequestAcceptedNotification(notification.from);
+    pushNotif = await showFriendRequestAcceptedNotification(notification.from);
   } else if (notification.type === 'new_message') {
-    pushNotif = showNewMessageNotification(
+    pushNotif = await showNewMessageNotification(
       notification.from,
       notification.content.text,
       notification.content.conversationId
     );
   }
 
-  // Handle notification click
-  if (pushNotif && navigate) {
-    pushNotif.onclick = () => {
-      window.focus();
-      if (notification.link) {
-        navigate(notification.link);
-      }
-      pushNotif.close();
-    };
-  }
+  // Note: Click handling is done by the service worker (see sw.js notificationclick event)
+  // The service worker will use notification.data.url to navigate
 
   return pushNotif;
 }

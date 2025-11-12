@@ -45,7 +45,12 @@ const Chat = () => {
         setOtherUser(data.conversation.otherUser);
       } else {
         // Fallback: find the other user manually
-        const other = data.conversation.participants.find(p => p._id.toString() !== user._id.toString());
+        // Handle both user.id and user._id
+        const currentUserId = user?.id || user?._id;
+        const other = data.conversation.participants.find(p => {
+          const participantId = p._id?.toString() || p.id?.toString();
+          return participantId !== currentUserId;
+        });
         setOtherUser(other);
       }
       
@@ -264,15 +269,20 @@ const Chat = () => {
                 
                 // Debug first message
                 if (index === 0) {
+                  console.log('=== CHAT MESSAGE DEBUG ===');
                   console.log('First message comparison:', {
                     senderId,
                     currentUserId,
                     isOwn,
+                    result: senderId === currentUserId ? 'MATCH (own)' : 'NO MATCH (other)',
                     senderType: typeof message.sender,
                     userType: typeof user,
                     senderFull: message.sender,
                     userFull: user
                   });
+                  console.log('Message element will have class:', isOwn ? 'message own' : 'message other');
+                  console.log('CSS should align:', isOwn ? 'flex-end (RIGHT)' : 'flex-start (LEFT)');
+                  console.log('========================');
                 }
                 
                 const prevSenderId = index > 0 
