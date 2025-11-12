@@ -14,9 +14,12 @@ const Chat = () => {
   const [messageText, setMessageText] = useState('');
   const [otherUser, setOtherUser] = useState(null);
   const [error, setError] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef(null);
   const pollIntervalRef = useRef(null);
   const hasMarkedRead = useRef(false);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -129,11 +132,18 @@ const Chat = () => {
   const sendMessage = async (e) => {
     e.preventDefault();
     
-    if (!messageText.trim() || sending) return;
+    // Allow sending if there's text OR files
+    if ((!messageText.trim() && selectedFiles.length === 0) || sending || uploading) return;
 
     const trimmedText = messageText.trim();
     if (trimmedText.length > 5000) {
       setError('Správa je príliš dlhá (max 5000 znakov)');
+      return;
+    }
+
+    // If files are selected, upload them first
+    if (selectedFiles.length > 0) {
+      await uploadFiles(trimmedText);
       return;
     }
 
@@ -177,6 +187,90 @@ const Chat = () => {
       setError('Nepodarilo sa odoslať správu');
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 5) {
+      setError('Môžete nahrať maximálne 5 súborov naraz');
+      return;
+    }
+
+    // Validate file size (10MB max per file)
+    const oversizedFiles = files.filter(f => f.size > 10 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      setError('Niektoré súbory presahujú limit 10MB');
+      return;
+    }
+
+    setSelectedFiles(files);
+    setError('');
+  };
+
+  const removeFile = (index) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadFiles = async (text = '') => {
+    if (selectedFiles.length === 0) return;
+
+    setUploading(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      selectedFiles.forEach(file => {
+        formData.append('files', file);
+      });
+      if (text) {
+        formData.append('text', text);
+      }
+
+      const response = await fetch(`/api/conversations/${conversationId}/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload files');
+      }
+
+      const data = await response.json();
+      
+      // Add new message to list
+      setMessages(prev => [...prev, data.message]);
+      setMessageText('');
+      setSelectedFiles([]);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      // Update conversation
+      if (conversation) {
+        setConversation({
+          ...conversation,
+          lastMessage: {
+            text: text || `📎 ${selectedFiles.length} súbor${selectedFiles.length > 1 ? 'y' : ''}`,
+            sender: user._id,
+            timestamp: new Date()
+          }
+        });
+      }
+
+      // Notify other components
+      window.dispatchEvent(new CustomEvent('messagesRead'));
+      
+      scrollToBottom();
+    } catch (err) {
+      console.error('Error uploading files:', err);
+      setError(err.message || 'Nepodarilo sa nahrať súbory');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -348,7 +442,41 @@ const Chat = () => {
                     
                     <div className="message-content">
                       <div className="message-bubble">
-                        <p className="message-text">{message.text}</p>
+                        {message.text && <p className="message-text">{message.text}</p>}
+                        
+                        {/* Display files */}
+                        {message.files && message.files.length > 0 && (
+                          <div className="message-files">
+                            {message.files.map((file, fileIndex) => (
+                              <div key={fileIndex} className="message-file">
+                                {file.type.startsWith('image/') ? (
+                                  <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                    <img 
+                                      src={file.thumbnailUrl || file.url} 
+                                      alt={file.name}
+                                      className="message-image"
+                                    />
+                                  </a>
+                                ) : (
+                                  <a 
+                                    href={file.url} 
+                                    download={file.name}
+                                    className="file-download"
+                                  >
+                                    <span className="file-icon">
+                                      {file.type === 'application/pdf' ? '📄' : '📎'}
+                                    </span>
+                                    <div className="file-info">
+                                      <span className="file-name">{file.name}</span>
+                                      <span className="file-size">{(file.size / 1024).toFixed(1)} KB</span>
+                                    </div>
+                                    <span className="download-icon">⬇️</span>
+                                  </a>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       {showTimestamp && (
                         <span className="message-time">{formatMessageTime(message.createdAt)}</span>
@@ -374,16 +502,67 @@ const Chat = () => {
         {/* Input */}
         <form className="message-input-area" onSubmit={sendMessage}>
           {error && <div className="input-error">⚠️ {error}</div>}
+          
+          {/* File preview */}
+          {selectedFiles.length > 0 && (
+            <div className="selected-files-preview">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="selected-file">
+                  {file.type.startsWith('image/') ? (
+                    <img 
+                      src={URL.createObjectURL(file)} 
+                      alt={file.name}
+                      className="preview-image"
+                    />
+                  ) : (
+                    <div className="preview-file">
+                      <span className="preview-icon">
+                        {file.type === 'application/pdf' ? '📄' : '📎'}
+                      </span>
+                      <span className="preview-name">{file.name}</span>
+                    </div>
+                  )}
+                  <button 
+                    type="button"
+                    className="remove-file"
+                    onClick={() => removeFile(index)}
+                    title="Odstrániť súbor"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          
           <div className="message-input-wrapper">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*,.pdf,.zip"
+              multiple
+              style={{ display: 'none' }}
+            />
+            <button
+              type="button"
+              className="attach-button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading || sending}
+              title="Priložiť súbory"
+            >
+              📎
+            </button>
+            
             <div className="message-input-container">
               <textarea
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Napíšte správu..."
+                placeholder={selectedFiles.length > 0 ? "Pridať popis..." : "Napíšte správu..."}
                 className="message-input"
                 rows="1"
                 maxLength="5000"
-                disabled={sending}
+                disabled={sending || uploading}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -400,10 +579,10 @@ const Chat = () => {
             <button 
               type="submit" 
               className="send-button"
-              disabled={!messageText.trim() || sending}
-              title={sending ? 'Odosielam...' : 'Odoslať správu'}
+              disabled={(!messageText.trim() && selectedFiles.length === 0) || sending || uploading}
+              title={uploading ? 'Nahrávam...' : sending ? 'Odosielam...' : 'Odoslať správu'}
             >
-              {sending ? '⏳' : '➤'}
+              {uploading ? '⏳' : sending ? '⏳' : '➤'}
             </button>
           </div>
         </form>
