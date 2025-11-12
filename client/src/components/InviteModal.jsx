@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './InviteModal.css';
 
 const InviteModal = ({ show, onClose, groupId }) => {
@@ -17,21 +16,31 @@ const InviteModal = ({ show, onClose, groupId }) => {
   const fetchFriends = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      
       // Get all friends
-      const friendsRes = await axios.get('http://localhost:5000/api/users/friends', {
-        headers: { Authorization: `Bearer ${token}` }
+      const friendsRes = await fetch('/api/users/friends', {
+        credentials: 'include'
       });
+
+      if (!friendsRes.ok) {
+        throw new Error('Failed to fetch friends');
+      }
+
+      const friendsData = await friendsRes.json();
 
       // Get current group members
-      const groupRes = await axios.get(`http://localhost:5000/api/groups/${groupId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const groupRes = await fetch(`/api/groups/${groupId}`, {
+        credentials: 'include'
       });
 
+      if (!groupRes.ok) {
+        throw new Error('Failed to fetch group');
+      }
+
+      const groupData = await groupRes.json();
+
       // Filter out users already in the group
-      const memberIds = groupRes.data.members.map(m => m._id);
-      const availableFriends = friendsRes.data.filter(f => !memberIds.includes(f._id));
+      const memberIds = groupData.members.map(m => m._id);
+      const availableFriends = friendsData.filter(f => !memberIds.includes(f._id));
 
       setFriends(availableFriends);
     } catch (error) {
@@ -45,12 +54,19 @@ const InviteModal = ({ show, onClose, groupId }) => {
     setInviting({ ...inviting, [userId]: true });
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `http://localhost:5000/api/groups/${groupId}/members`,
-        { userId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await fetch(`/api/groups/${groupId}/members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to invite user');
+      }
 
       // Remove invited friend from list
       setFriends(friends.filter(f => f._id !== userId));
@@ -58,7 +74,7 @@ const InviteModal = ({ show, onClose, groupId }) => {
       alert('Člen bol úspešne pridaný do skupiny!');
     } catch (error) {
       console.error('Error inviting user:', error);
-      alert(error.response?.data?.error || 'Nepodarilo sa pridať člena');
+      alert(error.message || 'Nepodarilo sa pridať člena');
     } finally {
       setInviting({ ...inviting, [userId]: false });
     }
