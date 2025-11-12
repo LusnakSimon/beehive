@@ -194,8 +194,9 @@
 }
 
 .no-groups p {
-  color: #6b7280;
+  color: #1f2937;
   margin: 0 0 1.5rem;
+  font-size: 1rem;
 }
 
 .btn-primary {
@@ -302,7 +303,7 @@
 
 .group-description {
   font-size: 0.9375rem;
-  color: #6b7280;
+  color: #1f2937;
   margin: 0 0 1rem;
   line-height: 1.5;
   display: -webkit-box;
@@ -322,10 +323,11 @@
 
 .group-meta-item {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #1f2937;
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  font-weight: 500;
 }
 
 .group-actions {
