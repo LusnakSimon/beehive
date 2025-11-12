@@ -177,13 +177,13 @@
 }
 
 .message.own {
-  justify-content: flex-end;
-  flex-direction: row-reverse;
+  justify-content: flex-end !important;
+  flex-direction: row-reverse !important;
 }
 
 .message.other {
-  justify-content: flex-start;
-  flex-direction: row;
+  justify-content: flex-start !important;
+  flex-direction: row !important;
 }
 
 .message-avatar {
