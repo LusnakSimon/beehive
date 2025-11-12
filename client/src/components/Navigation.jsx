@@ -90,6 +90,8 @@ export default function Navigation() {
       // Listen for custom event when messages are read
       const handleMessagesRead = () => {
         fetchUnreadCount()
+        // Also update notification count since message notifications should be marked as read
+        fetchNotificationCount()
       }
       const handleNotificationsRead = () => {
         fetchNotificationCount()

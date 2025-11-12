@@ -76,8 +76,12 @@ const Chat = () => {
         const existingIds = new Set(prevMessages.map(m => m.id || m._id));
         const uniqueNewMessages = newMessages.filter(m => !existingIds.has(m.id || m._id));
         
-        // If we have new messages, merge them
+        // If we have new messages, merge them and mark as read
         if (uniqueNewMessages.length > 0) {
+          // Mark as read when new messages arrive (if page is visible)
+          if (!document.hidden) {
+            markAsRead();
+          }
           return [...prevMessages, ...uniqueNewMessages];
         }
         
@@ -95,7 +99,7 @@ const Chat = () => {
       // Scroll to bottom on first load or new messages
       setTimeout(scrollToBottom, 100);
 
-      // Mark messages as read (only once on mount)
+      // Mark messages as read on initial load
       if (!hasMarkedRead.current) {
         hasMarkedRead.current = true;
         markAsRead();
@@ -185,10 +189,22 @@ const Chat = () => {
     // Poll for new messages every 5 seconds
     pollIntervalRef.current = setInterval(fetchMessages, 5000);
 
+    // Handle page visibility change - mark as read when user returns to tab
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // User returned to tab, mark messages as read
+        markAsRead();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
       }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
     };
   }, [conversationId, user]);
 
