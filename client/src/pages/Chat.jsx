@@ -443,43 +443,46 @@ const Chat = () => {
                     {!isOwn && !showAvatar && <div className="message-avatar-spacer" />}
                     
                     <div className="message-content">
-                      <div className="message-bubble">
-                        {message.text && <p className="message-text">{message.text}</p>}
-                        
-                        {/* Display files */}
-                        {message.files && message.files.length > 0 && (
-                          <div className="message-files">
-                            {message.files.map((file, fileIndex) => (
-                              <div key={fileIndex} className="message-file">
-                                {file.type.startsWith('image/') ? (
-                                  <a href={file.url} target="_blank" rel="noopener noreferrer">
-                                    <img 
-                                      src={file.thumbnailUrl || file.url} 
-                                      alt={file.name}
-                                      className="message-image"
-                                    />
-                                  </a>
-                                ) : (
-                                  <a 
-                                    href={file.url} 
-                                    download={file.name}
-                                    className="file-download"
-                                  >
-                                    <span className="file-icon">
-                                      {file.type === 'application/pdf' ? '📄' : '📎'}
-                                    </span>
-                                    <div className="file-info">
-                                      <span className="file-name">{file.name}</span>
-                                      <span className="file-size">{(file.size / 1024).toFixed(1)} KB</span>
-                                    </div>
-                                    <span className="download-icon">⬇️</span>
-                                  </a>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+                      {/* Only show bubble if there's text or files */}
+                      {(message.text || (message.files && message.files.length > 0)) && (
+                        <div className="message-bubble">
+                          {message.text && <p className="message-text">{message.text}</p>}
+                          
+                          {/* Display files */}
+                          {message.files && message.files.length > 0 && (
+                            <div className="message-files">
+                              {message.files.map((file, fileIndex) => (
+                                <div key={fileIndex} className="message-file">
+                                  {file.type.startsWith('image/') ? (
+                                    <a href={file.url} target="_blank" rel="noopener noreferrer">
+                                      <img 
+                                        src={file.thumbnailUrl || file.url} 
+                                        alt={file.name}
+                                        className="message-image"
+                                      />
+                                    </a>
+                                  ) : (
+                                    <a 
+                                      href={file.url} 
+                                      download={file.name}
+                                      className="file-download"
+                                    >
+                                      <span className="file-icon">
+                                        {file.type === 'application/pdf' ? '📄' : '📎'}
+                                      </span>
+                                      <div className="file-info">
+                                        <span className="file-name">{file.name}</span>
+                                        <span className="file-size">{(file.size / 1024).toFixed(1)} KB</span>
+                                      </div>
+                                      <span className="download-icon">⬇️</span>
+                                    </a>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {showTimestamp && (
                         <span className="message-time">{formatMessageTime(message.createdAt)}</span>
                       )}
