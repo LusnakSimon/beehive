@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import InviteModal from '../components/InviteModal';
+import EditGroupModal from '../components/EditGroupModal';
 import './GroupDetail.css';
 
 const GroupDetail = () => {
@@ -340,6 +341,17 @@ const GroupDetail = () => {
         show={showInviteModal}
         onClose={() => setShowInviteModal(false)}
         groupId={groupId}
+      />
+
+      {/* Edit Group Modal */}
+      <EditGroupModal
+        show={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        group={group}
+        onSuccess={(updatedGroup) => {
+          setGroup(updatedGroup);
+          fetchGroup(); // Refresh group data
+        }}
       />
     </div>
   );
