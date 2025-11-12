@@ -205,7 +205,6 @@ const Chat = () => {
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-    };
   }, [conversationId, user]);
 
   const formatTime = (timestamp) => {
