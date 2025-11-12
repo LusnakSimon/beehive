@@ -69,7 +69,27 @@ const Chat = () => {
       if (!response.ok) throw new Error('Failed to fetch messages');
 
       const data = await response.json();
-      setMessages(data.messages);
+      
+      // Deduplicate messages by ID (in case we added one optimistically)
+      setMessages(prevMessages => {
+        const newMessages = data.messages;
+        const existingIds = new Set(prevMessages.map(m => m.id || m._id));
+        const uniqueNewMessages = newMessages.filter(m => !existingIds.has(m.id || m._id));
+        
+        // If we have new messages, merge them
+        if (uniqueNewMessages.length > 0) {
+          return [...prevMessages, ...uniqueNewMessages];
+        }
+        
+        // If message count is different, replace entirely (might have deletions)
+        if (newMessages.length !== prevMessages.length) {
+          return newMessages;
+        }
+        
+        // Otherwise keep existing messages to avoid re-render
+        return prevMessages;
+      });
+      
       setLoading(false);
       
       // Scroll to bottom on first load or new messages
@@ -267,18 +287,17 @@ const Chat = () => {
                 const currentUserId = user?.id || user?._id;
                 const isOwn = senderId === currentUserId;
                 
-                // Debug first message
-                if (index === 0) {
-                  console.log('=== CHAT MESSAGE DEBUG ===');
-                  console.log('First message comparison:', {
+                // Debug first message AND any message from current user
+                if (index === 0 || isOwn) {
+                  console.log(`=== MESSAGE ${index} DEBUG ===`);
+                  console.log('Message comparison:', {
+                    messageIndex: index,
                     senderId,
                     currentUserId,
                     isOwn,
                     result: senderId === currentUserId ? 'MATCH (own)' : 'NO MATCH (other)',
-                    senderType: typeof message.sender,
-                    userType: typeof user,
-                    senderFull: message.sender,
-                    userFull: user
+                    senderName: message.sender?.name || 'unknown',
+                    messageText: message.text?.substring(0, 30) + '...'
                   });
                   console.log('Message element will have class:', isOwn ? 'message own' : 'message other');
                   console.log('CSS should align:', isOwn ? 'flex-end (RIGHT)' : 'flex-start (LEFT)');
