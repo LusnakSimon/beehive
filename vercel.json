@@ -51,6 +51,14 @@
       "destination": "/api/social-notifications/[...path]"
     },
     {
+      "source": "/api/groups",
+      "destination": "/api/groups/[...path]"
+    },
+    {
+      "source": "/api/groups/:path*",
+      "destination": "/api/groups/[...path]"
+    },
+    {
       "source": "/:path((?!api).*)",
       "destination": "/index.html"
     }

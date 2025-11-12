@@ -138,6 +138,10 @@ export default function Navigation() {
               <span>Správy</span>
               {totalUnread > 0 && <span className="nav-badge">{totalUnread}</span>}
             </NavLink>
+            <NavLink to="/groups" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <span className="icon">👥</span>
+              <span>Skupiny</span>
+            </NavLink>
             <NavLink to="/notifications" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <span className="icon">🔔</span>
               <span>Upozornenia</span>

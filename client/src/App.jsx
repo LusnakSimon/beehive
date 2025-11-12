@@ -16,6 +16,8 @@ import Friends from './pages/Friends'
 import UserSearch from './pages/UserSearch'
 import Messages from './pages/Messages'
 import Chat from './pages/Chat'
+import Groups from './pages/Groups'
+import CreateGroup from './pages/CreateGroup'
 import Notifications from './pages/Notifications'
 import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
@@ -69,6 +71,8 @@ function App() {
               <Route path="/friends/requests" element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/messages/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
+              <Route path="/groups/create" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
