@@ -200,11 +200,11 @@
 
 @media (max-width: 768px) {
   .messages-page {
-    padding: 1rem 0 8rem;
+    padding: 1rem 0.5rem 8rem;
   }
 
   .messages-header {
-    padding: 0 1rem;
+    padding: 0 0.5rem;
   }
 
   .messages-header h1 {
@@ -212,7 +212,7 @@
   }
 
   .conversations-list {
-    border-radius: 0;
+    border-radius: 12px;
   }
 
   .conversation-item {

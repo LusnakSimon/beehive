@@ -1,7 +1,13 @@
 .create-group-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  padding: 7rem 1rem 2rem;
+  background: var(--bg-secondary, #f3f4f6);
+  padding: 2rem 1.5rem 8rem;
+}
+
+@media (min-width: 769px) {
+  .create-group-page {
+    padding-top: 6.5rem;
+  }
 }
 
 .create-group-container {
@@ -297,12 +303,11 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .create-group-page {
-    padding: 1rem;
-    padding-top: 5rem;
+    padding: 1rem 0.5rem 8rem;
   }
 
   .create-group-container {
-    padding: 1.5rem;
+    padding: 1rem;
     border-radius: 12px;
   }
 

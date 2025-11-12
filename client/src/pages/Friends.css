@@ -234,7 +234,7 @@
 
 @media (max-width: 768px) {
   .friends-page {
-    padding: 1rem 0.75rem 8rem;
+    padding: 1rem 0.5rem 8rem;
   }
 
   .friends-header {
@@ -254,6 +254,29 @@
 
   .friends-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .friend-card {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .friend-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .friend-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .friend-stats {
+    gap: 1.5rem;
+  }
+
+  .friend-stat .stat-value {
+    font-size: 1.25rem;
   }
 
   .empty-actions {

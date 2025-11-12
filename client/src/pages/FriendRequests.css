@@ -4,6 +4,12 @@
   padding: 2rem 1.5rem 8rem;
 }
 
+@media (min-width: 769px) {
+  .friend-requests-page {
+    padding-top: 6.5rem;
+  }
+}
+
 .friend-requests-container {
   max-width: 800px;
   margin: 0 auto;
@@ -214,12 +220,12 @@
 
 @media (max-width: 768px) {
   .friend-requests-page {
-    padding: 1rem 0.75rem 8rem;
+    padding: 1rem 0.5rem 8rem;
   }
 
   .friend-requests-container h1 {
     font-size: 1.5rem;
-    padding: 0 0.5rem;
+    padding: 0;
   }
 
   .tabs {

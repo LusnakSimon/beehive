@@ -1,8 +1,15 @@
 .notifications-page {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem 1rem;
-  padding-bottom: 5rem;
+  padding: 2rem 1.5rem 8rem;
+  min-height: 100vh;
+  background: var(--bg-secondary, #f3f4f6);
+}
+
+@media (min-width: 769px) {
+  .notifications-page {
+    padding-top: 6.5rem;
+  }
 }
 
 .notifications-header {
@@ -233,6 +240,10 @@
 }
 
 @media (max-width: 767px) {
+  .notifications-page {
+    padding: 1rem 0.5rem 8rem;
+  }
+
   .notifications-header {
     flex-direction: column;
     align-items: flex-start;

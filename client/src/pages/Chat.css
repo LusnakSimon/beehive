@@ -253,9 +253,10 @@
 }
 
 .message.own .message-bubble {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   color: white;
   border-bottom-right-radius: 6px;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
 }
 
 .message.other .message-bubble {
@@ -337,7 +338,7 @@
   width: 100%;
   padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
-  border-radius: 20px;
+  border-radius: 22px;
   font-size: 0.9375rem;
   font-family: inherit;
   resize: none;
@@ -347,6 +348,7 @@
   transition: all 0.2s;
   background: white;
   color: #1f2937;
+  line-height: 1.4;
 }
 
 .message-input::placeholder {
@@ -460,7 +462,7 @@
   border: none;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: 22px;
   font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -587,7 +589,7 @@
   border: none;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: 22px;
   font-size: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;

@@ -166,7 +166,7 @@ export default function Navigation() {
               <span>Domov</span>
             </NavLink>
             <NavLink to="/history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">�</span>
+              <span className="icon">📜</span>
               <span>História</span>
             </NavLink>
             <NavLink to="/messages" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>

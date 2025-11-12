@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import InviteModal from '../components/InviteModal';
 import './GroupDetail.css';
 
 const GroupDetail = () => {
@@ -332,15 +333,14 @@ const GroupDetail = () => {
             </div>
           </div>
         )}
-
-        {/* Admin Section - TODO: Add admin features in Phase 2.2 */}
-        {group.isAdmin && (
-          <div className="group-section admin-section">
-            <h2>Administrácia</h2>
-            <p className="admin-placeholder">🚧 Admin funkcie budú dostupné v ďalšej verzii (Phase 2.2)</p>
-          </div>
-        )}
       </div>
+
+      {/* Invite Modal */}
+      <InviteModal 
+        show={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        groupId={groupId}
+      />
     </div>
   );
 };

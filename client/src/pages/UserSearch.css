@@ -317,7 +317,7 @@
 
 @media (max-width: 768px) {
   .search-page {
-    padding: 1rem 0.75rem 8rem;
+    padding: 1rem 0.5rem 8rem;
   }
 
   .search-container h1 {
@@ -328,12 +328,17 @@
     flex-direction: column;
   }
 
+  .search-form {
+    padding: 1rem;
+  }
+
   .btn-search {
     width: 100%;
   }
 
   .users-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .range-inputs {
