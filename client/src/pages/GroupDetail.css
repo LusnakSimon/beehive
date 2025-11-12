@@ -434,3 +434,80 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Remove Member Button */
+.remove-member-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.member-card:hover .remove-member-btn {
+  opacity: 1;
+}
+
+.remove-member-btn:hover {
+  background: #dc2626;
+}
+
+/* Admin Section Enhancements */
+.admin-section {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 4px solid #f59e0b;
+}
+
+.admin-section h2 {
+  color: #92400e;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.admin-btn {
+  padding: 0.875rem 1.5rem;
+  background: white;
+  border: 2px solid #f59e0b;
+  color: #92400e;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-btn:hover {
+  background: #f59e0b;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.admin-btn.share-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #3b82f6;
+  color: white;
+}
+
+.admin-btn.share-btn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #2563eb;
+}

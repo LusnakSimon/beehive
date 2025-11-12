@@ -11,6 +11,8 @@ const GroupDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const fetchGroup = async () => {
     try {
@@ -92,6 +94,38 @@ const GroupDetail = () => {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const handleRemoveMember = async (userId) => {
+    if (!confirm('Naozaj chcete odstrániť tohto člena zo skupiny?')) return;
+
+    try {
+      const response = await fetch(`/api/groups/${groupId}/members/${userId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to remove member');
+      }
+
+      alert('Člen bol odstránený zo skupiny');
+      fetchGroup();
+    } catch (err) {
+      console.error('Error removing member:', err);
+      alert(err.message || 'Nepodarilo sa odstrániť člena');
+    }
+  };
+
+  const handleCopyInviteLink = () => {
+    const inviteLink = `${window.location.origin}/groups/${groupId}`;
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      alert('Invite link bol skopírovaný do schránky!');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      alert('Nepodarilo sa skopírovať link');
+    });
   };
 
   if (!user) {
@@ -249,12 +283,53 @@ const GroupDetail = () => {
                       <span className="member-role">Moderátor</span>
                     )}
                   </div>
+                  {group.isAdmin && member.user.id !== group.creator.id && (
+                    <button 
+                      className="remove-member-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveMember(member.user.id);
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
             {group.members.length > 12 && (
               <p className="members-more">+ ďalších {group.members.length - 12} členov</p>
             )}
+          </div>
+        )}
+
+        {/* Admin Panel */}
+        {group.isAdmin && (
+          <div className="group-section admin-section">
+            <h2>⚙️ Administrácia</h2>
+            
+            <div className="admin-actions">
+              <button 
+                className="admin-btn"
+                onClick={() => setShowInviteModal(true)}
+              >
+                ➕ Pozvať členov
+              </button>
+              
+              <button 
+                className="admin-btn"
+                onClick={() => setShowEditModal(true)}
+              >
+                ✏️ Upraviť skupinu
+              </button>
+              
+              <button 
+                className="admin-btn share-btn"
+                onClick={handleCopyInviteLink}
+              >
+                🔗 Kopírovať invite link
+              </button>
+            </div>
           </div>
         )}
 
