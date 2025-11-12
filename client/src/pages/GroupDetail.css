@@ -13,7 +13,7 @@
 .group-detail-container {
   max-width: 1000px;
   margin: 0 auto;
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   overflow: hidden;
@@ -67,7 +67,7 @@
   align-items: flex-start;
   padding: 2rem;
   gap: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   flex-wrap: wrap;
 }
 
@@ -183,7 +183,7 @@
 }
 
 .btn-leave {
-  background: white;
+  background: var(--card-bg);
   color: #ef4444;
   border: 2px solid #ef4444;
   padding: 0.875rem 1.5rem;
@@ -218,7 +218,7 @@
 /* Sections */
 .group-section {
   padding: 2rem;
-  border-bottom: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .group-section:last-child {
@@ -274,7 +274,7 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .member-card:hover {
@@ -288,7 +288,7 @@
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .member-info {
@@ -333,7 +333,7 @@
 .group-detail-error {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin: 2rem auto;
@@ -491,7 +491,7 @@
 
 .admin-btn {
   padding: 0.875rem 1.5rem;
-  background: white;
+  background: var(--card-bg);
   border: 2px solid #f59e0b;
   color: #92400e;
   border-radius: 10px;

@@ -67,15 +67,15 @@
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
 }
 
 .empty-icon {
@@ -87,11 +87,11 @@
 .empty-state h3 {
   font-size: 1.5rem;
   margin: 1rem 0 0.5rem;
-  color: #1a1a1a;
+  color: var(--text);
 }
 
 .empty-state p {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1rem;
   max-width: 400px;
   margin: 0 auto 2rem;
@@ -115,10 +115,10 @@
 }
 
 .conversations-list {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow-md);
   margin: 0 1rem;
 }
 
@@ -129,7 +129,7 @@
   padding: 1rem 1.5rem;
   cursor: pointer;
   transition: all 0.2s;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   position: relative;
 }
 
@@ -138,7 +138,7 @@
 }
 
 .conversation-item:hover {
-  background: #f9fafb;
+  background: var(--bg-tertiary);
 }
 
 .conversation-item.unread {
@@ -191,7 +191,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
-  color: #1a1a1a;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

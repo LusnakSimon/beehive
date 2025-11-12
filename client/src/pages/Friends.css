@@ -91,11 +91,12 @@
   width: 100%;
   padding: 1rem 3rem 1rem 1rem;
   border-radius: 16px;
-  border: 2px solid #e5e7eb;
+  border: 2px solid var(--border);
   font-size: 1rem;
-  background: white;
+  background: var(--card-bg);
+  color: var(--text);
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--card-shadow);
 }
 
 .search-input:focus {
@@ -111,20 +112,21 @@
   transform: translateY(-50%);
   font-size: 1.25rem;
   pointer-events: none;
+  color: var(--text-secondary);
 }
 
 .loading {
   text-align: center;
   padding: 3rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
 }
 
 .empty-icon {
@@ -136,11 +138,11 @@
 .empty-state h3 {
   font-size: 1.5rem;
   margin: 1rem 0 0.5rem;
-  color: #1a1a1a;
+  color: var(--text);
 }
 
 .empty-state p {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1rem;
   max-width: 500px;
   margin: 0 auto 2rem;
@@ -191,10 +193,10 @@
 }
 
 .friend-card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
@@ -204,7 +206,7 @@
 
 .friend-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-shadow-hover);
 }
 
 .friend-avatar {
@@ -225,19 +227,19 @@
 .friend-info h3 {
   font-size: 1.25rem;
   margin: 0 0 0.5rem 0;
-  color: #1a1a1a;
+  color: var(--text);
 }
 
 .friend-location,
 .friend-experience {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0.25rem 0;
 }
 
 .friend-bio {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0.75rem 0 0;
   line-height: 1.5;
   display: -webkit-box;
@@ -252,7 +254,7 @@
   display: flex;
   gap: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border);
   width: 100%;
   justify-content: center;
 }
@@ -271,7 +273,7 @@
 
 .friend-stat .stat-label {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
