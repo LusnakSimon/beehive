@@ -160,6 +160,8 @@
 
 .message {
   display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
   gap: 0.5rem;
   align-items: flex-end;
   animation: messageSlideIn 0.2s ease-out;
