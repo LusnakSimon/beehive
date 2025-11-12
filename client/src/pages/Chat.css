@@ -179,12 +179,12 @@
 }
 
 .message.own {
-  justify-content: flex-end !important;
+  align-self: flex-end !important;
   flex-direction: row-reverse !important;
 }
 
 .message.other {
-  justify-content: flex-start !important;
+  align-self: flex-start !important;
   flex-direction: row !important;
 }
 
