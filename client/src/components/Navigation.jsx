@@ -165,9 +165,9 @@ export default function Navigation() {
               <span className="icon">🏠</span>
               <span>Domov</span>
             </NavLink>
-            <NavLink to="/inspection" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">📋</span>
-              <span>Kontrola</span>
+            <NavLink to="/history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <span className="icon">�</span>
+              <span>História</span>
             </NavLink>
             <NavLink to="/messages" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <span className="icon">💬</span>
@@ -189,11 +189,11 @@ export default function Navigation() {
               </button>
               {showMobileMenu && (
                 <div className="mobile-dropdown">
-                  <NavLink to="/map" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                  <NavLink to="/history" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">📊</span>
-                    <span>História</span>
+                  <NavLink to="/inspection" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
+                    <span className="icon">📋</span>
+                    <span>Kontrola</span>
                   </NavLink>
+                  <NavLink to="/map" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">🗺️</span>
                     <span>Mapa</span>
                   </NavLink>
@@ -239,7 +239,7 @@ export default function Navigation() {
               <span className="nav-username">{user?.name}</span>
             </NavLink>
             <button onClick={logout} className="nav-logout-btn">
-              <span className="icon">�</span>
+              <span className="icon">🚪</span>
               <span>Odhlásiť</span>
             </button>
           </div>
