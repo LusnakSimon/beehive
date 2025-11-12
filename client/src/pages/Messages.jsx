@@ -95,20 +95,40 @@ export default function Messages() {
         ) : (
           <div className="conversations-list">
             {conversations.map((conv) => {
-              const avatarUrl = conv.otherUser?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.otherUser?.name || 'User')}&background=fbbf24&color=fff&size=128`
+              // Check if it's a group conversation
+              const isGroup = conv.type === 'group' && conv.group;
+              
+              const displayName = isGroup 
+                ? conv.group.name 
+                : (conv.otherUser?.name || 'Neznámy používateľ');
+              
+              const avatarUrl = isGroup
+                ? (conv.group.icon || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.group.name)}&background=10b981&color=fff&size=128`)
+                : (conv.otherUser?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.otherUser?.name || 'User')}&background=fbbf24&color=fff&size=128`);
+
+              const handleClick = () => {
+                if (isGroup) {
+                  navigate(`/groups/${conv.group._id}/chat`);
+                } else {
+                  navigate(`/messages/${conv.id}`);
+                }
+              };
 
               return (
                 <div
                   key={conv.id}
                   className={`conversation-item ${conv.unreadCount > 0 ? 'unread' : ''}`}
-                  onClick={() => navigate(`/messages/${conv.id}`)}
+                  onClick={handleClick}
                 >
                   <div className="conversation-avatar-wrapper">
                     <img
                       src={avatarUrl}
-                      alt={conv.otherUser?.name}
+                      alt={displayName}
                       className="conversation-avatar"
                     />
+                    {isGroup && (
+                      <span className="group-badge">👥</span>
+                    )}
                     {conv.unreadCount > 0 && (
                       <span className="unread-badge">{conv.unreadCount}</span>
                     )}
@@ -117,7 +137,10 @@ export default function Messages() {
                   <div className="conversation-content">
                     <div className="conversation-top">
                       <h3 className="conversation-name">
-                        {conv.otherUser?.name || 'Neznámy používateľ'}
+                        {displayName}
+                        {isGroup && (
+                          <span className="member-count"> · {conv.group.memberCount} členov</span>
+                        )}
                       </h3>
                       <span className="conversation-time">
                         {formatTime(conv.lastMessage?.timestamp || conv.updatedAt)}

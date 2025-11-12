@@ -106,6 +106,8 @@ export default function Notifications() {
         navigate(`/profile/${notification.from._id}`)
       } else if (notification.type === 'new_message' && notification.content.conversationId) {
         navigate(`/chat/${notification.content.conversationId}`)
+      } else if (notification.type === 'group_message' && notification.content.groupId) {
+        navigate(`/groups/${notification.content.groupId}/chat`)
       }
     }
   }
