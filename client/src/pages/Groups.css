@@ -1,12 +1,14 @@
 .groups-page {
   min-height: 100vh;
   background: var(--bg-secondary, #f3f4f6);
-  padding: 2rem 1.5rem 8rem;
+  padding: 0;
+  padding-bottom: 8rem;
 }
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   .groups-page {
-    padding-top: 6.5rem;
+    padding-top: 4.5rem;
+    padding-bottom: 2rem;
   }
 }
 
@@ -17,43 +19,73 @@
 
 /* Header */
 .groups-header {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  padding: 2rem 1.5rem 1.5rem;
+  margin: 0 1rem 1.5rem;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
   gap: 1rem;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 50;
+}
+
+@media (max-width: 768px) {
+  .groups-header {
+    margin: 1rem 1rem 1.5rem;
+    padding-top: 1.5rem;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 .groups-header-content h1 {
-  font-size: 2rem;
-  color: #1f2937;
-  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  color: white;
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .groups-header-content h1 {
+    font-size: 1.5rem;
+  }
 }
 
 .groups-header-content p {
-  font-size: 1rem;
-  color: #6b7280;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
   margin: 0;
 }
 
 .btn-create-group {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
-  border: none;
-  padding: 0.875rem 1.5rem;
-  border-radius: 10px;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  backdrop-filter: blur(10px);
   white-space: nowrap;
 }
 
 .btn-create-group:hover {
+  background: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+@media (max-width: 768px) {
+  .btn-create-group {
+    width: 100%;
+  }
 }
 
 /* Filters */
