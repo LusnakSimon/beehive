@@ -198,7 +198,7 @@ export default function Navigation() {
                     <span>Mapa</span>
                   </NavLink>
                   <NavLink to="/groups" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">�</span>
+                    <span className="icon">👥</span>
                     <span>Skupiny</span>
                   </NavLink>
                   <NavLink to="/search" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>

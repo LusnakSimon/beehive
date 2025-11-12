@@ -436,6 +436,8 @@ const Chat = () => {
                         src={otherUser.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}&background=fbbf24&color=fff&size=128`} 
                         alt={otherUser.name}
                         className="message-avatar"
+                        onClick={() => navigate(`/profile/${otherUser.id || otherUser._id}`)}
+                        style={{ cursor: 'pointer' }}
                       />
                     )}
                     {!isOwn && !showAvatar && <div className="message-avatar-spacer" />}
