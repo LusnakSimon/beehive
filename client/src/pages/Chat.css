@@ -253,10 +253,15 @@
 }
 
 .message.own .message-bubble {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
   border-bottom-right-radius: 6px;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+}
+
+/* Ensure text is always visible */
+.message.own .message-bubble * {
+  color: white !important;
 }
 
 .message.other .message-bubble {
@@ -272,13 +277,26 @@
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
+  background: transparent !important;
 }
 
 .message.own .message-text {
+  color: white !important;
+  background: transparent !important;
+}
+
+/* Fix text selection visibility in own messages */
+.message.own .message-text::selection {
+  background: rgba(255, 255, 255, 0.3);
   color: white;
 }
 
 .message.other .message-text {
+  color: #1f2937;
+}
+
+.message.other .message-text::selection {
+  background: rgba(59, 130, 246, 0.2);
   color: #1f2937;
 }
 

@@ -585,16 +585,6 @@ const char* appKey = "${lorawanConfig.appKey}";`;
             max="300"
           />
         </div>
-
-        <div className="form-group checkbox">
-          <input
-            id="notifications"
-            type="checkbox"
-            checked={settings.notifications}
-            onChange={(e) => handleChange('notifications', e.target.checked)}
-          />
-          <label htmlFor="notifications">Povoliť upozornenia</label>
-        </div>
       </div>
 
       <div className="settings-section">
