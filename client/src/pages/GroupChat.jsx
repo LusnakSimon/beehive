@@ -234,7 +234,11 @@ function GroupChat() {
                   {formatDate(msgs[0].createdAt)}
                 </div>
                 {msgs.map((message) => {
-                  const isOwn = message.sender.id === currentUser?._id || message.sender._id === currentUser?._id;
+                  // Normalize IDs for comparison
+                  const senderId = message.sender?._id?.toString() || message.sender?.id?.toString();
+                  const userId = currentUser?._id?.toString() || currentUser?.id?.toString();
+                  const isOwn = senderId === userId;
+                  
                   return (
                     <div key={message.id} className={`group-message ${isOwn ? 'own' : 'other'}`}>
                       {!isOwn && (
@@ -300,8 +304,17 @@ function GroupChat() {
                 </button>
               </div>
               <div className="members-list">
-                {group.members.map((member) => (
-                  <div key={member.user.id} className="member-item">
+                {group.members.map((member) => {
+                  const memberId = member.user?._id?.toString() || member.user?.id?.toString();
+                  const creatorId = group.creator?._id?.toString() || group.creator?.id?.toString();
+                  const isCreator = memberId === creatorId;
+                  const isAdmin = group.admins?.some(a => {
+                    const adminId = a._id?.toString() || a.id?.toString();
+                    return adminId === memberId;
+                  });
+                  
+                  return (
+                    <div key={member.user.id} className="member-item">
                     <img 
                       src={member.user.image || '/default-avatar.png'} 
                       alt={member.user.name}
@@ -309,15 +322,16 @@ function GroupChat() {
                     />
                     <div className="member-info">
                       <span className="member-name">{member.user.name}</span>
-                      {group.creator.id === member.user.id && (
+                      {isCreator && (
                         <span className="member-badge">Zakladateľ</span>
                       )}
-                      {group.admins.some(a => a.id === member.user.id) && (
+                      {isAdmin && !isCreator && (
                         <span className="member-badge admin">Admin</span>
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </>

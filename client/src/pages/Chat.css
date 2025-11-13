@@ -309,22 +309,7 @@
 }
 
 .message.other .message-text {
-  color: var(--text);
-}
-
-/* Fix text selection visibility in own messages */
-.message.own .message-text::selection {
-  background: rgba(255, 255, 255, 0.3);
-  color: white;
-}
-
-.message.other .message-text {
-  color: #1f2937;
-}
-
-.message.other .message-text::selection {
-  background: rgba(59, 130, 246, 0.2);
-  color: #1f2937;
+  color: var(--text) !important;
 }
 
 .message-time {
