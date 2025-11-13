@@ -27,6 +27,38 @@
       "destination": "/api/inspection/[...path]"
     },
     {
+      "source": "/api/friends",
+      "destination": "/api/friends/[...path]"
+    },
+    {
+      "source": "/api/friends/:path*",
+      "destination": "/api/friends/[...path]"
+    },
+    {
+      "source": "/api/conversations",
+      "destination": "/api/conversations/[...path]"
+    },
+    {
+      "source": "/api/conversations/:path*",
+      "destination": "/api/conversations/[...path]"
+    },
+    {
+      "source": "/api/social-notifications",
+      "destination": "/api/social-notifications/[...path]"
+    },
+    {
+      "source": "/api/social-notifications/:path*",
+      "destination": "/api/social-notifications/[...path]"
+    },
+    {
+      "source": "/api/groups",
+      "destination": "/api/groups/[...path]"
+    },
+    {
+      "source": "/api/groups/:path*",
+      "destination": "/api/groups/[...path]"
+    },
+    {
       "source": "/:path((?!api).*)",
       "destination": "/index.html"
     }

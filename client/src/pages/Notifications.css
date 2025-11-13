@@ -1,0 +1,322 @@
+.notifications-page {
+  min-height: 100vh;
+  background: var(--bg-secondary, #f3f4f6);
+  padding: 0;
+  padding-bottom: 8rem;
+}
+
+@media (min-width: 768px) {
+  .notifications-page {
+    padding-top: 4.5rem;
+    padding-bottom: 2rem;
+  }
+}
+
+.notifications-header {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  padding: 2rem 1.5rem 1.5rem;
+  margin: 0 1rem 1.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  z-index: 50;
+}
+
+@media (max-width: 768px) {
+  .notifications-header {
+    margin: 1rem 1rem 1.5rem;
+    padding-top: 1.5rem;
+    border-radius: 20px;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.notifications-header h1 {
+  font-size: 1.75rem;
+  color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .notifications-header h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    flex: 1;
+  }
+}
+
+.mark-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+}
+
+.mark-all-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .mark-all-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.mark-all-btn .icon {
+  font-size: 1.1rem;
+}
+
+.notifications-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  margin-bottom: 1.5rem;
+}
+
+.error-message .icon {
+  font-size: 1.5rem;
+}
+
+.notifications-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.notifications-empty h2 {
+  font-size: 1.5rem;
+  color: var(--text);
+  margin: 0.5rem 0;
+}
+
+.notifications-empty p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 400px;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.notification-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.notification-item.unread {
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid var(--primary);
+}
+
+.notification-item.read {
+  opacity: 0.8;
+}
+
+.notification-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.notification-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+  flex-shrink: 0;
+}
+
+.notification-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-message {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.notification-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  align-items: flex-start;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+.mark-read-btn:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+@media (min-width: 768px) {
+  .notifications-page {
+    padding-top: 6rem;
+    padding-bottom: 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .notifications-page {
+    padding: 1rem 0.5rem 8rem;
+  }
+
+  .notifications-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notifications-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .mark-all-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .notification-item {
+    padding: 0.875rem;
+  }
+
+  .notification-icon {
+    font-size: 1.5rem;
+  }
+
+  .notification-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .notification-message {
+    font-size: 0.9rem;
+  }
+
+  .action-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+}

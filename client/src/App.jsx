@@ -10,10 +10,22 @@ import Admin from './pages/Admin'
 import Inspection from './pages/Inspection'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
+import ProfileEdit from './pages/ProfileEdit'
+import FriendRequests from './pages/FriendRequests'
+import Friends from './pages/Friends'
+import UserSearch from './pages/UserSearch'
+import Messages from './pages/Messages'
+import Chat from './pages/Chat'
+import Groups from './pages/Groups'
+import CreateGroup from './pages/CreateGroup'
+import GroupDetail from './pages/GroupDetail'
+import GroupChat from './pages/GroupChat'
+import Notifications from './pages/Notifications'
 import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
 import VarroaReminder from './components/VarroaReminder'
+import './colors.css'
 import './App.css'
 
 function App() {
@@ -52,8 +64,20 @@ function App() {
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/inspection" element={<ProtectedRoute><Inspection /></ProtectedRoute>} />
               <Route path="/map" element={<ProtectedRoute><HiveMap /></ProtectedRoute>} />
+              <Route path="/search" element={<ProtectedRoute><UserSearch /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
+              <Route path="/profile/:userId" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+              <Route path="/friends/requests" element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
+              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/messages/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
+              <Route path="/groups/create" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
+              <Route path="/groups/:groupId" element={<ProtectedRoute><GroupDetail /></ProtectedRoute>} />
+              <Route path="/groups/:groupId/chat" element={<ProtectedRoute><GroupChat /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
           </main>

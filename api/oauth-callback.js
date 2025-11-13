@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
 let cached = global.mongoose;
@@ -44,7 +44,7 @@ async function generateUniqueHiveId(User) {
   return `HIVE-${String(nextNumber).padStart(3, '0')}`;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const { code, error } = req.query;
 
   if (error) {
@@ -117,9 +117,20 @@ export default async function handler(req, res) {
 
       const user = await userResponse.json();
       
+      // Get user's primary email if not public
+      let email = user.email;
+      if (!email) {
+        const emailsResponse = await fetch('https://api.github.com/user/emails', {
+          headers: { Authorization: `Bearer ${tokens.access_token}` },
+        });
+        const emails = await emailsResponse.json();
+        const primaryEmail = emails.find(e => e.primary);
+        email = primaryEmail ? primaryEmail.email : emails[0]?.email;
+      }
+      
       userInfo = {
         id: user.id.toString(),
-        email: user.email,
+        email: email,
         name: user.name || user.login,
         picture: user.avatar_url,
         provider: 'github',
