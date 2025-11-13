@@ -222,12 +222,16 @@
   text-align: center;
   width: 100%;
   margin-bottom: 1rem;
+  overflow: hidden;
 }
 
 .friend-info h3 {
   font-size: 1.25rem;
   margin: 0 0 0.5rem 0;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .friend-location,

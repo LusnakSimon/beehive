@@ -1,6 +1,6 @@
 .groups-page {
   min-height: 100vh;
-  background: var(--bg-secondary, #f3f4f6);
+  background: var(--bg-primary);
   padding: 0;
   padding-bottom: 8rem;
 }
@@ -423,6 +423,9 @@
   font-weight: 600;
   text-align: center;
   min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Mobile Responsive */

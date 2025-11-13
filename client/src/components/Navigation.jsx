@@ -133,6 +133,10 @@ export default function Navigation() {
               <span className="icon">🔍</span>
               <span>Hľadať</span>
             </NavLink>
+            <NavLink to="/friends" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <span className="icon">👫</span>
+              <span>Priatelia</span>
+            </NavLink>
             <NavLink to="/messages" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <span className="icon">💬</span>
               <span>Správy</span>
