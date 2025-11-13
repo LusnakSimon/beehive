@@ -150,7 +150,6 @@ export default function Messages() {
                     <div className="conversation-preview">
                       {conv.lastMessage ? (
                         <p className={conv.unreadCount > 0 ? 'unread-text' : ''}>
-                          {conv.lastMessage.sender?.toString() === currentUser?.id ? 'Vy: ' : ''}
                           {conv.lastMessage.text}
                         </p>
                       ) : (
