@@ -227,7 +227,7 @@
 .conversation-preview p {
   margin: 0;
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -235,7 +235,7 @@
 
 .conversation-preview .unread-text {
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text);
 }
 
 .conversation-preview .no-messages {

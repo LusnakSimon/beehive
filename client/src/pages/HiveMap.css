@@ -28,11 +28,11 @@
 
 .stat {
   padding: 8px 16px;
-  background: #fff;
-  border: 2px solid #e5e7eb;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
   border-radius: 8px;
   font-size: 14px;
-  color: #000;
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -45,9 +45,9 @@
 .map-controls {
   margin-bottom: 15px;
   padding: 15px;
-  background: #fff;
-  color: #000;
-  border: 2px solid #e5e7eb;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 2px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -59,7 +59,7 @@
   cursor: pointer;
   user-select: none;
   font-weight: 600;
-  color: #000;
+  color: var(--text);
 }
 
 .toggle-control input[type="checkbox"] {
@@ -78,8 +78,8 @@
 .no-hives-map {
   text-align: center;
   padding: 60px 20px;
-  background: white;
-  border: 2px solid #e5e7eb;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
@@ -87,12 +87,12 @@
 .no-hives-map p:first-child {
   font-size: 20px;
   margin-bottom: 10px;
-  color: #000;
+  color: var(--text);
   font-weight: 700;
 }
 
 .no-hives-map p:last-child {
-  color: #374151;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -108,14 +108,14 @@
 
 .hive-popup h3 {
   margin: 0 0 8px 0;
-  color: #1a1a1a;
+  color: var(--text);
   font-size: 16px;
   font-weight: 600;
 }
 
 .hive-id {
   font-size: 12px;
-  color: #333;
+  color: var(--text-secondary);
   margin: 4px 0;
   font-family: monospace;
   font-weight: 500;
@@ -130,14 +130,14 @@
 .hive-visibility {
   margin: 8px 0;
   font-size: 13px;
-  color: #333;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .distance-panel {
-  background: #fff;
-  color: #000;
-  border: 2px solid #e5e7eb;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 2px solid var(--border);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -146,7 +146,7 @@
 
 .distance-panel h3 {
   margin: 0 0 15px 0;
-  color: #000;
+  color: var(--text);
   font-size: 18px;
   font-weight: 700;
 }
@@ -164,16 +164,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: #f9fafb;
-  color: #000;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-primary);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 8px;
   transition: background 0.2s;
 }
 
 .distance-item:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
+  background: var(--card-bg);
+  border-color: var(--border);
 }
 
 .distance-hive {
@@ -188,7 +188,7 @@
 }
 
 .distance-hive > div {
-  color: #000;
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -203,14 +203,14 @@
 
 .distance-value {
   font-weight: 700;
-  color: #000;
+  color: var(--text);
   font-size: 15px;
 }
 
 .map-legend {
-  background: #fff;
-  color: #000;
-  border: 2px solid #e5e7eb;
+  background: var(--card-bg);
+  color: var(--text);
+  border: 2px solid var(--border);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -218,7 +218,7 @@
 
 .map-legend h4 {
   margin: 0 0 15px 0;
-  color: #000;
+  color: var(--text);
   font-weight: 700;
 }
 
@@ -227,7 +227,7 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 10px;
-  color: #000;
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -310,7 +310,7 @@
 }
 
 .map-error {
-  background: #fff;
+  background: var(--card-bg);
   border: 2px solid #ef4444;
   border-radius: 12px;
   padding: 30px;
@@ -328,7 +328,7 @@
 }
 
 .map-error > p {
-  color: #000;
+  color: var(--text);
   font-size: 16px;
   margin: 0 0 20px 0;
   font-weight: 600;
@@ -350,7 +350,7 @@
 
 .error-hint p {
   margin: 0 0 10px 0;
-  color: #000;
+  color: var(--text);
   font-weight: 700;
   font-size: 14px;
 }
@@ -358,7 +358,7 @@
 .error-hint ul {
   margin: 0;
   padding-left: 20px;
-  color: #000;
+  color: var(--text);
   font-weight: 500;
   line-height: 1.8;
 }

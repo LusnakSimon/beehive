@@ -86,8 +86,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
   border-radius: 8px;
   transition: all 0.2s;
 }
@@ -104,7 +104,7 @@
 .social-setting-info label {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text);
   display: block;
   margin-bottom: 0.25rem;
   cursor: pointer;
@@ -112,7 +112,7 @@
 
 .social-setting-desc {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
