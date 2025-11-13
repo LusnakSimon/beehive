@@ -19,6 +19,7 @@ function GroupChat() {
 
   useEffect(() => {
     fetchGroupAndMessages();
+    markGroupAsRead(); // Mark messages as read when opening
     const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
   }, [groupId]);
@@ -61,16 +62,26 @@ function GroupChat() {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch(`/api/groups/${groupId}/messages?limit=100`, {
+      const res = await fetch(`/api/groups/${groupId}/messages?limit=100`, {
         credentials: 'include'
       });
-
-      if (response.ok) {
-        const data = await response.json();
+      if (res.ok) {
+        const data = await res.json();
         setMessages(data.messages);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
+    }
+  };
+
+  const markGroupAsRead = async () => {
+    try {
+      await fetch(`/api/groups/${groupId}/read`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Error marking group as read:', error);
     }
   };
 

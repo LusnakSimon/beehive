@@ -142,11 +142,11 @@
 }
 
 .conversation-item.unread {
-  background: #fef3c7;
+  background: rgba(251, 191, 36, 0.15);
 }
 
 .conversation-item.unread:hover {
-  background: #fde68a;
+  background: rgba(251, 191, 36, 0.25);
 }
 
 .conversation-avatar-wrapper {
@@ -219,7 +219,7 @@
 
 .conversation-time {
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-secondary);
   white-space: nowrap;
   margin-left: 1rem;
 }
@@ -240,13 +240,14 @@
 
 .conversation-preview .no-messages {
   font-style: italic;
-  color: #999;
+  color: var(--text-secondary);
 }
 
 .conversation-arrow {
   font-size: 1.5rem;
-  color: #ccc;
+  color: var(--text-secondary);
   flex-shrink: 0;
+  opacity: 0.5;
 }
 
 @media (max-width: 768px) {
