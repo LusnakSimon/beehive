@@ -148,7 +148,7 @@
 @media (max-width: 768px) {
   .messages-area {
     padding: 0.75rem;
-    padding-bottom: calc(3.5rem + 50px); /* Znížené - bolo príliš veľa miesta */
+    padding-bottom: calc(3.5rem + 70px); /* Input field + navbar s extra spacingom */
   }
 }
 
