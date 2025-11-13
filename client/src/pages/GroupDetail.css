@@ -255,7 +255,7 @@
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
-  border: 1px solid #dbeafe;
+  border: 1px solid var(--border);
 }
 
 /* Members */
@@ -474,12 +474,12 @@
 
 /* Admin Section Enhancements */
 .admin-section {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  background: var(--bg-tertiary);
   border-left: 4px solid #f59e0b;
 }
 
 .admin-section h2 {
-  color: #92400e;
+  color: var(--text);
 }
 
 .admin-actions {
@@ -492,8 +492,8 @@
 .admin-btn {
   padding: 0.875rem 1.5rem;
   background: var(--card-bg);
-  border: 2px solid #f59e0b;
-  color: #92400e;
+  border: 2px solid var(--border);
+  color: var(--text);
   border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
@@ -502,10 +502,9 @@
 }
 
 .admin-btn:hover {
-  background: #f59e0b;
-  color: white;
+  background: var(--bg-tertiary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
 .admin-btn.share-btn {
