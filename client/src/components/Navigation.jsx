@@ -242,9 +242,8 @@ export default function Navigation() {
               {user?.image && <img src={user.image} alt={user.name} className="nav-avatar" />}
               <span className="nav-username">{user?.name}</span>
             </NavLink>
-            <button onClick={logout} className="nav-logout-btn">
+            <button onClick={logout} className="nav-logout-btn" title="Odhlásiť sa">
               <span className="icon">🚪</span>
-              <span>Odhlásiť sa</span>
             </button>
           </div>
         </>

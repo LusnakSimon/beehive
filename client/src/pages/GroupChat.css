@@ -139,7 +139,7 @@
 @media (max-width: 768px) {
   .group-messages-container {
     padding: 0.75rem;
-    padding-bottom: 150px; /* Zvýšené pre input field na mobile */
+    padding-bottom: 180px; /* Zvýšené pre input field na mobile - poslednú správu musí byť vidno */
   }
 }
 

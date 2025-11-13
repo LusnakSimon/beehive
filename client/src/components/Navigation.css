@@ -185,8 +185,9 @@
 .nav-logout-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.875rem;
+  padding: 0.5rem;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 12px;
@@ -197,6 +198,7 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
+  min-width: 40px;
 }
 
 .nav-logout-btn:hover {
@@ -207,7 +209,7 @@
 }
 
 .nav-logout-btn .icon {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 /* Mobile user dropdown */
