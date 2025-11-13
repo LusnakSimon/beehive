@@ -111,7 +111,7 @@
 
 .group-header-info h1 {
   font-size: 2rem;
-  color: #1f2937;
+  color: var(--text);
   margin: 0 0 0.75rem;
   font-weight: 700;
 }
@@ -124,7 +124,7 @@
 
 .meta-item {
   font-size: 0.9375rem;
-  color: #1f2937;
+  color: var(--text);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -196,7 +196,7 @@
 }
 
 .btn-leave:hover:not(:disabled) {
-  background: #fef2f2;
+  background: var(--bg-tertiary);
 }
 
 .btn-leave:disabled {
@@ -227,7 +227,7 @@
 
 .group-section h2 {
   font-size: 1.5rem;
-  color: #1f2937;
+  color: var(--text);
   margin: 0 0 1rem;
   font-weight: 700;
 }
@@ -235,7 +235,7 @@
 .group-description-text,
 .group-rules-text {
   font-size: 1rem;
-  color: #1f2937;
+  color: var(--text);
   line-height: 1.6;
   white-space: pre-wrap;
   margin: 0;
@@ -249,8 +249,8 @@
 }
 
 .tag {
-  background: #eff6ff;
-  color: #1f2937;
+  background: var(--bg-tertiary);
+  color: var(--text);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -270,7 +270,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: #f9fafb;
+  background: var(--bg-tertiary);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
@@ -278,7 +278,7 @@
 }
 
 .member-card:hover {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
@@ -299,7 +299,7 @@
 .member-name {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -307,24 +307,24 @@
 
 .member-role {
   font-size: 0.8125rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .members-more {
   margin-top: 1rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.9375rem;
 }
 
 /* Admin Section */
 .admin-section {
-  background: #fef9f3;
+  background: var(--bg-tertiary);
 }
 
 .admin-placeholder {
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 1rem;
   margin: 0;
 }
@@ -375,7 +375,7 @@
   text-align: center;
   padding: 4rem 2rem;
   font-size: 1.125rem;
-  color: #1f2937;
+  color: var(--text);
 }
 
 /* Mobile Responsive */
