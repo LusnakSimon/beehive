@@ -218,7 +218,10 @@ export const NotificationProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Error checking conditions:', error);
-    }  const value = {
+    }
+  };
+
+  const value = {
     permission,
     isSupported,
     settings,
