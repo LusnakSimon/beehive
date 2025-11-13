@@ -331,17 +331,18 @@
 }
 
 .file-image {
-  max-width: 280px;
-  max-height: 280px;
-  border-radius: 0.5rem;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s;
+  object-fit: cover;
 }
 
 @media (max-width: 768px) {
   .file-image {
-    max-width: 220px;
-    max-height: 220px;
+    max-width: 180px;
+    max-height: 180px;
   }
 }
 

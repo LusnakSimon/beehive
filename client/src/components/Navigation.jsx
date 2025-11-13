@@ -244,7 +244,7 @@ export default function Navigation() {
             </NavLink>
             <button onClick={logout} className="nav-logout-btn">
               <span className="icon">🚪</span>
-              <span>Odhlásiť</span>
+              <span>Odhlásiť sa</span>
             </button>
           </div>
         </>
