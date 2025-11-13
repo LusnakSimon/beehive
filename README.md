@@ -54,6 +54,17 @@ Inteligentný IoT systém na monitorovanie včelieho úľa | Bachelor's Thesis P
 - **Low Power** - Months on battery
 - **ESP32 Configuration** - Easy setup wizard in settings
 
+### 💬 Social & Community Features ✨ NEW
+- **Friend System** - Connect with fellow beekeepers
+- **Direct Messaging** - 1-on-1 private chat conversations
+- **Group Chats** - Create and join beekeeper communities
+- **Admin Controls** - Manage group members (promote/demote/kick)
+- **Notification System** - Real-time alerts for messages and friend requests
+- **User Profiles** - View profiles with hive collections and experience
+- **Dark Mode** - Complete app-wide dark mode support
+- **Responsive Chat** - Optimized for both mobile and desktop
+- **Avatar Navigation** - Click avatars to visit user profiles
+
 ---
 
 ## 🛠️ Tech Stack
