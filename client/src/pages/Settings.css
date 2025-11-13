@@ -229,6 +229,9 @@
   transition: all 0.2s;
   touch-action: manipulation;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-delete-hive:hover:not(:disabled) {
@@ -435,7 +438,7 @@
 .coordinate-input label {
   display: block;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 4px;
   font-weight: 500;
 }
@@ -443,25 +446,27 @@
 .coordinate-input input[type="number"] {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 14px;
+  background: var(--surface);
+  color: var(--text);
   transition: border-color 0.2s;
 }
 
 .coordinate-input input[type="number"]:focus {
   outline: none;
-  border-color: #fbbf24;
+  border-color: var(--primary);
 }
 
 .form-group select {
   width: 100%;
   padding: 12px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border);
   border-radius: 8px;
   font-size: 16px;
-  background: white;
-  color: #000;
+  background: var(--surface);
+  color: var(--text);
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s;
@@ -469,13 +474,13 @@
 
 .form-group select:focus {
   outline: none;
-  border-color: #fbbf24;
+  border-color: var(--primary);
 }
 
 .form-group select option {
-  color: #000;
+  color: var(--text);
   font-weight: 600;
-  background: white;
+  background: var(--surface);
 }
 }
 
@@ -487,7 +492,7 @@
 
 /* LoRaWAN Configuration */
 .section-description {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 16px;
   margin-bottom: 20px;
   line-height: 1.5;
@@ -502,7 +507,7 @@
   display: block;
   margin-top: 6px;
   font-size: 12px;
-  color: #888;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
