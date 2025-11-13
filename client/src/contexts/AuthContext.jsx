@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (provider) => {
     try {
       // Redirect to OAuth provider
-      window.location.href = `/api/oauth-${provider}`;
+      window.location.href = `/api/auth/${provider}`;
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(false);
       
       // Call logout endpoint to clear cookie
-      await fetch('/api/logout', {
+      await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include'
       });
