@@ -290,29 +290,37 @@ function GroupChat() {
 
         {/* Members Sidebar */}
         {showMembers && (
-          <div className="members-sidebar">
-            <h3>Členovia ({group.members.length})</h3>
-            <div className="members-list">
-              {group.members.map((member) => (
-                <div key={member.user.id} className="member-item">
-                  <img 
-                    src={member.user.image || '/default-avatar.png'} 
-                    alt={member.user.name}
-                    className="member-avatar"
-                  />
-                  <div className="member-info">
-                    <span className="member-name">{member.user.name}</span>
-                    {group.creator.id === member.user.id && (
-                      <span className="member-badge">Zakladateľ</span>
-                    )}
-                    {group.admins.some(a => a.id === member.user.id) && (
-                      <span className="member-badge admin">Admin</span>
-                    )}
+          <>
+            <div className="members-overlay" onClick={() => setShowMembers(false)} />
+            <div className="members-sidebar">
+              <div className="members-header">
+                <h3>Členovia ({group.members.length})</h3>
+                <button className="close-members-btn" onClick={() => setShowMembers(false)}>
+                  ✕
+                </button>
+              </div>
+              <div className="members-list">
+                {group.members.map((member) => (
+                  <div key={member.user.id} className="member-item">
+                    <img 
+                      src={member.user.image || '/default-avatar.png'} 
+                      alt={member.user.name}
+                      className="member-avatar"
+                    />
+                    <div className="member-info">
+                      <span className="member-name">{member.user.name}</span>
+                      {group.creator.id === member.user.id && (
+                        <span className="member-badge">Zakladateľ</span>
+                      )}
+                      {group.admins.some(a => a.id === member.user.id) && (
+                        <span className="member-badge admin">Admin</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 

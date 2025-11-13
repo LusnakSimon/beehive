@@ -23,8 +23,8 @@ const EditGroupModal = ({ show, onClose, group, onSuccess }) => {
         name: group.name || '',
         description: group.description || '',
         category: group.category || 'general',
-        tags: group.tags?.join(', ') || '',
-        rules: group.rules?.join('\n') || '',
+        tags: Array.isArray(group.tags) ? group.tags.join(', ') : (group.tags || ''),
+        rules: Array.isArray(group.rules) ? group.rules.join('\n') : (group.rules || ''),
         coverImage: null,
         icon: null
       });
