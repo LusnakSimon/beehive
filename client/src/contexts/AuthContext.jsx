@@ -77,20 +77,17 @@ export const AuthProvider = ({ children }) => {
       // Set logout flag to prevent checkSession from running
       setIsLoggingOut(true);
       
-      // Clear state first
-      setUser(null);
-      setIsAuthenticated(false);
-      
       // Call logout endpoint to clear cookie
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include'
       });
       
-      // Wait a bit for cookie to clear
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Clear state
+      setUser(null);
+      setIsAuthenticated(false);
       
-      // Redirect to login
+      // Redirect to login (will unmount component, so no need to reset flag)
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);

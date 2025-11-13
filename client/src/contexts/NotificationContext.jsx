@@ -169,33 +169,56 @@ export const NotificationProvider = ({ children }) => {
 
   const checkConditions = async (hiveId) => {
     if (!settings.enabled || permission !== 'granted') return;
-
+    
     try {
-      const response = await fetch(`/api/notifications/check?hiveId=${hiveId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(settings)
-      });
-
-      const result = await response.json();
+      // Fetch latest sensor data
+      const response = await fetch(`/api/sensor/latest?hiveId=${hiveId}`);
+      if (!response.ok) return;
       
-      if (result.alerts && result.alerts.length > 0) {
-        for (const alert of result.alerts) {
-          await sendNotification(alert.title, {
-            body: alert.body,
-            tag: alert.tag,
-            data: { url: '/', hiveId }
-          });
-        }
+      const data = await response.json();
+      const alerts = [];
+
+      // Check temperature
+      if (data.temperature < settings.tempMin) {
+        alerts.push({
+          title: '🌡️ Nízka teplota!',
+          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (min: ${settings.tempMin}°C)`,
+          tag: `temp-low-${hiveId}`
+        });
+      } else if (data.temperature > settings.tempMax) {
+        alerts.push({
+          title: '🌡️ Vysoká teplota!',
+          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (max: ${settings.tempMax}°C)`,
+          tag: `temp-high-${hiveId}`
+        });
+      }
+
+      // Check humidity
+      if (data.humidity < settings.humidityMin) {
+        alerts.push({
+          title: '💧 Nízka vlhkosť!',
+          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (min: ${settings.humidityMin}%)`,
+          tag: `humidity-low-${hiveId}`
+        });
+      } else if (data.humidity > settings.humidityMax) {
+        alerts.push({
+          title: '💧 Vysoká vlhkosť!',
+          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (max: ${settings.humidityMax}%)`,
+          tag: `humidity-high-${hiveId}`
+        });
+      }
+
+      // Send notifications
+      for (const alert of alerts) {
+        await sendNotification(alert.title, {
+          body: alert.body,
+          tag: alert.tag,
+          data: { url: '/', hiveId }
+        });
       }
     } catch (error) {
       console.error('Error checking conditions:', error);
-    }
-  };
-
-  const value = {
+    }  const value = {
     permission,
     isSupported,
     settings,
