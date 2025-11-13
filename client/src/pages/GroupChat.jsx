@@ -230,37 +230,55 @@ function GroupChat() {
                 <div className="date-separator">
                   {formatDate(msgs[0].createdAt)}
                 </div>
-                {msgs.map((message) => (
-                  <div key={message.id} className="group-message">
-                    <img 
-                      src={message.sender.image || '/default-avatar.png'} 
-                      alt={message.sender.name}
-                      className="message-avatar"
-                    />
-                    <div className="message-content">
-                      <div className="message-header">
-                        <span className="sender-name">{message.sender.name}</span>
-                        <span className="message-time">{formatTime(message.createdAt)}</span>
+                {msgs.map((message) => {
+                  const isOwn = message.sender.id === currentUser?._id || message.sender._id === currentUser?._id;
+                  return (
+                    <div key={message.id} className={`group-message ${isOwn ? 'own' : 'other'}`}>
+                      {!isOwn && (
+                        <img 
+                          src={message.sender.image || '/default-avatar.png'} 
+                          alt={message.sender.name}
+                          className="message-avatar"
+                        />
+                      )}
+                      <div className="message-content">
+                        {!isOwn && (
+                          <div className="message-header">
+                            <span className="sender-name">{message.sender.name}</span>
+                          </div>
+                        )}
+                        {message.text && (
+                          <div className="message-bubble">
+                            <p className="message-text">{message.text}</p>
+                            <span className="message-time">{formatTime(message.createdAt)}</span>
+                          </div>
+                        )}
+                        {message.files && message.files.length > 0 && (
+                          <div className="message-files">
+                            {message.files.map((file, idx) => (
+                              <div key={idx} className="file-item">
+                                {file.type.startsWith('image/') ? (
+                                  <img src={file.url} alt={file.name} className="file-image" />
+                                ) : (
+                                  <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-link">
+                                    📎 {file.name}
+                                  </a>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      {message.text && <p className="message-text">{message.text}</p>}
-                      {message.files && message.files.length > 0 && (
-                        <div className="message-files">
-                          {message.files.map((file, idx) => (
-                            <div key={idx} className="file-item">
-                              {file.type.startsWith('image/') ? (
-                                <img src={file.url} alt={file.name} className="file-image" />
-                              ) : (
-                                <a href={file.url} target="_blank" rel="noopener noreferrer" className="file-link">
-                                  📎 {file.name}
-                                </a>
-                              )}
-                            </div>
-                          ))}
-                        </div>
+                      {isOwn && (
+                        <img 
+                          src={currentUser?.image || '/default-avatar.png'} 
+                          alt={currentUser?.name}
+                          className="message-avatar"
+                        />
                       )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ))
           )}
