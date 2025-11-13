@@ -7,7 +7,7 @@ import VarroaReminder from '../components/VarroaReminder'
 import './Dashboard.css'
 
 export default function Dashboard() {
-  const { selectedHive } = useHive()
+  const { selectedHive, getCurrentHive } = useHive()
   const { checkConditions } = useNotifications()
   const [data, setData] = useState({
     temperature: 0,
@@ -21,6 +21,21 @@ export default function Dashboard() {
   const [history24h, setHistory24h] = useState([])
   const [loading, setLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
+
+  // Helper function to format time ago
+  const formatTimeAgo = (date) => {
+    const now = new Date()
+    const diffMs = now - date
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Práve teraz'
+    if (diffMins < 60) return `Pred ${diffMins} min`
+    if (diffHours < 24) return `Pred ${diffHours} hod`
+    if (diffDays === 1) return 'Včera'
+    return `Pred ${diffDays} dňami`
+  }
 
   useEffect(() => {
     if (!selectedHive) {
@@ -179,6 +194,74 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Device Status Card - LoRaWAN Info */}
+      {getCurrentHive()?.device?.type === 'esp32-lorawan' && (
+        <div className="device-status-card">
+          <div className="device-header">
+            <span className="device-icon">📶</span>
+            <span className="device-title">LoRaWAN Zariadenie</span>
+          </div>
+          <div className="device-info-grid">
+            <div className="device-info-item">
+              <span className="device-info-label">DevEUI:</span>
+              <span className="device-info-value" style={{ fontFamily: 'monospace', fontSize: '0.9em' }}>
+                {getCurrentHive()?.device?.devEUI || 'Nezadané'}
+              </span>
+            </div>
+            {getCurrentHive()?.device?.lastSeen && (
+              <div className="device-info-item">
+                <span className="device-info-label">Naposledy videné:</span>
+                <span className="device-info-value">
+                  {formatTimeAgo(new Date(getCurrentHive().device.lastSeen))}
+                </span>
+              </div>
+            )}
+            {getCurrentHive()?.device?.signalStrength !== null && getCurrentHive()?.device?.signalStrength !== undefined && (
+              <div className="device-info-item">
+                <span className="device-info-label">Signál (RSSI):</span>
+                <span className="device-info-value" style={{ 
+                  color: getCurrentHive().device.signalStrength > -100 ? '#10b981' : '#f59e0b' 
+                }}>
+                  {getCurrentHive().device.signalStrength} dBm
+                </span>
+              </div>
+            )}
+            {getCurrentHive()?.device?.batteryLevel !== null && getCurrentHive()?.device?.batteryLevel !== undefined && (
+              <div className="device-info-item">
+                <span className="device-info-label">Batéria:</span>
+                <span className="device-info-value" style={{ 
+                  color: getCurrentHive().device.batteryLevel > 30 ? '#10b981' : getCurrentHive().device.batteryLevel > 15 ? '#f59e0b' : '#ef4444'
+                }}>
+                  🔋 {getCurrentHive().device.batteryLevel}%
+                </span>
+              </div>
+            )}
+          </div>
+          {!getCurrentHive()?.device?.lastSeen && (
+            <div className="device-waiting">
+              ⏳ Čakám na prvé dáta z LoRaWAN siete...
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Other device types info */}
+      {getCurrentHive()?.device?.type && getCurrentHive().device.type !== 'esp32-lorawan' && (
+        <div className="device-status-card">
+          <div className="device-header">
+            <span className="device-icon">
+              {getCurrentHive().device.type === 'esp32-wifi' ? '📡' : 
+               getCurrentHive().device.type === 'manual' ? '📝' : '📲'}
+            </span>
+            <span className="device-title">
+              {getCurrentHive().device.type === 'esp32-wifi' ? 'ESP32 WiFi' :
+               getCurrentHive().device.type === 'manual' ? 'Manuálne zadávanie' : 
+               getCurrentHive().device.type === 'esp32-lte' ? 'ESP32 LTE' : 'Neznámy typ'}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="metrics-grid-modern">
         {/* Temperature Card */}

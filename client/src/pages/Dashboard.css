@@ -543,3 +543,91 @@
     font-size: 0.95rem;
   }
 }
+
+/* Device Status Card - LoRaWAN Info */
+.device-status-card {
+  background: var(--surface);
+  padding: 1.25rem;
+  border-radius: 16px;
+  margin: 0 1rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3b82f6;
+  animation: slideIn 0.4s ease-out;
+}
+
+.device-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.device-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.device-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.device-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.875rem;
+}
+
+.device-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.device-info-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.device-info-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.device-waiting {
+  margin-top: 0.875rem;
+  padding: 0.875rem;
+  background: rgba(251, 191, 36, 0.08);
+  border-radius: 10px;
+  font-size: 0.875rem;
+  color: #f59e0b;
+  text-align: center;
+  font-weight: 500;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+@media (max-width: 768px) {
+  .device-status-card {
+    padding: 1rem;
+    margin: 0 0.75rem 1rem;
+  }
+  
+  .device-info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .device-info-item {
+    padding: 0.625rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+  }
+}
