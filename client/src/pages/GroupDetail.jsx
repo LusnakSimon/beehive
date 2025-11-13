@@ -120,6 +120,54 @@ const GroupDetail = () => {
     }
   };
 
+  const handlePromoteAdmin = async (userId) => {
+    if (!confirm('Povýšiť tohto člena na administrátora?')) return;
+
+    try {
+      const response = await fetch(`/api/groups/${groupId}/promote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ userId })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to promote member');
+      }
+
+      alert('Člen bol povýšený na administrátora');
+      fetchGroup();
+    } catch (err) {
+      console.error('Error promoting member:', err);
+      alert(err.message || 'Nepodarilo sa povýšiť člena');
+    }
+  };
+
+  const handleDemoteAdmin = async (userId) => {
+    if (!confirm('Odobrať administrátorské práva tomuto členovi?')) return;
+
+    try {
+      const response = await fetch(`/api/groups/${groupId}/demote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ userId })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to demote admin');
+      }
+
+      alert('Administrátorské práva boli odobraté');
+      fetchGroup();
+    } catch (err) {
+      console.error('Error demoting admin:', err);
+      alert(err.message || 'Nepodarilo sa odobrať administrátorské práva');
+    }
+  };
+
   const handleCopyInviteLink = () => {
     const inviteLink = `${window.location.origin}/groups/${groupId}`;
     navigator.clipboard.writeText(inviteLink).then(() => {
@@ -268,36 +316,101 @@ const GroupDetail = () => {
           <div className="group-section">
             <h2>Členovia ({group.members.length})</h2>
             <div className="members-grid">
-              {group.members.slice(0, 12).map(member => (
-                <div 
-                  key={member.user.id || member.user._id} 
-                  className="member-card"
-                  onClick={() => navigate(`/profile/${member.user.id || member.user._id}`)}
-                >
-                  <img 
-                    src={member.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.user.name)}&background=3b82f6&color=fff&size=128`}
-                    alt={member.user.name}
-                    className="member-avatar"
-                  />
-                  <div className="member-info">
-                    <div className="member-name">{member.user.name}</div>
-                    {member.role === 'moderator' && (
-                      <span className="member-role">Moderátor</span>
+              {group.members.slice(0, 12).map(member => {
+                // Normalize IDs for comparison
+                const memberId = member.user?.id?.toString() || member.user?._id?.toString();
+                const creatorId = group.creator?.id?.toString() || group.creator?._id?.toString();
+                const isCreator = memberId === creatorId;
+                const isAdmin = group.admins?.some(a => {
+                  const adminId = a.id?.toString() || a._id?.toString();
+                  return adminId === memberId;
+                });
+                
+                return (
+                  <div 
+                    key={memberId} 
+                    className="member-card"
+                  >
+                    <img 
+                      src={member.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.user.name)}&background=3b82f6&color=fff&size=128`}
+                      alt={member.user.name}
+                      className="member-avatar"
+                      onClick={() => navigate(`/profile/${memberId}`)}
+                    />
+                    <div className="member-info">
+                      <div 
+                        className="member-name"
+                        onClick={() => navigate(`/profile/${memberId}`)}
+                      >
+                        {member.user.name}
+                      </div>
+                      <div className="member-badges">
+                        {isCreator && (
+                          <span className="member-badge creator">👑 Zakladateľ</span>
+                        )}
+                        {isAdmin && !isCreator && (
+                          <span className="member-badge admin">⭐ Admin</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Admin actions - only for creator */}
+                    {group.isCreator && !isCreator && (
+                      <div className="member-actions">
+                        {isAdmin ? (
+                          <button 
+                            className="action-btn demote"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDemoteAdmin(memberId);
+                            }}
+                            title="Odobrať admin práva"
+                          >
+                            ⬇️
+                          </button>
+                        ) : (
+                          <button 
+                            className="action-btn promote"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePromoteAdmin(memberId);
+                            }}
+                            title="Povýšiť na admina"
+                          >
+                            ⬆️
+                          </button>
+                        )}
+                        <button 
+                          className="action-btn remove"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveMember(memberId);
+                          }}
+                          title="Vyhodiť zo skupiny"
+                        >
+                          🚫
+                        </button>
+                      </div>
+                    )}
+                    
+                    {/* Admins can only remove non-creator members */}
+                    {group.isAdmin && !group.isCreator && !isCreator && (
+                      <div className="member-actions">
+                        <button 
+                          className="action-btn remove"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveMember(memberId);
+                          }}
+                          title="Vyhodiť zo skupiny"
+                        >
+                          🚫
+                        </button>
+                      </div>
                     )}
                   </div>
-                  {group.isAdmin && member.user.id !== group.creator.id && (
-                    <button 
-                      className="remove-member-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveMember(member.user.id);
-                      }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
             {group.members.length > 12 && (
               <p className="members-more">+ ďalších {group.members.length - 12} členov</p>
