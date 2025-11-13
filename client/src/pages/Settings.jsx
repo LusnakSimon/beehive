@@ -25,14 +25,16 @@ export default function Settings() {
 
   const [showAddHive, setShowAddHive] = useState(false)
   const [editingHive, setEditingHive] = useState(null)
+    const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
+
   const [newHive, setNewHive] = useState({
     name: '',
     location: '',
-    color: '#fbbf24',
+    color: colors[0],
     coordinates: { lat: '', lng: '' },
     visibility: 'private',
     device: {
-      type: 'manual',  // 'manual', 'esp32-wifi', 'esp32-lorawan'
+      type: 'manual',
       devEUI: ''       // Required for LoRaWAN
     }
   })
@@ -218,7 +220,15 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         name: editingHive.name,
         location: editingHive.location,
         color: editingHive.color,
-        visibility: editingHive.visibility
+        visibility: editingHive.visibility,
+        device: {
+          type: editingHive.device?.type || 'manual'
+        }
+      }
+
+      // Add devEUI for LoRaWAN devices
+      if (editingHive.device?.type === 'esp32-lorawan' && editingHive.device?.devEUI) {
+        hiveData.device.devEUI = editingHive.device.devEUI.toUpperCase()
       }
 
       // Only include coordinates if both lat and lng are provided
@@ -290,13 +300,9 @@ const char* appKey = "${lorawanConfig.appKey}";`;
     }
   }
 
-  const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
-
   return (
     <div className="settings">
-      <h1>⚙️ Nastavenia</h1>
-
-      <div className="settings-section">
+      <h1>⚙️ Nastavenia</h1>      <div className="settings-section">
         <h2>Správa úľov</h2>
         
         <div className="hives-list">
@@ -319,9 +325,10 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                     id: hive.id,
                     name: hive.name,
                     location: hive.location || '',
-                    color: hive.color || '#fbbf24',
+                    color: hive.color || colors[0],
                     coordinates: hive.coordinates || { lat: '', lng: '' },
-                    visibility: hive.visibility || 'private'
+                    visibility: hive.visibility || 'private',
+                    device: hive.device || { type: 'manual', devEUI: '' }
                   })}
                 >
                   ✏️
@@ -603,6 +610,53 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                     />
                   </div>
                 </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="editDeviceType">Typ zariadenia</label>
+                <select
+                  id="editDeviceType"
+                  value={editingHive.device?.type || 'manual'}
+                  onChange={(e) => setEditingHive(prev => ({
+                    ...prev,
+                    device: { ...prev.device, type: e.target.value, devEUI: '' }
+                  }))}
+                >
+                  <option value="manual">📝 Manuálne zadávanie</option>
+                  <option value="esp32-wifi">📡 ESP32 WiFi</option>
+                  <option value="esp32-lorawan">📶 ESP32 LoRaWAN</option>
+                </select>
+
+                {editingHive.device?.type === 'esp32-lorawan' && (
+                  <div style={{ marginTop: '0.75rem' }}>
+                    <label htmlFor="editDevEUI">
+                      DevEUI (Device ID) *
+                      <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem' }}>
+                        16 hexadecimálnych znakov (napr. 70B3D57ED005A4B2)
+                      </span>
+                    </label>
+                    <input
+                      id="editDevEUI"
+                      type="text"
+                      value={editingHive.device?.devEUI || ''}
+                      onChange={(e) => setEditingHive(prev => ({
+                        ...prev,
+                        device: { ...prev.device, devEUI: e.target.value.toUpperCase() }
+                      }))}
+                      placeholder="70B3D57ED005A4B2"
+                      pattern="[0-9A-Fa-f]{16}"
+                      maxLength="16"
+                      style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.9rem',
+                        letterSpacing: '0.05em'
+                      }}
+                    />
+                    <div className="info-box" style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                      <p>💡 DevEUI nájdeš vytlačené na ESP32 alebo v sériovej konzole</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
