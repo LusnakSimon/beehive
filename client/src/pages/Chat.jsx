@@ -492,9 +492,11 @@ const Chat = () => {
 
                     {isOwn && showAvatar && (
                       <img 
-                        src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=3b82f6&color=fff&size=128`} 
+                        src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=3b82f6&color=fff&size=128`}
                         alt={user.name}
                         className="message-avatar"
+                        onClick={() => navigate(`/profile/${user.id || user._id}`)}
+                        style={{ cursor: 'pointer' }}
                       />
                     )}
                     {isOwn && !showAvatar && <div className="message-avatar-spacer" />}

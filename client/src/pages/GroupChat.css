@@ -29,6 +29,8 @@
 @media (min-width: 768px) {
   .group-chat-wrapper {
     height: calc(100vh - 4.5rem);
+    border-radius: 16px;
+    overflow: hidden;
   }
 }
 

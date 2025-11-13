@@ -257,6 +257,8 @@ function GroupChat() {
                           src={message.sender.image || '/default-avatar.png'} 
                           alt={message.sender.name}
                           className="message-avatar"
+                          onClick={() => navigate(`/profile/${message.sender._id || message.sender.id}`)}
+                          style={{ cursor: 'pointer' }}
                         />
                       )}
                       <div className="message-content">
@@ -292,6 +294,8 @@ function GroupChat() {
                           src={currentUser?.image || '/default-avatar.png'} 
                           alt={currentUser?.name}
                           className="message-avatar"
+                          onClick={() => navigate(`/profile/${currentUser?._id || currentUser?.id}`)}
+                          style={{ cursor: 'pointer' }}
                         />
                       )}
                     </div>
