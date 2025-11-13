@@ -99,8 +99,8 @@ const Chat = () => {
       
       setLoading(false);
       
-      // Scroll to bottom on first load or new messages
-      setTimeout(scrollToBottom, 100);
+      // Scroll to bottom disabled per user request
+      // setTimeout(scrollToBottom, 100);
 
       // Mark messages as read on initial load
       if (!hasMarkedRead.current) {
@@ -181,7 +181,8 @@ const Chat = () => {
       // Notify other components about new message
       window.dispatchEvent(new CustomEvent('messagesRead'));
       
-      scrollToBottom();
+      // Auto scroll disabled per user request
+      // scrollToBottom();
     } catch (err) {
       console.error('Error sending message:', err);
       setError('Nepodarilo sa odoslať správu');
@@ -265,7 +266,8 @@ const Chat = () => {
       // Notify other components
       window.dispatchEvent(new CustomEvent('messagesRead'));
       
-      scrollToBottom();
+      // Auto scroll disabled per user request
+      // scrollToBottom();
     } catch (err) {
       console.error('Error uploading files:', err);
       setError(err.message || 'Nepodarilo sa nahrať súbory');

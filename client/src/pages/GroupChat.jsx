@@ -23,9 +23,10 @@ function GroupChat() {
     return () => clearInterval(interval);
   }, [groupId]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  // Auto scroll disabled per user request
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

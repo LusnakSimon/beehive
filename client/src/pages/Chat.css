@@ -146,7 +146,7 @@
 @media (max-width: 768px) {
   .messages-area {
     padding: 0.75rem;
-    padding-bottom: calc(3.5rem + 70px);
+    padding-bottom: calc(3.5rem + 80px);
   }
 }
 
@@ -284,7 +284,7 @@
 
 .message.own .message-bubble {
   background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: white;
+  color: white !important;
   border-bottom-right-radius: 6px;
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
 }
@@ -304,15 +304,8 @@
   word-break: break-word;
 }
 
-@media (max-width: 768px) {
-  .message-text {
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
-}
-
 .message.own .message-text {
-  color: white;
+  color: white !important;
 }
 
 .message.other .message-text {
