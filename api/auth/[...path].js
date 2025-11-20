@@ -64,6 +64,7 @@ module.exports = async function handler(req, res) {
       client_id: process.env.GITHUB_ID,
       redirect_uri: redirectUri,
       scope: 'read:user user:email',
+      state: 'github'
     });
     const authUrl = `https://github.com/login/oauth/authorize?${params.toString()}`;
     return res.redirect(authUrl);
@@ -79,6 +80,7 @@ module.exports = async function handler(req, res) {
       scope: 'openid email profile',
       access_type: 'offline',
       prompt: 'consent',
+      state: 'google'
     });
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
     return res.redirect(authUrl);
@@ -99,7 +101,7 @@ module.exports = async function handler(req, res) {
     try {
       // Determine provider from state or referer
       const referer = req.headers.referer || '';
-      const provider = referer.includes('google') ? 'google' : 'github';
+      const provider = req.query.state || (referer.includes('google') ? 'google' : 'github');
       let userInfo;
 
       if (provider === 'google') {
