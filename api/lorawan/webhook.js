@@ -1,4 +1,4 @@
-const { connectDB } = require('../../lib/utils/db');
+const { connectDB } = require('../../lib/utils/db.js');
 
 module.exports = async (req, res) => {
   // Set CORS headers for webhook (allow from TTN/ChirpStack)
