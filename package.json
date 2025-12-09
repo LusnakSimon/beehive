@@ -9,7 +9,10 @@
   "scripts": {
     "dev": "npm run dev --workspace=client",
     "build": "npm run build --workspace=client",
-    "start": "npm run preview --workspace=client"
+    "start": "npm run preview --workspace=client",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "iot",
@@ -22,7 +25,10 @@
   "author": "Simon Lusnak",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@types/jest": "^30.0.0",
+    "concurrently": "^8.2.2",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
   },
   "dependencies": {
     "@next-auth/mongodb-adapter": "^1.1.3",
