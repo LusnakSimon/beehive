@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { HiveProvider } from './context/HiveContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { ToastProvider } from './contexts/ToastContext'
 import Dashboard from './pages/Dashboard'
 import History from './pages/History'
 import Settings from './pages/Settings'
@@ -46,11 +47,12 @@ function App() {
 
   return (
     <AuthProvider>
+      <ToastProvider>
       <NotificationProvider>
         <HiveProvider>
         <div className="app">
           {!isOnline && (
-            <div className="offline-banner">
+            <div className="offline-banner" role="alert">
               ⚠️ Offline režim - niektoré funkcie sú obmedzené
             </div>
           )}
@@ -86,6 +88,7 @@ function App() {
         </div>
       </HiveProvider>
       </NotificationProvider>
+      </ToastProvider>
     </AuthProvider>
   )
 }

@@ -10,13 +10,17 @@
     "dev": "npm run dev --workspace=client",
     "build": "npm run build --workspace=client",
     "start": "npm run preview --workspace=client",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "jest --testPathIgnorePatterns=integration",
+    "test:watch": "jest --watch --testPathIgnorePatterns=integration",
+    "test:coverage": "jest --coverage --testPathIgnorePatterns=integration",
+    "test:integration": "jest --testPathPattern=integration --runInBand",
     "test:client": "npm test --workspace=client",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
-    "test:all": "npm test && npm run test:client && npm run test:e2e"
+    "test:all": "npm test && npm run test:client && npm run test:e2e",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
   },
   "keywords": [
     "iot",
