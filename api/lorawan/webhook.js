@@ -1,33 +1,9 @@
-const mongoose = require('mongoose');
-
-let isConnected = false;
-
-async function connectToDatabase() {
-  if (isConnected) {
-    return;
-  }
-
-  const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/beehive';
-  
-  try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
-    });
-
-    isConnected = true;
-    console.log('[LoRaWAN Webhook] Connected to MongoDB');
-  } catch (error) {
-    console.error('[LoRaWAN Webhook] MongoDB connection failed:', error);
-    throw error;
-  }
-}
+const connectDB = require('../../lib/utils/db');
 
 module.exports = async (req, res) => {
-  // Set CORS headers
+  // Set CORS headers for webhook (allow from TTN/ChirpStack)
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
   res.setHeader(
     'Access-Control-Allow-Headers',
@@ -44,7 +20,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    await connectToDatabase();
+    await connectDB();
     
     const User = require('../../lib/models/User');
     const Reading = require('../../lib/models/Reading');
