@@ -12,7 +12,11 @@
     "start": "npm run preview --workspace=client",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:client": "npm test --workspace=client",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:all": "npm test && npm run test:client && npm run test:e2e"
   },
   "keywords": [
     "iot",
@@ -25,6 +29,7 @@
   "author": "Simon Lusnak",
   "license": "MIT",
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/jest": "^30.0.0",
     "concurrently": "^8.2.2",
     "jest": "^30.2.0",
