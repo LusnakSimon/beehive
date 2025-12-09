@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import './GroupChat.css';
 
 function GroupChat() {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const toast = useToast();
   const [group, setGroup] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -114,7 +116,7 @@ function GroupChat() {
           fetchMessages();
         } else {
           const error = await response.json();
-          alert(error.error || 'Failed to send files');
+          toast.error(error.error || 'Failed to send files');
         }
       } else {
         // Send text message
@@ -132,12 +134,12 @@ function GroupChat() {
           fetchMessages();
         } else {
           const error = await response.json();
-          alert(error.error || 'Failed to send message');
+          toast.error(error.error || 'Failed to send message');
         }
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message');
+      toast.error('Failed to send message');
     } finally {
       setSending(false);
     }

@@ -4,6 +4,7 @@ import { useHive } from '../context/HiveContext'
 import { useNotifications } from '../contexts/NotificationContext'
 import HiveSelector from '../components/HiveSelector'
 import VarroaReminder from '../components/VarroaReminder'
+import { DashboardSkeleton } from '../components/Skeleton'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -145,9 +146,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="loading-screen">
-        <div className="loading-spinner"></div>
-        <p>Načítavam dáta z úľa...</p>
+      <div className="dashboard">
+        <header className="dashboard-header">
+          <div className="header-content">
+            <h1>🐝 Beehive Monitor</h1>
+            <p className="subtitle">Real-time monitorovanie</p>
+          </div>
+        </header>
+        <DashboardSkeleton />
       </div>
     )
   }

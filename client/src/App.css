@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Page loader for lazy loaded components */
+.page-loader {
+  padding: 1rem;
+  min-height: 60vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}

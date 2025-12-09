@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import './FriendRequests.css'
 
 export default function FriendRequests() {
   const { user: currentUser } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
   
   const [activeTab, setActiveTab] = useState('incoming')
   const [requests, setRequests] = useState([])
@@ -44,7 +46,7 @@ export default function FriendRequests() {
 
       if (response.ok) {
         await fetchRequests()
-        alert('Friend request accepted!')
+        toast.success('Friend request accepted!')
       }
     } catch (err) {
       console.error('Error accepting request:', err)

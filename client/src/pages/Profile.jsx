@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import './Profile.css'
 
 export default function Profile() {
   const { userId } = useParams()
   const { user: currentUser, logout } = useAuth()
   const navigate = useNavigate()
+  const toast = useToast()
   
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -85,14 +87,14 @@ export default function Profile() {
 
       if (response.ok) {
         await fetchFriendshipStatus()
-        alert('Friend request sent!')
+        toast.success('Friend request sent!')
       } else {
         const error = await response.json()
-        alert(error.error || 'Failed to send friend request')
+        toast.error(error.error || 'Failed to send friend request')
       }
     } catch (err) {
       console.error('Error sending friend request:', err)
-      alert('Failed to send friend request')
+      toast.error('Failed to send friend request')
     } finally {
       setActionLoading(false)
     }
@@ -109,7 +111,7 @@ export default function Profile() {
 
       if (response.ok) {
         await fetchFriendshipStatus()
-        alert('Friend request cancelled')
+        toast.info('Friend request cancelled')
       }
     } catch (err) {
       console.error('Error cancelling request:', err)
@@ -130,7 +132,7 @@ export default function Profile() {
       if (response.ok) {
         await fetchFriendshipStatus()
         await fetchProfile()
-        alert('Friend request accepted!')
+        toast.success('Friend request accepted!')
       }
     } catch (err) {
       console.error('Error accepting request:', err)
@@ -151,7 +153,7 @@ export default function Profile() {
       if (response.ok) {
         await fetchFriendshipStatus()
         await fetchProfile()
-        alert('Friend removed')
+        toast.info('Friend removed')
       }
     } catch (err) {
       console.error('Error removing friend:', err)

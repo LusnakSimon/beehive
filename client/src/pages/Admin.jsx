@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useToast } from '../contexts/ToastContext';
 import './Admin.css';
 
 export default function Admin() {
@@ -6,6 +7,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newHiveId, setNewHiveId] = useState('');
+  const toast = useToast();
   
   // Simulator state
   const [simulatorRunning, setSimulatorRunning] = useState(false);
@@ -89,14 +91,14 @@ export default function Admin() {
       
       if (response.ok) {
         await fetchUsers();
-        alert('Používateľ bol úspešne vymazaný');
+        toast.success('Používateľ bol úspešne vymazaný');
       } else {
         const data = await response.json();
-        alert(data.error || 'Nepodarilo sa vymazať používateľa');
+        toast.error(data.error || 'Nepodarilo sa vymazať používateľa');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert('Chyba pri mazaní používateľa');
+      toast.error('Chyba pri mazaní používateľa');
     }
   };
 

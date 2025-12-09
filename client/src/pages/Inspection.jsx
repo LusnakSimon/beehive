@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useHive } from '../context/HiveContext'
+import { useToast } from '../contexts/ToastContext'
 import HiveSelector from '../components/HiveSelector'
 import './Inspection.css'
 
 export default function Inspection() {
   const { selectedHive } = useHive()
+  const toast = useToast()
   const [checklist, setChecklist] = useState({
     pollen: false,
     capped: false,
@@ -85,7 +87,7 @@ export default function Inspection() {
       }
     } catch (error) {
       console.error('Chyba pri ukladaní inšpekcie:', error)
-      alert('Nepodarilo sa uložiť inšpekciu')
+      toast.error('Nepodarilo sa uložiť inšpekciu')
     } finally {
       setLoading(false)
     }
@@ -104,11 +106,11 @@ export default function Inspection() {
       if (response.ok) {
         fetchInspectionHistory()
       } else {
-        alert('Nepodarilo sa vymazať kontrolu')
+        toast.error('Nepodarilo sa vymazať kontrolu')
       }
     } catch (error) {
       console.error('Chyba pri mazaní kontroly:', error)
-      alert('Nepodarilo sa vymazať kontrolu')
+      toast.error('Nepodarilo sa vymazať kontrolu')
     }
   }
 
@@ -156,7 +158,7 @@ export default function Inspection() {
       }
     } catch (error) {
       console.error('Chyba pri aktualizácii kontroly:', error)
-      alert('Nepodarilo sa aktualizovať kontrolu')
+      toast.error('Nepodarilo sa aktualizovať kontrolu')
     } finally {
       setLoading(false)
     }

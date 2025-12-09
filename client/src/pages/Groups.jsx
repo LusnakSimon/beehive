@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import './Groups.css';
 
 const Groups = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // 'all', 'my-groups'
@@ -86,10 +88,10 @@ const Groups = () => {
       fetchGroups();
       
       // Show success message
-      alert(data.message);
+      toast.success(data.message);
     } catch (err) {
       console.error('Error joining group:', err);
-      alert(err.message || 'Nepodarilo sa pripojiť k skupine');
+      toast.error(err.message || 'Nepodarilo sa pripojiť k skupine');
     }
   };
 

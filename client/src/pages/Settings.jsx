@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useHive } from '../context/HiveContext'
+import { useToast } from '../contexts/ToastContext'
 import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
 import SocialNotificationSettings from '../components/SocialNotificationSettings'
@@ -8,6 +9,7 @@ import SocialNotificationSettings from '../components/SocialNotificationSettings
 export default function Settings() {
   const { user, refreshUser } = useAuth()
   const { hives } = useHive()
+  const toast = useToast()
   const [settings, setSettings] = useState({
     notifications: true,
     tempMin: 30,
@@ -60,7 +62,7 @@ export default function Settings() {
   const saveSettings = () => {
     localStorage.setItem('beehive-settings', JSON.stringify(settings))
     localStorage.setItem('lorawan-config', JSON.stringify(lorawanConfig))
-    alert('Nastavenia uložené!')
+    toast.success('Nastavenia uložené!')
   }
 
   const handleChange = (field, value) => {
@@ -94,9 +96,9 @@ const char* appEUI = "${lorawanConfig.appEUI}";
 const char* appKey = "${lorawanConfig.appKey}";`;
     
     navigator.clipboard.writeText(config).then(() => {
-      alert('✅ Konfigurácia skopírovaná do schránky!\n\nMôžeš ju vložiť do svojho ESP32 kódu.')
+      toast.success('Konfigurácia skopírovaná do schránky!')
     }).catch(() => {
-      alert('❌ Nepodarilo sa skopírovať. Skús manuálne.')
+      toast.error('Nepodarilo sa skopírovať. Skús manuálne.')
     })
   }
 
@@ -108,7 +110,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert('Tvoj prehliadač nepodporuje geolokáciu')
+      toast.warning('Tvoj prehliadač nepodporuje geolokáciu')
       return
     }
 
@@ -124,11 +126,11 @@ const char* appKey = "${lorawanConfig.appKey}";`;
           }
         }))
         setGettingLocation(false)
-        alert('GPS súradnice získané!')
+        toast.success('GPS súradnice získané!')
       },
       (error) => {
         console.error('Geolocation error:', error)
-        alert('Nepodarilo sa získať polohu. Skontroluj povolenia prehliadača.')
+        toast.error('Nepodarilo sa získať polohu. Skontroluj povolenia prehliadača.')
         setGettingLocation(false)
       }
     )
@@ -136,14 +138,14 @@ const char* appKey = "${lorawanConfig.appKey}";`;
 
   const handleAddHive = async () => {
     if (!newHive.name) {
-      alert('Vyplň názov úľa')
+      toast.warning('Vyplň názov úľa')
       return
     }
     
     // Validate devEUI for LoRaWAN devices
     if (newHive.device.type === 'esp32-lorawan') {
       if (!newHive.device.devEUI || !/^[0-9A-Fa-f]{16}$/.test(newHive.device.devEUI)) {
-        alert('DevEUI musí mať presne 16 hexadecimálnych znakov (napr. 70B3D57ED005A4B2)')
+        toast.error('DevEUI musí mať presne 16 hexadecimálnych znakov (napr. 70B3D57ED005A4B2)')
         return
       }
     }
@@ -186,7 +188,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       if (response.ok) {
         const data = await response.json()
         await refreshUser() // Refresh user data with new JWT
-        alert(`Úľ "${newHive.name}" bol úspešne vytvorený!`)
+        toast.success(`Úľ "${newHive.name}" bol úspešne vytvorený!`)
         setNewHive({ 
           name: '', 
           location: '', 
@@ -197,11 +199,11 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         setShowAddHive(false)
       } else {
         const error = await response.json()
-        alert(`Chyba: ${error.message}`)
+        toast.error(`Chyba: ${error.message}`)
       }
     } catch (error) {
       console.error('Error adding hive:', error)
-      alert('Nepodarilo sa pridať úľ')
+      toast.error('Nepodarilo sa pridať úľ')
     } finally {
       setIsAddingHive(false)
     }
@@ -209,7 +211,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
 
   const handleEditHive = async () => {
     if (!editingHive || !editingHive.name) {
-      alert('Vyplň názov úľa')
+      toast.warning('Vyplň názov úľa')
       return
     }
     
@@ -256,15 +258,15 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         console.log('✅ refreshUser() completed')
         console.log('👤 User after refresh:', user)
         console.log('🐝 Hives from context:', hives)
-        alert(`Úľ "${editingHive.name}" bol úspešne upravený!`)
+        toast.success(`Úľ "${editingHive.name}" bol úspešne upravený!`)
         setEditingHive(null)
       } else {
         const error = await response.json()
-        alert(`Chyba: ${error.message}`)
+        toast.error(`Chyba: ${error.message}`)
       }
     } catch (error) {
       console.error('Error editing hive:', error)
-      alert('Nepodarilo sa upraviť úľ')
+      toast.error('Nepodarilo sa upraviť úľ')
     } finally {
       setIsAddingHive(false)
     }
@@ -272,7 +274,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
 
   const handleDeleteHive = async (hiveId) => {
     if (hives.length === 1) {
-      alert('Nemôžeš vymazať posledný úľ!')
+      toast.warning('Nemôžeš vymazať posledný úľ!')
       return
     }
     
@@ -289,14 +291,14 @@ const char* appKey = "${lorawanConfig.appKey}";`;
 
       if (response.ok) {
         await refreshUser() // Refresh user data with new JWT
-        alert('Úľ vymazaný!')
+        toast.success('Úľ vymazaný!')
       } else {
         const error = await response.json()
-        alert(`Chyba: ${error.message || 'Nepodarilo sa vymazať úľ'}`)
+        toast.error(`Chyba: ${error.message || 'Nepodarilo sa vymazať úľ'}`)
       }
     } catch (error) {
       console.error('Error deleting hive:', error)
-      alert('Chyba pri mazaní úľa')
+      toast.error('Chyba pri mazaní úľa')
     }
   }
 
@@ -571,7 +573,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                           }))
                         },
                         (error) => {
-                          alert('Nepodarilo sa získať polohu: ' + error.message)
+                          toast.error('Nepodarilo sa získať polohu: ' + error.message)
                         }
                       )
                     }

@@ -1,33 +1,49 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { HiveProvider } from './context/HiveContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './contexts/ToastContext'
+import ErrorBoundary from './components/ErrorBoundary'
+import { DashboardSkeleton, ListSkeleton } from './components/Skeleton'
+
+// Core pages - loaded eagerly for fast initial load
 import Dashboard from './pages/Dashboard'
-import History from './pages/History'
-import Settings from './pages/Settings'
-import Admin from './pages/Admin'
-import Inspection from './pages/Inspection'
 import Login from './pages/Login'
-import Profile from './pages/Profile'
-import ProfileEdit from './pages/ProfileEdit'
-import FriendRequests from './pages/FriendRequests'
-import Friends from './pages/Friends'
-import UserSearch from './pages/UserSearch'
-import Messages from './pages/Messages'
-import Chat from './pages/Chat'
-import Groups from './pages/Groups'
-import CreateGroup from './pages/CreateGroup'
-import GroupDetail from './pages/GroupDetail'
-import GroupChat from './pages/GroupChat'
-import Notifications from './pages/Notifications'
-import HiveMap from './pages/HiveMap'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
 import VarroaReminder from './components/VarroaReminder'
+
+// Lazy loaded pages - loaded on demand to reduce initial bundle
+const History = lazy(() => import('./pages/History'))
+const Settings = lazy(() => import('./pages/Settings'))
+const Admin = lazy(() => import('./pages/Admin'))
+const Inspection = lazy(() => import('./pages/Inspection'))
+const Profile = lazy(() => import('./pages/Profile'))
+const ProfileEdit = lazy(() => import('./pages/ProfileEdit'))
+const FriendRequests = lazy(() => import('./pages/FriendRequests'))
+const Friends = lazy(() => import('./pages/Friends'))
+const UserSearch = lazy(() => import('./pages/UserSearch'))
+const Messages = lazy(() => import('./pages/Messages'))
+const Chat = lazy(() => import('./pages/Chat'))
+const Groups = lazy(() => import('./pages/Groups'))
+const CreateGroup = lazy(() => import('./pages/CreateGroup'))
+const GroupDetail = lazy(() => import('./pages/GroupDetail'))
+const GroupChat = lazy(() => import('./pages/GroupChat'))
+const Notifications = lazy(() => import('./pages/Notifications'))
+const HiveMap = lazy(() => import('./pages/HiveMap'))
+
 import './colors.css'
 import './App.css'
+
+// Loading fallback component
+function PageLoader() {
+  return (
+    <div className="page-loader">
+      <DashboardSkeleton />
+    </div>
+  )
+}
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine)
@@ -46,6 +62,7 @@ function App() {
   }, [])
 
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <ToastProvider>
       <NotificationProvider>
@@ -60,6 +77,7 @@ function App() {
           <Navigation />
           
           <main className="main-content">
+            <Suspense fallback={<PageLoader />}>
               <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -82,6 +100,7 @@ function App() {
               <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
+            </Suspense>
           </main>
           
           <VarroaReminder />
@@ -90,6 +109,7 @@ function App() {
       </NotificationProvider>
       </ToastProvider>
     </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

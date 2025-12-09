@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import './Login.css';
 
 const Login = () => {
   const { isAuthenticated, login, loading } = useAuth();
+  const toast = useToast();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -16,7 +18,7 @@ const Login = () => {
       await login('google');
     } catch (error) {
       console.error('Google login failed:', error);
-      alert('Prihlásenie zlyhalo. Skús to prosím znova.');
+      toast.error('Prihlásenie zlyhalo. Skús to prosím znova.');
     }
   };
 
@@ -25,7 +27,7 @@ const Login = () => {
       await login('github');
     } catch (error) {
       console.error('GitHub login failed:', error);
-      alert('Prihlásenie zlyhalo. Skús to prosím znova.');
+      toast.error('Prihlásenie zlyhalo. Skús to prosím znova.');
     }
   };
 

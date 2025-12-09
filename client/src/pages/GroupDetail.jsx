@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import InviteModal from '../components/InviteModal';
 import EditGroupModal from '../components/EditGroupModal';
 import './GroupDetail.css';
@@ -9,6 +10,7 @@ const GroupDetail = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -61,13 +63,13 @@ const GroupDetail = () => {
       }
 
       const data = await response.json();
-      alert(data.message);
+      toast.success(data.message);
       
       // Refresh group data
       fetchGroup();
     } catch (err) {
       console.error('Error joining group:', err);
-      alert(err.message || 'Nepodarilo sa pripojiť k skupine');
+      toast.error(err.message || 'Nepodarilo sa pripojiť k skupine');
     } finally {
       setActionLoading(false);
     }
@@ -88,11 +90,11 @@ const GroupDetail = () => {
         throw new Error(errorData.error || 'Failed to leave group');
       }
 
-      alert('Úspešne ste opustili skupinu');
+      toast.success('Úspešne ste opustili skupinu');
       navigate('/groups');
     } catch (err) {
       console.error('Error leaving group:', err);
-      alert(err.message || 'Nepodarilo sa opustiť skupinu');
+      toast.error(err.message || 'Nepodarilo sa opustiť skupinu');
     } finally {
       setActionLoading(false);
     }
@@ -112,11 +114,11 @@ const GroupDetail = () => {
         throw new Error(errorData.error || 'Failed to remove member');
       }
 
-      alert('Člen bol odstránený zo skupiny');
+      toast.success('Člen bol odstránený zo skupiny');
       fetchGroup();
     } catch (err) {
       console.error('Error removing member:', err);
-      alert(err.message || 'Nepodarilo sa odstrániť člena');
+      toast.error(err.message || 'Nepodarilo sa odstrániť člena');
     }
   };
 
@@ -136,11 +138,11 @@ const GroupDetail = () => {
         throw new Error(errorData.message || 'Failed to promote member');
       }
 
-      alert('Člen bol povýšený na administrátora');
+      toast.success('Člen bol povýšený na administrátora');
       fetchGroup();
     } catch (err) {
       console.error('Error promoting member:', err);
-      alert(err.message || 'Nepodarilo sa povýšiť člena');
+      toast.error(err.message || 'Nepodarilo sa povýšiť člena');
     }
   };
 
@@ -160,21 +162,21 @@ const GroupDetail = () => {
         throw new Error(errorData.message || 'Failed to demote admin');
       }
 
-      alert('Administrátorské práva boli odobraté');
+      toast.success('Administrátorské práva boli odobraté');
       fetchGroup();
     } catch (err) {
       console.error('Error demoting admin:', err);
-      alert(err.message || 'Nepodarilo sa odobrať administrátorské práva');
+      toast.error(err.message || 'Nepodarilo sa odobrať administrátorské práva');
     }
   };
 
   const handleCopyInviteLink = () => {
     const inviteLink = `${window.location.origin}/groups/${groupId}`;
     navigator.clipboard.writeText(inviteLink).then(() => {
-      alert('Invite link bol skopírovaný do schránky!');
+      toast.success('Invite link bol skopírovaný do schránky!');
     }).catch(err => {
       console.error('Failed to copy:', err);
-      alert('Nepodarilo sa skopírovať link');
+      toast.error('Nepodarilo sa skopírovať link');
     });
   };
 
