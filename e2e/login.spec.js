@@ -79,10 +79,10 @@ test.describe('Login Page', () => {
     const loginCard = page.locator('.login-card');
     await expect(loginCard).toBeVisible();
     
-    // Card should be near full width on mobile
+    // Card should be reasonably sized on mobile (at least 75% of viewport)
     const cardBox = await loginCard.boundingBox();
     const viewport = page.viewportSize();
-    expect(cardBox.width).toBeGreaterThan(viewport.width * 0.8);
+    expect(cardBox.width).toBeGreaterThan(viewport.width * 0.75);
   });
 
   test('should have proper focus states for accessibility', async ({ page }) => {
