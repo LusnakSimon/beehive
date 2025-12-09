@@ -3,18 +3,6 @@
  * Tests the complete flow of data from TTN webhook to database
  */
 
-const { describe, it, expect, beforeEach, vi } = require('vitest');
-
-// Mock mongoose and models
-vi.mock('mongoose', () => ({
-  connect: vi.fn().mockResolvedValue({}),
-  models: {},
-  model: vi.fn(),
-  Schema: vi.fn().mockImplementation(() => ({
-    index: vi.fn()
-  }))
-}));
-
 // Test payload formats
 describe('LoRaWAN Payload Parsing', () => {
   
