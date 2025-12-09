@@ -1,41 +1,19 @@
 const conversationsRoutes = require('../../lib/routes/conversations.js');
-const mongoose = require('mongoose');
-
-let cached = global.mongoose;
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function connectDB() {
-  if (cached.conn) return cached.conn;
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
-      bufferCommands: false,
-      maxPoolSize: 10,
-    });
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
+const { connectDB } = require('../../lib/utils/db.js');
+const { setCorsHeaders } = require('../../lib/utils/cors.js');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // Set CORS headers
+  if (setCorsHeaders(req, res)) return;
   
   try {
     await connectDB();
     return await conversationsRoutes(req, res);
   } catch (error) {
     console.error('Conversations API Error:', error);
-    console.error('Error stack:', error.stack);
     return res.status(500).json({ 
       error: 'Internal server error',
-      message: error.message
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
