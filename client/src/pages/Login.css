@@ -187,6 +187,27 @@
   text-decoration: underline;
 }
 
+.login-privacy a:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Focus states for accessibility */
+.oauth-button:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
+.oauth-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.oauth-button:focus-visible {
+  outline: 3px solid #667eea;
+  outline-offset: 2px;
+}
+
 /* Spinner for loading state */
 .spinner {
   width: 50px;
@@ -236,5 +257,26 @@
   .oauth-button {
     padding: 12px 20px;
     font-size: 15px;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .login-card {
+    animation: none;
+  }
+  
+  .login-icon {
+    animation: none;
+  }
+  
+  .oauth-button {
+    transition: none;
+  }
+  
+  .spinner {
+    animation: none;
+    border-top-color: #667eea;
+    border-color: #667eea;
   }
 }

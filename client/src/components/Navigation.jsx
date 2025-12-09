@@ -187,8 +187,11 @@ export default function Navigation() {
               <button 
                 className={`nav-link ${showMobileMenu ? 'active' : ''}`}
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
+                aria-expanded={showMobileMenu}
+                aria-haspopup="true"
+                aria-label="Zobraziť viac možností"
               >
-                <span className="icon">⋯</span>
+                <span className="icon" aria-hidden="true">⋯</span>
                 <span>Viac</span>
               </button>
               {showMobileMenu && (
@@ -238,18 +241,18 @@ export default function Navigation() {
 
           {/* Desktop user section */}
           <div className="nav-user-section">
-            <NavLink to="/profile" className="nav-user-info nav-profile-link">
-              {user?.image && <img src={user.image} alt={user.name} className="nav-avatar" />}
+            <NavLink to="/profile" className="nav-user-info nav-profile-link" aria-label="Zobraziť profil">
+              {user?.image && <img src={user.image} alt="" className="nav-avatar" aria-hidden="true" />}
               <span className="nav-username">{user?.name}</span>
             </NavLink>
-            <button onClick={logout} className="nav-logout-btn" title="Odhlásiť sa">
-              <span className="icon">🚪</span>
+            <button onClick={logout} className="nav-logout-btn" aria-label="Odhlásiť sa">
+              <span className="icon" aria-hidden="true">🚪</span>
             </button>
           </div>
         </>
       ) : (
         <NavLink to="/login" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          <span className="icon">🔑</span>
+          <span className="icon" aria-hidden="true">🔑</span>
           <span>Prihlásenie</span>
         </NavLink>
       )}
