@@ -5,6 +5,7 @@ import { useToast } from '../contexts/ToastContext'
 import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
 import SocialNotificationSettings from '../components/SocialNotificationSettings'
+import LoRaWANSetupGuide from '../components/LoRaWANSetupGuide'
 
 export default function Settings() {
   const { user, refreshUser } = useAuth()
@@ -27,7 +28,8 @@ export default function Settings() {
 
   const [showAddHive, setShowAddHive] = useState(false)
   const [editingHive, setEditingHive] = useState(null)
-    const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
+  const [showLoRaWANGuide, setShowLoRaWANGuide] = useState(false)
+  const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
 
   const [newHive, setNewHive] = useState({
     name: '',
@@ -476,8 +478,16 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                       letterSpacing: '0.05em'
                     }}
                   />
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    style={{ marginTop: '0.75rem', width: '100%' }}
+                    onClick={() => setShowLoRaWANGuide(true)}
+                  >
+                    📖 Zobraziť návod na nastavenie TTN
+                  </button>
                   <div className="info-box" style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
-                    <p>💡 DevEUI nájdeš vytlačené na ESP32 alebo v sériovej konzole</p>
+                    <p>💡 DevEUI nájdeš vytlačené na ESP32 alebo v sériovej konzole pri nahratí firmvéru</p>
                   </div>
                 </div>
               )}
@@ -852,6 +862,13 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       <button className="btn btn-primary" onClick={saveSettings}>
         💾 Uložiť nastavenia
       </button>
+
+      {showLoRaWANGuide && (
+        <LoRaWANSetupGuide 
+          devEUI={newHive.device.devEUI || editingHive?.device?.devEUI}
+          onClose={() => setShowLoRaWANGuide(false)}
+        />
+      )}
     </div>
   )
 }
