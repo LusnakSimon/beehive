@@ -1,10 +1,19 @@
 const jwt = require('jsonwebtoken');
 const { connectDB } = require('../../lib/utils/db.js');
-const User = require('../../lib/models/User');
+
+// Lazy load User model to avoid mongoose initialization issues
+let User;
+function getUser() {
+  if (!User) {
+    User = require('../../lib/models/User');
+  }
+  return User;
+}
 
 // Generate unique hive ID for new user
-async function generateUniqueHiveId(User) {
-  const allUsers = await User.find({}, 'ownedHives');
+async function generateUniqueHiveId() {
+  const UserModel = getUser();
+  const allUsers = await UserModel.find({}, 'ownedHives');
   const allHives = allUsers.flatMap(u => u.ownedHives || []);
   const hiveNumbers = allHives
     .map(h => {
@@ -165,9 +174,10 @@ module.exports = async function handler(req, res) {
 
       // Connect to database
       await connectDB();
+      const UserModel = getUser();
 
       // Find or create user
-      let user = await User.findOne({ 
+      let user = await UserModel.findOne({ 
         $or: [
           { email: userInfo.email },
           { [`oauth.${userInfo.provider}.id`]: userInfo.id }
@@ -176,9 +186,9 @@ module.exports = async function handler(req, res) {
 
       if (!user) {
         // Generate unique hive ID for new user
-        const firstHiveId = await generateUniqueHiveId(User);
+        const firstHiveId = await generateUniqueHiveId();
         
-        user = new User({
+        user = new UserModel({
           username: userInfo.email.split('@')[0],
           email: userInfo.email,
           name: userInfo.name,
