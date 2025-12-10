@@ -1,1 +1,0 @@
-{"end_device_ids":{"device_id":"test","dev_eui":"0004A30B00F1A2B3"},"uplink_message":{"decoded_payload":{"temperature":35.5,"humidity":60,"weight":45,"battery":95,"hiveId":"HIVE-001"}}}
