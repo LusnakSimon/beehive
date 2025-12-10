@@ -36,6 +36,7 @@
     "@playwright/test": "^1.57.0",
     "@types/jest": "^30.0.0",
     "concurrently": "^8.2.2",
+    "dotenv": "^17.2.3",
     "jest": "^30.2.0",
     "supertest": "^7.1.4"
   },
