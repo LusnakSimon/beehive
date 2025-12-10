@@ -234,7 +234,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Šimon Lusnák** - Bachelor's Thesis Project (VAII)
+**Šimon Lusnák** - Bachelor's Thesis Project
 
 - GitHub: [@LusnakSimon](https://github.com/LusnakSimon)
 
@@ -251,4 +251,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <p align="center">
   Made with ❤️ for beekeepers everywhere 🐝
+  https://ko-fi.com/dongfeng400
 </p>
