@@ -250,8 +250,10 @@ module.exports = async function handler(req, res) {
       );
 
       // Set cookie and redirect
-      res.setHeader('Set-Cookie', `auth-token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`);
-      res.redirect('/');
+      const cookieValue = `auth-token=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`;
+      res.setHeader('Set-Cookie', cookieValue);
+      res.setHeader('Location', '/');
+      res.status(302).end();
     } catch (error) {
       console.error('OAuth callback error:', error);
       res.redirect(`/login?error=${encodeURIComponent(error.message)}`);
