@@ -170,11 +170,14 @@ module.exports = async function handler(req, res) {
           }),
         });
 
-        const { access_token } = await tokenResponse.json();
+        const tokenData = await tokenResponse.json();
+        console.log('GitHub token response:', JSON.stringify(tokenData));
 
-        if (!access_token) {
-          throw new Error('No access token received');
+        if (!tokenData.access_token) {
+          throw new Error(tokenData.error_description || tokenData.error || 'No access token received');
         }
+
+        const access_token = tokenData.access_token;
 
         // Get user info
         const userResponse = await fetch('https://api.github.com/user', {
