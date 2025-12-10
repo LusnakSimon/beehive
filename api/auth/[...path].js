@@ -30,21 +30,22 @@ async function generateUniqueHiveId() {
 }
 
 module.exports = async function handler(req, res) {
-  const path = req.query.path ? req.query.path.join('/') : '';
+  try {
+    const path = req.query.path ? req.query.path.join('/') : '';
 
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(200).end();
-  }
+    // Handle CORS preflight
+    if (req.method === 'OPTIONS') {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      return res.status(200).end();
+    }
 
-  // Route: /api/auth/logout
-  if (path === 'logout') {
-    res.setHeader('Set-Cookie', 'auth-token=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
-    return res.json({ success: true, message: 'Logged out successfully' });
-  }
+    // Route: /api/auth/logout
+    if (path === 'logout') {
+      res.setHeader('Set-Cookie', 'auth-token=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+      return res.json({ success: true, message: 'Logged out successfully' });
+    }
 
   // Route: /api/auth/github
   if (path === 'github') {
@@ -61,18 +62,27 @@ module.exports = async function handler(req, res) {
 
   // Route: /api/auth/google
   if (path === 'google') {
-    const redirectUri = `${process.env.NEXTAUTH_URL || 'https://ebeehive.vercel.app'}/api/auth/callback`;
-    const params = new URLSearchParams({
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: 'openid email profile',
-      access_type: 'offline',
-      prompt: 'consent',
-      state: 'google'
-    });
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-    return res.redirect(authUrl);
+    try {
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+      if (!clientId) {
+        return res.status(500).json({ error: 'GOOGLE_CLIENT_ID not configured' });
+      }
+      const redirectUri = `${process.env.NEXTAUTH_URL || 'https://ebeehive.vercel.app'}/api/auth/callback`;
+      const params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: 'openid email profile',
+        access_type: 'offline',
+        prompt: 'consent',
+        state: 'google'
+      });
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+      return res.redirect(authUrl);
+    } catch (err) {
+      console.error('Google auth error:', err);
+      return res.status(500).json({ error: err.message });
+    }
   }
 
   // Route: /api/auth/callback
@@ -239,5 +249,13 @@ module.exports = async function handler(req, res) {
   } else {
     // Unknown path
     res.status(404).json({ error: 'Not found' });
+  }
+  } catch (outerError) {
+    console.error('Auth handler fatal error:', outerError);
+    return res.status(500).json({ 
+      error: 'Auth handler error', 
+      message: outerError.message,
+      stack: process.env.NODE_ENV !== 'production' ? outerError.stack : undefined
+    });
   }
 };
