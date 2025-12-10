@@ -1,26 +1,6 @@
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
-
-let cached = global.mongoose;
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function connectDB() {
-  if (cached.conn) return cached.conn;
-  if (!cached.promise) {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-      throw new Error('MONGODB_URI not found');
-    }
-    cached.promise = mongoose.connect(uri, {
-      bufferCommands: false,
-      maxPoolSize: 10,
-    });
-  }
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
+const { connectDB } = require('../../lib/utils/db.js');
+const User = require('../../lib/models/User');
 
 // Generate unique hive ID for new user
 async function generateUniqueHiveId(User) {
@@ -185,7 +165,6 @@ module.exports = async function handler(req, res) {
 
       // Connect to database
       await connectDB();
-      const User = mongoose.models.User || require('../../lib/models/User');
 
       // Find or create user
       let user = await User.findOne({ 
@@ -226,9 +205,16 @@ module.exports = async function handler(req, res) {
         await user.save();
       }
 
-      // Create JWT token
+      // Create JWT token with all user data
       const token = jwt.sign(
-        { userId: user._id, email: user.email },
+        { 
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          image: user.avatar,
+          role: user.role || 'user',
+          ownedHives: user.ownedHives || []
+        },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
