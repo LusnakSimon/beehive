@@ -56,6 +56,20 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true, message: 'Logged out successfully' });
     }
 
+    // Debug endpoint to check env vars (remove in production)
+    if (path === 'debug') {
+      return res.json({
+        hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+        hasGoogleClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+        hasGithubId: !!process.env.GITHUB_ID,
+        hasGithubSecret: !!process.env.GITHUB_SECRET,
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        hasMongoUri: !!process.env.MONGODB_URI,
+        googleClientIdPrefix: process.env.GOOGLE_CLIENT_ID?.substring(0, 10) + '...',
+        githubIdPrefix: process.env.GITHUB_ID?.substring(0, 10) + '...',
+      });
+    }
+
   // Route: /api/auth/github
   if (path === 'github') {
     const redirectUri = `${process.env.NEXTAUTH_URL || 'https://ebeehive.vercel.app'}/api/auth/callback`;
