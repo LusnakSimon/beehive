@@ -482,7 +482,6 @@
   font-weight: 600;
   background: var(--surface);
 }
-}
 
 @media (max-width: 768px) {
   .coordinates-inputs {
