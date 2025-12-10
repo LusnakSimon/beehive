@@ -64,9 +64,11 @@ module.exports = async function handler(req, res) {
         hasGithubId: !!process.env.GITHUB_ID,
         hasGithubSecret: !!process.env.GITHUB_SECRET,
         hasJwtSecret: !!process.env.JWT_SECRET,
+        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
         hasMongoUri: !!process.env.MONGODB_URI,
-        googleClientIdPrefix: process.env.GOOGLE_CLIENT_ID?.substring(0, 10) + '...',
-        githubIdPrefix: process.env.GITHUB_ID?.substring(0, 10) + '...',
+        jwtSecretPrefix: process.env.JWT_SECRET?.substring(0, 5) + '...',
+        nextAuthSecretPrefix: process.env.NEXTAUTH_SECRET?.substring(0, 5) + '...',
+        secretsMatch: process.env.JWT_SECRET === process.env.NEXTAUTH_SECRET,
       });
     }
 
@@ -253,6 +255,7 @@ module.exports = async function handler(req, res) {
       }
 
       // Create JWT token with all user data
+      const jwtSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
       const token = jwt.sign(
         { 
           id: user._id.toString(),
@@ -262,7 +265,7 @@ module.exports = async function handler(req, res) {
           role: user.role || 'user',
           ownedHives: user.ownedHives || []
         },
-        process.env.JWT_SECRET,
+        jwtSecret,
         { expiresIn: '7d' }
       );
 
