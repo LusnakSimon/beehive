@@ -1,5 +1,6 @@
+// Auth handler v2 - updated 2025-01-27
 const jwt = require('jsonwebtoken');
-const { connectDB } = require('../../lib/utils/db.js');
+const { connectDB } = require('../../lib/utils/db');
 
 // Lazy load User model to avoid mongoose initialization issues
 let User;
