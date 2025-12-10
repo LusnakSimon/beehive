@@ -1,79 +1,57 @@
-# Beehive Monitor - Frontend (PWA)
+# eBeeHive - Frontend
 
-React-based Progressive Web App for beehive monitoring with offline support and push notifications.
+React PWA for beehive monitoring with offline support and push notifications.
 
-## 🛠️ Technology Stack
+## Tech Stack
 
-- **React 18.2** - UI library with hooks
-- **Vite 5** - Fast build tool and dev server
-- **React Router 6** - Client-side routing
-- **Recharts 2.10** - Data visualization charts
-- **React Leaflet 4.2** - Interactive maps
-- **Leaflet 1.9** - Mapping library
-- **Service Worker** - Offline caching & push notifications
+- React 18 + Vite 5
+- React Router 6
+- Recharts (data visualization)
+- React Leaflet (maps)
+- Vitest + React Testing Library
 
-## 📁 Project Structure
+## Development
 
-```
-client/src/
-├── components/           # Reusable React components
-│   ├── Navigation.jsx    # App navigation (mobile bottom bar)
-│   ├── HiveSelector.jsx  # Multi-hive dropdown selector
-│   ├── ProtectedRoute.jsx # Auth guard for routes
-│   ├── VarroaReminder.jsx # Varroa treatment reminder
-│   └── NotificationSettings.jsx # Push notification config
-│
-├── contexts/             # React Context providers
-│   ├── AuthContext.jsx   # OAuth authentication state
-│   ├── HiveContext.jsx   # Current selected hive
-│   └── NotificationContext.jsx # Push notification state
-│
-├── pages/                # Page components (routes)
-│   ├── Login.jsx         # OAuth login page
-│   ├── Dashboard.jsx     # Real-time sensor dashboard
-│   ├── History.jsx       # Historical data charts
-│   ├── Inspection.jsx    # Inspection checklist tracker
-│   ├── HiveMap.jsx       # GPS hive map view
-│   ├── Profile.jsx       # User profile page
-│   ├── Admin.jsx         # Admin panel (role=admin only)
-│   └── Settings.jsx      # App settings & hive management
-│
-├── App.jsx               # Main app with routing
-├── main.jsx              # Entry point
-└── index.css             # Global styles
-```
-
-## 🚀 Development
-
-### Install Dependencies
 ```bash
+# Install dependencies
 npm install
-```
 
-### Run Development Server
-```bash
+# Start dev server
 npm run dev
-```
-App runs on `http://localhost:5173`
 
-### Build for Production
-```bash
+# Run tests
+npm test
+
+# Build for production
 npm run build
 ```
-Output in `dist/` directory
 
-## 📱 PWA Features
+## Project Structure
 
-### Service Worker
-- Caches static assets
-- Caches API responses for offline use
-- Push notifications
+```
+src/
+├── components/        # Reusable UI components
+├── contexts/          # React Context providers
+├── pages/             # Route page components
+├── utils/             # Helper functions
+└── App.jsx            # Main app with routing
+```
 
-### Installation
-Users can install the app from browser:
-- Chrome/Edge: "Install app" button
-- Safari iOS: "Add to Home Screen"
+## Pages
 
-## 📄 License
+| Page | Route | Description |
+|------|-------|-------------|
+| Login | `/login` | OAuth authentication |
+| Dashboard | `/` | Real-time sensor data |
+| History | `/history` | Historical charts |
+| Inspection | `/inspection` | Inspection checklist |
+| Hive Map | `/map` | GPS hive locations |
+| Settings | `/settings` | App configuration |
+| Profile | `/profile/:id` | User profiles |
+| Messages | `/messages` | Direct messaging |
+| Groups | `/groups` | Group chats |
+| Admin | `/admin` | Admin panel |
 
-MIT License - Part of beehive-monitor project
+## Environment
+
+No environment variables required for the frontend - API calls use relative URLs proxied by Vite in development.
