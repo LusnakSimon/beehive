@@ -32,7 +32,15 @@ async function generateUniqueHiveId() {
 
 module.exports = async function handler(req, res) {
   try {
-    const path = req.query.path ? req.query.path.join('/') : '';
+    // Normalize path - use URL or query.path
+    let path = '';
+    if (req.url) {
+      // Extract path from URL: /api/auth/google -> google
+      const urlPath = req.url.split('?')[0];  // Remove query string
+      path = urlPath.replace(/^\/api\/auth\/?/, '');
+    } else if (req.query.path) {
+      path = Array.isArray(req.query.path) ? req.query.path.join('/') : req.query.path;
+    }
 
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
