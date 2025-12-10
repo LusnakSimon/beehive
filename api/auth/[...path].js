@@ -129,7 +129,8 @@ module.exports = async function handler(req, res) {
         const tokens = await tokenResponse.json();
         
         if (!tokens.access_token) {
-          throw new Error('No access token received');
+          console.error('Token response:', JSON.stringify(tokens));
+          throw new Error(tokens.error_description || tokens.error || 'No access token received');
         }
 
         // Get user info
