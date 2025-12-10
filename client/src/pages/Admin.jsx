@@ -23,23 +23,19 @@ export default function Admin() {
 
   const fetchUsers = async () => {
     try {
-      console.log('Fetching users...');
       const response = await fetch('/api/users', {
         credentials: 'include'
       });
       
-      console.log('Users response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('Users data:', data);
         setUsers(data);
       } else {
         const error = await response.json();
-        console.error('Failed to fetch users:', error);
+        toast.error(error.message || 'Nepodarilo sa načítať používateľov');
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      toast.error('Chyba pri načítavaní používateľov');
     } finally {
       setLoading(false);
     }
@@ -57,9 +53,10 @@ export default function Admin() {
       if (response.ok) {
         await fetchUsers();
         setNewHiveId('');
+        toast.success('Úľ bol pridelený');
       }
     } catch (error) {
-      console.error('Error assigning hive:', error);
+      toast.error('Chyba pri prideľovaní úľa');
     }
   };
 
@@ -72,9 +69,10 @@ export default function Admin() {
 
       if (response.ok) {
         await fetchUsers();
+        toast.success('Úľ bol odobraný');
       }
     } catch (error) {
-      console.error('Error removing hive:', error);
+      toast.error('Chyba pri odoberaní úľa');
     }
   };
   
@@ -115,9 +113,10 @@ export default function Admin() {
 
       if (response.ok) {
         await fetchUsers();
+        toast.success('Rola bola zmenená');
       }
     } catch (error) {
-      console.error('Error updating role:', error);
+      toast.error('Chyba pri zmene roly');
     }
   };
   
@@ -146,8 +145,6 @@ export default function Admin() {
     const reading = generateReading(hiveId);
     setLastReading(reading);
     
-    console.log('📡 Sending reading:', reading);
-    
     try {
       const response = await fetch('/api/sensor', {
         method: 'POST',
@@ -155,21 +152,17 @@ export default function Admin() {
         body: JSON.stringify(reading)
       });
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Reading sent successfully:', data);
-      } else {
-        console.error('❌ Failed to send reading:', response.status);
+      if (!response.ok) {
+        toast.error('Nepodarilo sa odoslať dáta');
       }
     } catch (error) {
-      console.error('❌ Error sending reading:', error);
+      toast.error('Chyba pri odosílaní dát');
     }
   };
   
   const startSimulator = () => {
     if (simulatorRunning) return;
     
-    console.log('▶️ Starting LoRaWAN simulator for', simulatorHive);
     setSimulatorRunning(true);
     localStorage.setItem('simulatorRunning', 'true');
     localStorage.setItem('simulatorHive', simulatorHive);
@@ -185,7 +178,6 @@ export default function Admin() {
   };
   
   const stopSimulator = () => {
-    console.log('⏸️ Stopping LoRaWAN simulator');
     setSimulatorRunning(false);
     localStorage.removeItem('simulatorRunning');
     localStorage.removeItem('simulatorHive');
@@ -202,7 +194,6 @@ export default function Admin() {
     const savedHive = localStorage.getItem('simulatorHive');
     
     if (wasRunning && savedHive) {
-      console.log('🔄 Restoring simulator state for', savedHive);
       setSimulatorHive(savedHive);
       setSimulatorRunning(true);
       

@@ -56,22 +56,6 @@ module.exports = async function handler(req, res) {
       return res.json({ success: true, message: 'Logged out successfully' });
     }
 
-    // Debug endpoint to check env vars (remove in production)
-    if (path === 'debug') {
-      return res.json({
-        hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
-        hasGoogleClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
-        hasGithubId: !!process.env.GITHUB_ID,
-        hasGithubSecret: !!process.env.GITHUB_SECRET,
-        hasJwtSecret: !!process.env.JWT_SECRET,
-        hasNextAuthSecret: !!process.env.NEXTAUTH_SECRET,
-        hasMongoUri: !!process.env.MONGODB_URI,
-        jwtSecretPrefix: process.env.JWT_SECRET?.substring(0, 5) + '...',
-        nextAuthSecretPrefix: process.env.NEXTAUTH_SECRET?.substring(0, 5) + '...',
-        secretsMatch: process.env.JWT_SECRET === process.env.NEXTAUTH_SECRET,
-      });
-    }
-
   // Route: /api/auth/github
   if (path === 'github') {
     const redirectUri = `${process.env.NEXTAUTH_URL || 'https://ebeehive.vercel.app'}/api/auth/callback`;
@@ -173,7 +157,6 @@ module.exports = async function handler(req, res) {
         });
 
         const tokenData = await tokenResponse.json();
-        console.log('GitHub token response:', JSON.stringify(tokenData));
 
         if (!tokenData.access_token) {
           throw new Error(tokenData.error_description || tokenData.error || 'No access token received');

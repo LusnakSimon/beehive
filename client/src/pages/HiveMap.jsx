@@ -92,8 +92,6 @@ export default function HiveMap() {
 
       if (response.ok) {
         const data = await response.json()
-        console.log('📍 Map API response:', data)
-        console.log('📍 Hives received:', data.hives?.length || 0)
         
         if (data.hives) {
           setHives(data.hives)

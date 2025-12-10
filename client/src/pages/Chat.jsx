@@ -56,8 +56,6 @@ const Chat = () => {
         });
         setOtherUser(other);
       }
-      
-      console.log('Fetched conversation - otherUser:', data.conversation.otherUser);
     } catch (err) {
       console.error('Error fetching conversation:', err);
     }
@@ -397,23 +395,6 @@ const Chat = () => {
                 const senderId = message.sender?.id || message.sender?._id || message.sender;
                 const currentUserId = user?.id || user?._id;
                 const isOwn = senderId === currentUserId;
-                
-                // Debug first message AND any message from current user
-                if (index === 0 || isOwn) {
-                  console.log(`=== MESSAGE ${index} DEBUG ===`);
-                  console.log('Message comparison:', {
-                    messageIndex: index,
-                    senderId,
-                    currentUserId,
-                    isOwn,
-                    result: senderId === currentUserId ? 'MATCH (own)' : 'NO MATCH (other)',
-                    senderName: message.sender?.name || 'unknown',
-                    messageText: message.text?.substring(0, 30) + '...'
-                  });
-                  console.log('Message element will have class:', isOwn ? 'message own' : 'message other');
-                  console.log('CSS should align:', isOwn ? 'flex-end (RIGHT)' : 'flex-start (LEFT)');
-                  console.log('========================');
-                }
                 
                 const prevSenderId = index > 0 
                   ? (messages[index - 1].sender?.id || messages[index - 1].sender?._id || messages[index - 1].sender)

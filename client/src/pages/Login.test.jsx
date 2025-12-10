@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import Login from './Login';
 import { ToastProvider } from '../contexts/ToastContext';
 import * as AuthContext from '../contexts/AuthContext';
@@ -21,9 +22,11 @@ Object.defineProperty(window, 'location', {
 // Helper to render with providers
 const renderWithProviders = (component) => {
   return render(
-    <ToastProvider>
-      {component}
-    </ToastProvider>
+    <MemoryRouter>
+      <ToastProvider>
+        {component}
+      </ToastProvider>
+    </MemoryRouter>
   );
 };
 
