@@ -25,15 +25,14 @@ export const AuthProvider = ({ children }) => {
 
   const checkSession = async () => {
     try {
-      // Fetch DB-backed current user
-      const response = await fetch('/api/users/me', {
+      // Use session endpoint to avoid 404 in some deployments
+      const response = await fetch('/api/session', {
         credentials: 'include'
       });
-
       if (response.ok) {
-        const data = await response.json();
-        if (data) {
-          setUser(data);
+        const session = await response.json();
+        if (session && session.user) {
+          setUser(session.user);
           setIsAuthenticated(true);
         }
       }
@@ -46,14 +45,13 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const response = await fetch('/api/users/me', {
+      const response = await fetch('/api/session', {
         credentials: 'include'
       });
-
       if (response.ok) {
-        const data = await response.json();
-        if (data) {
-          setUser(data);
+        const session = await response.json();
+        if (session && session.user) {
+          setUser(session.user);
           setIsAuthenticated(true);
           return true;
         }
