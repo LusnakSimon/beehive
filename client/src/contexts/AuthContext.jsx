@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext(null);
+      // Use /api/users/me to fetch fresh DB-backed user data (includes ownedHives)
+      const response = await fetch('/api/users/me', {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
-};
+        const data = await response.json();
+        if (data) {
+          setUser(data);
+          setIsAuthenticated(true);
+        }
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -43,14 +44,14 @@ export const AuthProvider = ({ children }) => {
 
   const refreshUser = async () => {
     try {
-      const response = await fetch('/api/session', {
+      const response = await fetch('/api/users/me', {
         credentials: 'include'
       });
       
       if (response.ok) {
-        const session = await response.json();
-        if (session && session.user) {
-          setUser(session.user);
+        const data = await response.json();
+        if (data) {
+          setUser(data);
           setIsAuthenticated(true);
           return true;
         }
