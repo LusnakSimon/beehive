@@ -1,37 +1,39 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-      // Use /api/users/me to fetch fresh DB-backed user data (includes ownedHives)
-      const response = await fetch('/api/users/me', {
+const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-        const data = await response.json();
-        if (data) {
-          setUser(data);
-          setIsAuthenticated(true);
-        }
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  
+
   useEffect(() => {
-    // Check session on mount, but skip if logging out
     if (!isLoggingOut) {
       checkSession();
     }
-  }, [isLoggingOut]);  const checkSession = async () => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggingOut]);
+
+  const checkSession = async () => {
     try {
-      const response = await fetch('/api/session', {
+      // Fetch DB-backed current user
+      const response = await fetch('/api/users/me', {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
-        const session = await response.json();
-        if (session && session.user) {
-          setUser(session.user);
+        const data = await response.json();
+        if (data) {
+          setUser(data);
           setIsAuthenticated(true);
         }
       }
@@ -47,7 +49,7 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch('/api/users/me', {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data) {
@@ -65,7 +67,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (provider) => {
     try {
-      // Redirect to OAuth provider
       window.location.href = `/api/auth/${provider}`;
     } catch (error) {
       console.error('Login error:', error);
@@ -75,24 +76,16 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      // Set logout flag to prevent checkSession from running
       setIsLoggingOut(true);
-      
-      // Call logout endpoint to clear cookie
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include'
       });
-      
-      // Clear state
       setUser(null);
       setIsAuthenticated(false);
-      
-      // Redirect to login (will unmount component, so no need to reset flag)
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);
-      // Even if API call fails, clear local state and redirect
       setUser(null);
       setIsAuthenticated(false);
       window.location.href = '/login';
@@ -123,11 +116,11 @@ export const withAuth = (Component) => {
 
     if (!mounted || loading) {
       return (
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '100vh' 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh'
         }}>
           <div className="spinner"></div>
         </div>
