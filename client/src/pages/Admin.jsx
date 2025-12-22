@@ -15,7 +15,7 @@ export default function Admin() {
   const [simulatorInterval, setSimulatorInterval] = useState(null);
   const [lastReading, setLastReading] = useState(null);
 
-  const availableHives = ['HIVE-001', 'HIVE-002', 'HIVE-003'];
+  const [availableHives, setAvailableHives] = useState([]);
 
   useEffect(() => {
     fetchUsers();
@@ -30,6 +30,19 @@ export default function Admin() {
       if (response.ok) {
         const data = await response.json();
         setUsers(data);
+        // Compute available hive IDs from all users
+        const allHives = data.flatMap(u => u.ownedHives || []);
+        const hiveIds = Array.from(new Set(allHives.map(h => (typeof h === 'string' ? h : h?.id)).filter(Boolean)));
+        if (hiveIds.length === 0) {
+          setAvailableHives(['HIVE-001', 'HIVE-002', 'HIVE-003']);
+        } else {
+          hiveIds.sort((a, b) => {
+            const na = parseInt(a.replace('HIVE-', '')) || 0;
+            const nb = parseInt(b.replace('HIVE-', '')) || 0;
+            return na - nb;
+          });
+          setAvailableHives(hiveIds);
+        }
       } else {
         const error = await response.json();
         toast.error(error.message || 'Nepodarilo sa načítať používateľov');
@@ -280,9 +293,9 @@ export default function Admin() {
                   onChange={(e) => setSimulatorHive(e.target.value)}
                   disabled={simulatorRunning}
                 >
-                  {availableHives.map(hive => (
-                    <option key={hive} value={hive}>{hive}</option>
-                  ))}
+                    {availableHives.map(hive => (
+                      <option key={hive} value={hive}>{hive}</option>
+                    ))}
                 </select>
               </label>
               

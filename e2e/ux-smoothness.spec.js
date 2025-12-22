@@ -151,7 +151,10 @@ test.describe('Visual Stability', () => {
 });
 
 test.describe('Animations & Transitions', () => {
-  test('should have smooth hover effects on cards', async ({ page }) => {
+  test('should have smooth hover effects on cards', async ({ page, isMobile }) => {
+    // Skip hover test on mobile - hover doesn't work on touch devices
+    test.skip(isMobile, 'Hover not applicable on mobile devices');
+    
     await page.goto('/');
     await waitForStableState(page);
     
