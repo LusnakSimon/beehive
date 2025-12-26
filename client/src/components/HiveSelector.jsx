@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useHive } from '../context/HiveContext'
 import './HiveSelector.css'
 
 export default function HiveSelector() {
   const { selectedHive, setSelectedHive, hives } = useHive()
   const [isOpen, setIsOpen] = useState(false)
+  const navigate = useNavigate()
 
   // Loading state - hives not yet loaded
   if (!hives || hives.length === 0) {
@@ -66,6 +68,17 @@ export default function HiveSelector() {
                 )}
               </button>
             ))}
+            <div className="hive-dropdown-footer">
+              <button
+                className="hive-dropdown-add"
+                onClick={() => {
+                  setIsOpen(false)
+                  navigate('/settings?addHive=1')
+                }}
+              >
+                ➕ Pridať nový úľ
+              </button>
+            </div>
           </div>
         </>
       )}

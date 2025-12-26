@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useHive } from '../context/HiveContext'
 import { useToast } from '../contexts/ToastContext'
@@ -39,7 +40,8 @@ export default function Settings() {
     visibility: 'private',
     device: {
       type: 'manual',
-      devEUI: ''       // Required for LoRaWAN
+      devEUI: '',       // Required for LoRaWAN
+      deviceId: ''      // Identifier for WiFi devices (esp32-wifi)
     }
   })
   const [isAddingHive, setIsAddingHive] = useState(false)
@@ -47,6 +49,14 @@ export default function Settings() {
 
   useEffect(() => {
     loadSettings()
+    // Open add-hive form when navigated from HiveSelector with ?addHive=1
+    const openFromQuery = () => {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('addHive')) {
+        setShowAddHive(true)
+      }
+    }
+    openFromQuery()
   }, [])
 
   const loadSettings = () => {
@@ -170,6 +180,11 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         hiveData.device.devEUI = newHive.device.devEUI.toUpperCase()
       }
 
+      // Add deviceId for WiFi devices
+      if (newHive.device.type === 'esp32-wifi' && newHive.device.deviceId) {
+        hiveData.device.deviceId = newHive.device.deviceId
+      }
+
       // Only include coordinates if both lat and lng are provided
       if (newHive.coordinates.lat && newHive.coordinates.lng) {
         hiveData.coordinates = {
@@ -233,6 +248,11 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       // Add devEUI for LoRaWAN devices
       if (editingHive.device?.type === 'esp32-lorawan' && editingHive.device?.devEUI) {
         hiveData.device.devEUI = editingHive.device.devEUI.toUpperCase()
+      }
+
+      // Add deviceId for WiFi devices
+      if (editingHive.device?.type === 'esp32-wifi' && editingHive.device?.deviceId) {
+        hiveData.device.deviceId = editingHive.device.deviceId
       }
 
       // Only include coordinates if both lat and lng are provided
@@ -332,7 +352,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                     color: hive.color || colors[0],
                     coordinates: hive.coordinates || { lat: '', lng: '' },
                     visibility: hive.visibility || 'private',
-                    device: hive.device || { type: 'manual', devEUI: '' }
+                    device: hive.device || { type: 'manual', devEUI: '', deviceId: '' }
                   })}
                 >
                   ✏️
@@ -445,7 +465,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                 value={newHive.device.type}
                 onChange={(e) => setNewHive(prev => ({ 
                   ...prev, 
-                  device: { ...prev.device, type: e.target.value, devEUI: '' }
+                  device: { ...prev.device, type: e.target.value, devEUI: '', deviceId: '' }
                 }))}
               >
                 <option value="manual">📝 Manuálne zadávanie</option>
@@ -631,7 +651,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                   value={editingHive.device?.type || 'manual'}
                   onChange={(e) => setEditingHive(prev => ({
                     ...prev,
-                    device: { ...prev.device, type: e.target.value, devEUI: '' }
+                    device: { ...prev.device, type: e.target.value, devEUI: '', deviceId: '' }
                   }))}
                 >
                   <option value="manual">📝 Manuálne zadávanie</option>
@@ -666,6 +686,30 @@ const char* appKey = "${lorawanConfig.appKey}";`;
                     />
                     <div className="info-box" style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
                       <p>💡 DevEUI nájdeš vytlačené na ESP32 alebo v sériovej konzole</p>
+                    </div>
+                  </div>
+                )}
+                {editingHive.device?.type === 'esp32-wifi' && (
+                  <div style={{ marginTop: '0.75rem' }}>
+                    <label htmlFor="editDeviceId">
+                      Device ID (Identifikátor zariadenia)
+                      <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem' }}>
+                        Zadaj jedinečný identifikátor pre tvoje ESP32 (napr. MAC alebo vlastné ID)
+                      </span>
+                    </label>
+                    <input
+                      id="editDeviceId"
+                      type="text"
+                      value={editingHive.device?.deviceId || ''}
+                      onChange={(e) => setEditingHive(prev => ({
+                        ...prev,
+                        device: { ...prev.device, deviceId: e.target.value }
+                      }))}
+                      placeholder="napr. 24:6F:28:AA:BB:CC"
+                      style={{ fontFamily: 'monospace', fontSize: '0.9rem' }}
+                    />
+                    <div className="info-box" style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                      <p>💡 Toto ID môžeš použiť vo firmeware pre identifikáciu zariadenia.</p>
                     </div>
                   </div>
                 )}
