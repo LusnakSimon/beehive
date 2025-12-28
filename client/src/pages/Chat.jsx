@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Chat.css';
+import '../components/ChatLayout.css';
 
 const Chat = () => {
   const { conversationId } = useParams();
@@ -358,10 +359,10 @@ const Chat = () => {
   }
 
   return (
-    <div className="chat-page">
-      <div className="chat-container">
+    <div className="chat-page bh-chat-page">
+      <div className="chat-container bh-chat-container">
         {/* Header */}
-        <div className="chat-header">
+        <div className="chat-header bh-chat-header">
           <button className="back-button" onClick={() => navigate('/messages')}>
             <span className="back-arrow">←</span>
           </button>
@@ -379,7 +380,7 @@ const Chat = () => {
         </div>
 
         {/* Messages */}
-        <div className="messages-area">
+        <div className="messages-area bh-messages-area">
           {loading ? (
             <div className="loading">Načítavam správy...</div>
           ) : messages.length === 0 ? (
@@ -389,7 +390,7 @@ const Chat = () => {
               <p className="no-messages-hint">Napíšte prvú správu pre začatie konverzácie</p>
             </div>
           ) : (
-            <div className="messages-list">
+            <div className="messages-list bh-messages-list">
               {messages.map((message, index) => {
                 // API returns sender.id (not sender._id) and message.id (not message._id)
                 const senderId = message.sender?.id || message.sender?._id || message.sender;
@@ -411,7 +412,7 @@ const Chat = () => {
                 return (
                   <div 
                     key={message.id || message._id} 
-                    className={`message ${isOwn ? 'own' : 'other'}`}
+                    className={`message ${isOwn ? 'own' : 'other'} bh-message ${isOwn ? 'own' : 'other'}`}
                     data-is-own={isOwn}
                   >
                     {!isOwn && showAvatar && (
@@ -425,10 +426,10 @@ const Chat = () => {
                     )}
                     {!isOwn && !showAvatar && <div className="message-avatar-spacer" />}
                     
-                    <div className="message-content">
+                    <div className="message-content bh-message-content">
                       {/* Only show bubble if there's text or files */}
                       {(message.text || (message.files && message.files.length > 0)) && (
-                        <div className="message-bubble">
+                        <div className="message-bubble bh-message-bubble">
                           {message.text && <p className="message-text">{message.text}</p>}
                           
                           {/* Display files */}
@@ -467,7 +468,7 @@ const Chat = () => {
                         </div>
                       )}
                       {showTimestamp && (
-                        <span className="message-time">{formatMessageTime(message.createdAt)}</span>
+                        <span className="message-time bh-message-time">{formatMessageTime(message.createdAt)}</span>
                       )}
                     </div>
 
@@ -490,7 +491,7 @@ const Chat = () => {
         </div>
 
         {/* Input */}
-        <form className="message-input-area" onSubmit={sendMessage}>
+        <form className="message-input-area bh-message-input-area" onSubmit={sendMessage}>
           {error && <div className="input-error">⚠️ {error}</div>}
           
           {/* File preview */}

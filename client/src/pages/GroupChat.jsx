@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import './GroupChat.css';
+import '../components/ChatLayout.css';
 
 function GroupChat() {
   const { groupId } = useParams();
@@ -210,10 +211,10 @@ function GroupChat() {
   const groupedMessages = groupMessagesByDate(messages);
 
   return (
-    <div className="group-chat-container">
-      <div className="group-chat-wrapper">
+    <div className="group-chat-container bh-chat-page">
+      <div className="group-chat-wrapper bh-chat-container">
         {/* Header */}
-        <div className="group-chat-header">
+        <div className="group-chat-header bh-chat-header">
           <button className="back-button" onClick={() => navigate(`/groups/${groupId}`)}>
             ←
           </button>
@@ -234,7 +235,7 @@ function GroupChat() {
 
         <div className="group-chat-content">
         {/* Messages */}
-        <div className="group-messages-container">
+        <div className="group-messages-container bh-messages-area">
           {Object.keys(groupedMessages).length === 0 ? (
             <div className="empty-messages">
               <p>Zatiaľ žiadne správy</p>
@@ -253,7 +254,7 @@ function GroupChat() {
                   const isOwn = senderId === userId;
                   
                   return (
-                    <div key={message.id} className={`group-message ${isOwn ? 'own' : 'other'}`}>
+                    <div key={message.id} className={`group-message ${isOwn ? 'own' : 'other'} bh-message ${isOwn ? 'own' : 'other'}`}>
                       {!isOwn && (
                         <img 
                           src={message.sender.image || '/default-avatar.png'} 
@@ -263,16 +264,16 @@ function GroupChat() {
                           style={{ cursor: 'pointer' }}
                         />
                       )}
-                      <div className="message-content">
+                      <div className="message-content bh-message-content">
                         {!isOwn && (
                           <div className="message-header">
                             <span className="sender-name">{message.sender.name}</span>
                           </div>
                         )}
                         {message.text && (
-                          <div className="message-bubble">
+                          <div className="message-bubble bh-message-bubble">
                             <p className="message-text">{message.text}</p>
-                            <span className="message-time">{formatTime(message.createdAt)}</span>
+                            <span className="message-time bh-message-time">{formatTime(message.createdAt)}</span>
                           </div>
                         )}
                         {message.files && message.files.length > 0 && (
