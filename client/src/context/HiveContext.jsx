@@ -28,7 +28,7 @@ export function HiveProvider({ children }) {
         // Handle both old format (string) and new format (object)
         if (typeof hive === 'string') {
           // Old format - generate default metadata
-          const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+          const colors = ['var(--warning)', 'var(--primary)', 'var(--success)', 'var(--danger)', 'var(--secondary)'];
           const number = hive.replace('HIVE-', '');
           const index = user.ownedHives.indexOf(hive);
           return {
@@ -43,7 +43,7 @@ export function HiveProvider({ children }) {
             id: hive.id,
             name: hive.name,
             location: hive.location || '',
-            color: hive.color || '#fbbf24'
+            color: hive.color || 'var(--warning)'
           };
         }
       });

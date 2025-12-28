@@ -21,8 +21,8 @@ html, body {
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text);
+  background-color: var(--bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -32,11 +32,11 @@ html, body {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--primary);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--primary-dark);
 }
 
 body {
@@ -74,12 +74,12 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: var(--card-bg);
   }
   a:hover {
     color: #747bff;
+  button:hover {
+    border-color: var(--primary);
   }
-  button {
-    background-color: #f9f9f9;
-  }
+  /* Color variants handled in client/src/colors.css */
 }
