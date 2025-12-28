@@ -407,3 +407,53 @@
     font-size: 0.95rem;
   }
 }
+
+/* Queued inspections (offline) */
+.queued-inspections {
+  margin: 0 1rem 1rem;
+  padding: 1rem;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+}
+
+.queued-inspections h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.queued-inspection-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+
+.queued-time {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  min-width: 140px;
+}
+
+.queued-summary {
+  color: var(--text);
+  flex: 1;
+}
+
+.queued-badge {
+  background: var(--warning-bg);
+  color: var(--warning);
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.queued-inspections .btn {
+  margin-bottom: 0.5rem;
+}
