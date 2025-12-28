@@ -357,7 +357,7 @@ function GroupChat() {
       </div>
 
       {/* Message Input */}
-      <form className="message-input-form" onSubmit={handleSendMessage}>
+      <form className="message-input-form bh-message-input-area" onSubmit={handleSendMessage}>
         {selectedFiles.length > 0 && (
           <div className="selected-files-preview">
             {selectedFiles.map((file, idx) => (

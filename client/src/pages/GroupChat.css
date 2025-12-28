@@ -493,12 +493,13 @@
 @media (max-width: 768px) {
   .message-input-form {
     padding: 0.75rem;
-    position: fixed;
-    bottom: 4rem;
-    left: 0;
-    right: 0;
+    /* Positioning handled by shared .bh-message-input-area */
+    position: static;
+    bottom: auto;
+    left: auto;
+    right: auto;
     background: var(--card-bg);
-    z-index: 10;
+    z-index: auto;
     border-top: 2px solid var(--border);
   }
 }
