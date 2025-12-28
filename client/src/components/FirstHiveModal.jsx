@@ -10,13 +10,14 @@ export default function FirstHiveModal() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
+  // Open modal when there are no hives in HiveContext (covers created hive state)
   useEffect(() => {
-    if (user && Array.isArray(user.ownedHives) && user.ownedHives.length === 0) {
+    if (Array.isArray(hives) && hives.length === 0) {
       setOpen(true)
     } else {
       setOpen(false)
     }
-  }, [user, hives])
+  }, [hives])
 
   if (!open) return null
 

@@ -8,14 +8,31 @@ export default function HiveSelector() {
   const [isOpen, setIsOpen] = useState(false)
   const navigate = useNavigate()
 
-  // Loading state - hives not yet loaded
-  if (!hives || hives.length === 0) {
+  // If hives is undefined, still loading. If hives is empty, show an "Add hive" selector.
+  if (!hives) {
     return (
       <div className="hive-selector">
         <div className="hive-selector-loading">
           <div className="loading-spinner-small"></div>
           <span>Načítavam úle...</span>
         </div>
+      </div>
+    )
+  }
+
+  if (Array.isArray(hives) && hives.length === 0) {
+    return (
+      <div className="hive-selector">
+        <button
+          className="hive-selector-btn empty"
+          onClick={() => navigate('/settings?addHive=1')}
+        >
+          <div className="hive-icon empty">➕</div>
+          <div className="hive-info">
+            <div className="hive-name">Pridať úľ</div>
+            <div className="hive-location">Zatiaľ žiadne úle</div>
+          </div>
+        </button>
       </div>
     )
   }
