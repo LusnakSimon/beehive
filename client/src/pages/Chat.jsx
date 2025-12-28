@@ -493,8 +493,8 @@ const Chat = () => {
         {/* Input */}
         <form className="message-input-area bh-message-input-area" onSubmit={sendMessage}>
           {error && <div className="input-error">⚠️ {error}</div>}
-          
-          {/* File preview */}
+
+          {/* File preview (kept) */}
           {selectedFiles.length > 0 && (
             <div className="selected-files-preview">
               {selectedFiles.map((file, index) => (
@@ -525,8 +525,8 @@ const Chat = () => {
               ))}
             </div>
           )}
-          
-          <div className="message-input-wrapper">
+
+          <div className="input-row">
             <input
               type="file"
               ref={fileInputRef}
@@ -535,6 +535,7 @@ const Chat = () => {
               multiple
               style={{ display: 'none' }}
             />
+
             <button
               type="button"
               className="attach-button"
@@ -544,29 +545,23 @@ const Chat = () => {
             >
               📎
             </button>
-            
-            <div className="message-input-container">
-              <textarea
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder={selectedFiles.length > 0 ? "Pridať popis..." : "Napíšte správu..."}
-                className="message-input"
-                rows="1"
-                maxLength="5000"
-                disabled={sending || uploading}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage(e);
-                  }
-                }}
-              />
-              <div className="input-footer">
-                <span className="char-count">
-                  {messageText.length}/5000
-                </span>
-              </div>
-            </div>
+
+            <textarea
+              value={messageText}
+              onChange={(e) => setMessageText(e.target.value)}
+              placeholder={selectedFiles.length > 0 ? "Pridať popis..." : "Napíšte správu..."}
+              className="message-input"
+              rows="1"
+              maxLength="5000"
+              disabled={sending || uploading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage(e);
+                }
+              }}
+            />
+
             <button 
               type="submit" 
               className="send-button"
