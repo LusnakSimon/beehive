@@ -4,13 +4,13 @@
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+  background: var(--btn-warning-gradient);
 }
 
 .error-boundary-content {
   max-width: 500px;
   text-align: center;
-  background: white;
+  background: var(--card-bg);
   padding: 3rem 2rem;
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
@@ -23,14 +23,14 @@
 }
 
 .error-boundary h1 {
-  color: #1f2937;
+  color: var(--text);
   margin: 0 0 1rem;
   font-size: 1.75rem;
   font-weight: 700;
 }
 
 .error-boundary p {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0 0 2rem;
   font-size: 1rem;
   line-height: 1.6;
@@ -38,7 +38,7 @@
 
 .error-details {
   text-align: left;
-  background: #f9fafb;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 2rem;
@@ -47,7 +47,7 @@
 .error-details summary {
   cursor: pointer;
   font-weight: 600;
-  color: #374151;
+  color: var(--text);
   margin-bottom: 0.5rem;
 }
 
@@ -56,7 +56,7 @@
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
-  color: #ef4444;
+  color: var(--danger);
   margin: 0.5rem 0 0;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .error-actions .btn-primary {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: var(--btn-warning-gradient);
   color: white;
   box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
 }
@@ -90,13 +90,13 @@
 
 .error-actions .btn-secondary {
   background: white;
-  color: #374151;
-  border: 2px solid #e5e7eb;
+  color: var(--text);
+  border: 2px solid var(--border);
 }
 
 .error-actions .btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: var(--bg-secondary);
+  border-color: var(--border-dark);
 }
 
 /* Responsive */

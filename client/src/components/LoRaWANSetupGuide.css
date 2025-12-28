@@ -50,8 +50,8 @@
 }
 
 .lorawan-guide .close-btn:hover {
-  background: var(--surface-hover);
-  color: var(--text-primary);
+  background: var(--bg-secondary);
+  color: var(--text);
 }
 
 /* Steps Navigation */
@@ -180,8 +180,9 @@
 }
 
 /* Code Block */
+
 .code-block {
-  background: #1e1e1e;
+  background: var(--card-bg);
   border-radius: 8px;
   overflow: hidden;
   margin: 1rem 0;
@@ -193,10 +194,9 @@
   overflow-x: auto;
   font-size: 0.8rem;
   line-height: 1.4;
-  color: #d4d4d4;
+  color: var(--text);
   max-height: 200px;
 }
-
 .code-block .copy-btn {
   display: block;
   width: 100%;

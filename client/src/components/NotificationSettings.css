@@ -10,11 +10,11 @@
 }
 
 .error-box {
-  background: rgba(239, 68, 68, 0.1) !important;
-  border-left: 4px solid #ef4444;
+  background: var(--danger-bg) !important;
+  border-left: 4px solid var(--danger);
 }
 
 .error-box p {
-  color: #ef4444 !important;
+  color: var(--danger) !important;
   margin: 0;
 }

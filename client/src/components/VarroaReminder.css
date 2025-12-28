@@ -3,9 +3,9 @@
   bottom: 80px;
   right: 20px;
   max-width: 400px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--btn-secondary-gradient);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--card-shadow-lg);
   z-index: 1000;
   animation: slideInRight 0.3s ease-out;
 }
@@ -79,22 +79,22 @@
 
 .varroa-actions .btn-primary {
   background: white;
-  color: #667eea;
+  color: var(--secondary);
 }
 
 .varroa-actions .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+  box-shadow: var(--card-shadow-md);
 }
 
 .varroa-actions .btn-secondary {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
   color: white;
   backdrop-filter: blur(10px);
 }
 
 .varroa-actions .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .varroa-actions .btn-text {
@@ -116,19 +116,19 @@
     left: 10px;
     max-width: none;
   }
-  
+
   .varroa-reminder-content {
     padding: 16px;
   }
-  
+
   .varroa-icon {
     font-size: 40px;
   }
-  
+
   .varroa-text h3 {
     font-size: 16px;
   }
-  
+
   .varroa-text p {
     font-size: 13px;
   }
