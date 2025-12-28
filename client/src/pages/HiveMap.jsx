@@ -151,6 +151,40 @@ export default function HiveMap() {
     })
   }
 
+  // Helper: ensure polylines are visible even if hive color is very light
+  const hexToRgb = (hex) => {
+    if (!hex) return null
+    let h = hex.replace('#', '').trim()
+    if (h.length === 3) h = h.split('').map(c => c + c).join('')
+    const int = parseInt(h, 16)
+    if (Number.isNaN(int)) return null
+    return { r: (int >> 16) & 255, g: (int >> 8) & 255, b: int & 255 }
+  }
+
+  const luminance = ({ r, g, b }) => {
+    const [R, G, B] = [r, g, b].map(v => {
+      const s = v / 255
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)
+    })
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B
+  }
+
+  const isLightColor = (hex) => {
+    const rgb = hexToRgb(hex)
+    if (!rgb) return false
+    return luminance(rgb) > 0.6
+  }
+
+  const getLineColor = (hex) => {
+    try {
+      const rootPrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary')?.trim() || '#2563eb'
+      if (!hex) return rootPrimary
+      return isLightColor(hex) ? rootPrimary : hex
+    } catch (e) {
+      return hex || '#2563eb'
+    }
+  }
+
   const getDistances = (hive) => {
     if (!hive.coordinates) return []
     
@@ -298,19 +332,19 @@ export default function HiveMap() {
               <>
                 {hives
                   .filter(h => h.id !== selectedHive.id && h.coordinates)
-                  .map(otherHive => (
-                    <Polyline
-                      key={`${selectedHive.id}-${otherHive.id}`}
-                      positions={[
-                        [selectedHive.coordinates.lat, selectedHive.coordinates.lng],
-                        [otherHive.coordinates.lat, otherHive.coordinates.lng]
-                      ]}
-                      color={selectedHive.color}
-                      weight={2}
-                      opacity={0.5}
-                      dashArray="5, 10"
-                    />
-                  ))
+                      .map(otherHive => (
+                        <Polyline
+                          key={`${selectedHive.id}-${otherHive.id}`}
+                          positions={[
+                            [selectedHive.coordinates.lat, selectedHive.coordinates.lng],
+                            [otherHive.coordinates.lat, otherHive.coordinates.lng]
+                          ]}
+                          color={getLineColor(selectedHive.color)}
+                          weight={2}
+                          opacity={0.8}
+                          dashArray="5, 10"
+                        />
+                      ))
                 }
               </>
             )}
