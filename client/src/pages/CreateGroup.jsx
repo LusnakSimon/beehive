@@ -146,7 +146,7 @@ const CreateGroup = () => {
               style={{
                 backgroundImage: coverImagePreview 
                   ? `url(${coverImagePreview})` 
-                  : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+                  : 'var(--btn-primary-gradient)'
               }}
             >
               {!coverImagePreview && (

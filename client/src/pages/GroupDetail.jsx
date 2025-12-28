@@ -211,7 +211,7 @@ const GroupDetail = () => {
           style={{
             backgroundImage: group.coverImage 
               ? `url(${group.coverImage})` 
-              : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+                  : 'var(--btn-primary-gradient)'
           }}
         >
           <button className="back-button-overlay" onClick={() => navigate('/groups')}>

@@ -93,7 +93,7 @@
   width: 120px;
   height: 120px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--btn-primary-gradient);
   color: white;
   display: flex;
   align-items: center;
@@ -139,7 +139,7 @@
 }
 
 .btn-chat {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--btn-success-gradient);
   color: white;
   border: none;
   padding: 0.875rem 1.5rem;
@@ -148,17 +148,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: var(--card-shadow-md);
   white-space: nowrap;
 }
 
 .btn-chat:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: var(--card-shadow-lg);
 }
 
 .btn-join {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--btn-primary-gradient);
   color: white;
   border: none;
   padding: 0.875rem 1.5rem;
@@ -167,13 +167,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: var(--card-shadow-md);
   white-space: nowrap;
 }
 
 .btn-join:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    box-shadow: var(--card-shadow-lg);
 }
 
 .btn-join:disabled {
@@ -184,7 +184,7 @@
 
 .btn-leave {
   background: var(--card-bg);
-  color: #ef4444;
+  color: var(--danger);
   border: 2px solid #ef4444;
   padding: 0.875rem 1.5rem;
   border-radius: 10px;
@@ -206,7 +206,7 @@
 
 .creator-badge,
 .admin-badge {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: var(--btn-warning-gradient);
   color: white;
   padding: 0.875rem 1.5rem;
   border-radius: 10px;
