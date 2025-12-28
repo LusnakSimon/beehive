@@ -88,15 +88,15 @@
 }
 
 .role-badge.admin {
-  background: rgba(251, 191, 36, 0.2);
-  color: #f59e0b;
-  border: 1px solid rgba(251, 191, 36, 0.4);
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning);
 }
 
 .role-badge.user {
-  background: rgba(59, 130, 246, 0.2);
-  color: #3b82f6;
-  border: 1px solid rgba(59, 130, 246, 0.4);
+  background: var(--primary-bg);
+  color: var(--primary);
+  border: 1px solid var(--primary);
 }
 
 .role-badge:hover {
@@ -124,18 +124,18 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.75rem;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--success-bg);
+  border: 1px solid var(--success);
   border-radius: 8px;
   font-size: 0.85rem;
-  color: #10b981;
+  color: var(--success);
   font-weight: 500;
 }
 
 .hive-tag .remove-btn {
   background: none;
   border: none;
-  color: #ef4444;
+  color: var(--danger);
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0;
@@ -165,7 +165,7 @@
   padding: 0.5rem;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg);
+  background: var(--card-bg);
   color: var(--text);
   font-size: 0.9rem;
   cursor: pointer;
@@ -256,12 +256,12 @@
   }
 }
 .simulator-panel {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--btn-secondary-gradient);
   color: white;
   padding: 2rem;
   border-radius: 16px;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--card-shadow-lg);
 }
 
 .simulator-panel h2 {
@@ -276,11 +276,11 @@
 }
 
 .simulator-controls {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(10px);
   padding: 1.5rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .simulator-config {
@@ -324,33 +324,33 @@
 }
 
 .simulator-btn.start {
-  background: #10b981;
+  background: var(--success);
   color: white;
 }
 
 .simulator-btn.start:hover {
-  background: #059669;
+  background: var(--success-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  box-shadow: var(--card-shadow-md);
 }
 
 .simulator-btn.stop {
-  background: #ef4444;
+  background: var(--danger);
   color: white;
 }
 
 .simulator-btn.stop:hover {
-  background: #dc2626;
+  background: var(--danger-dark);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  box-shadow: var(--card-shadow-md);
 }
 
 .simulator-status {
   margin-top: 1rem;
   padding: 0.75rem 1rem;
-  background: rgba(16, 185, 129, 0.2);
+  background: var(--success-bg);
   border-radius: 8px;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid var(--success);
 }
 
 .status-indicator {
@@ -361,9 +361,9 @@
 .last-reading {
   margin-top: 1rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--card-bg);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border);
 }
 
 .last-reading h4 {
@@ -379,12 +379,12 @@
 }
 
 .reading-data span {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-secondary);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--border);
 }
 
 @media (max-width: 768px) {
@@ -412,47 +412,47 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: var(--btn-primary-gradient);
   padding: 1.5rem;
   border-radius: 12px;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.2);
+  box-shadow: var(--card-shadow-md);
   color: white;
   transition: transform 0.2s;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.3);
+  box-shadow: var(--card-shadow-lg);
 }
 
 .stat-card:nth-child(2) {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.2);
+  background: var(--btn-primary-gradient);
+  box-shadow: var(--card-shadow-md);
 }
 
 .stat-card:nth-child(2):hover {
-  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.3);
+  box-shadow: var(--card-shadow-lg);
 }
 
 .stat-card:nth-child(3) {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.2);
+  background: var(--btn-success-gradient);
+  box-shadow: var(--card-shadow-md);
 }
 
 .stat-card:nth-child(3):hover {
-  box-shadow: 0 6px 20px rgba(67, 233, 123, 0.3);
+  box-shadow: var(--card-shadow-lg);
 }
 
 .stat-card:nth-child(4) {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  box-shadow: 0 4px 12px rgba(250, 112, 154, 0.2);
+  background: var(--btn-warning-gradient);
+  box-shadow: var(--card-shadow-md);
 }
 
 .stat-card:nth-child(4):hover {
-  box-shadow: 0 6px 20px rgba(250, 112, 154, 0.3);
+  box-shadow: var(--card-shadow-lg);
 }
 
 .stat-icon {
@@ -487,9 +487,9 @@
 
 .delete-user-btn {
   padding: 0.5rem 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -498,8 +498,8 @@
 }
 
 .delete-user-btn:hover {
-  background: #ef4444;
+  background: var(--danger);
   color: white;
-  border-color: #ef4444;
+  border-color: var(--danger);
   transform: translateY(-1px);
 }
