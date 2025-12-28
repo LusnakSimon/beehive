@@ -190,6 +190,35 @@
   .bh-message-input-area .send-button { margin-left: auto; }
 }
 
+/* Stronger normalization to avoid per-page overrides */
+.bh-message-input-area .attach-button,
+.bh-message-input-area .send-button {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+
+.bh-message-input-area .send-button {
+  background: var(--btn-secondary-gradient) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: var(--card-shadow-md) !important;
+  font-size: 1rem !important;
+}
+
+.bh-message-input-area .attach-button {
+  background: var(--input-bg) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.bh-message-input-area .message-input {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
 /* Ensure inputs and textareas inherit proper bg/text */
 .bh-message-input-area .message-input, .bh-message-input-area input[type="text"], .bh-message-input-area textarea {
   background: var(--input-bg);

@@ -45,6 +45,19 @@
   padding-bottom: 0.35rem;
 }
 
+/* Make sure no nav item shows an unexpected filled box on mobile */
+.nav-mobile .nav-link,
+.nav-mobile .nav-link .icon,
+.nav-mobile .nav-link span:not(.icon) {
+  background: transparent !important;
+  border: none !important;
+}
+
+.nav-mobile .nav-link.active {
+  color: var(--nav-link-active);
+  background: transparent !important;
+}
+
 .nav-link {
   display: flex;
   flex-direction: column;
