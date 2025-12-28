@@ -229,7 +229,7 @@ export default function Profile() {
         style={{
           backgroundImage: profile.profile?.coverPhoto 
             ? `url(${profile.profile.coverPhoto})` 
-            : 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+            : 'var(--btn-warning-gradient)'
         }}
       />
 
