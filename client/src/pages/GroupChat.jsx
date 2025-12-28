@@ -215,7 +215,17 @@ function GroupChat() {
       <div className="group-chat-wrapper bh-chat-container">
         {/* Header */}
         <div className="group-chat-header bh-chat-header">
-          <button className="back-button" onClick={() => navigate(`/groups/${groupId}`)}>
+            <button
+              className="back-button"
+              onClick={() => {
+                try {
+                  if (window.history.length > 1) navigate(-1);
+                  else navigate(`/groups/${groupId}`);
+                } catch (e) {
+                  navigate(`/groups/${groupId}`);
+                }
+              }}
+            >
             ←
           </button>
           <div className="group-header-info">

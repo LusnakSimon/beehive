@@ -110,6 +110,24 @@
   border: 1px solid var(--border);
 }
 
+/* Make text wrap more gracefully and prevent layout breakage */
+.bh-message-bubble .message-text,
+.bh-message-bubble p,
+.bh-message-bubble .file-info,
+.bh-message-bubble .message-files {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Images should fit inside bubble on narrow viewports */
+.bh-message-bubble img,
+.bh-message-bubble .message-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
 .bh-message.own .bh-message-bubble {
   background: var(--btn-secondary-gradient);
   color: white;

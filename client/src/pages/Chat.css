@@ -465,6 +465,8 @@
   overflow-x: auto;
   border-bottom: 1px solid var(--border);
   background: var(--bg-secondary);
+  max-height: 80px;
+  overflow-y: auto;
 }
 
 .selected-file {
@@ -571,8 +573,8 @@
 }
 
 .message-image {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 100%;
+  height: auto;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s;

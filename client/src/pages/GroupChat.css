@@ -335,9 +335,10 @@
   max-width: 100%;
 }
 
+
 .file-image {
-  max-width: 200px;
-  max-height: 200px;
+  max-width: 100%;
+  height: auto;
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.2s;
@@ -509,6 +510,8 @@
   gap: 0.5rem;
   margin-bottom: 0.75rem;
   flex-wrap: wrap;
+  max-height: 80px;
+  overflow-x: auto;
 }
 
 .file-preview {
