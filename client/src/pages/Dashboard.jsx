@@ -6,6 +6,11 @@ import HiveSelector from '../components/HiveSelector'
 import VarroaReminder from '../components/VarroaReminder'
 import { DashboardSkeleton } from '../components/Skeleton'
 import './Dashboard.css'
+import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+
+const DB_NAME = 'beehive-cache-v1'
+const LATEST_STORE = 'sensor-latest'
+const HISTORY_STORE = 'sensor-history'
 
 export default function Dashboard() {
   const { selectedHive, getCurrentHive } = useHive()
@@ -64,12 +69,24 @@ export default function Dashboard() {
         const result = await response.json()
         setPreviousData(data)
         setData(result)
-        
+        try { await idbAddItem(DB_NAME, LATEST_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), item: result }) } catch (e) {}
         // Check notification conditions after fetching new data
         await checkConditions(selectedHive)
+        return
       }
     } catch (error) {
       console.error('Chyba pri načítaní dát:', error)
+      // fallback to cached latest
+      try {
+        const cached = await idbGetAllItems(DB_NAME, LATEST_STORE)
+        const latest = (cached || []).reverse().find(c => c.hiveId === selectedHive)
+        if (latest && latest.item) {
+          setPreviousData(data)
+          setData(latest.item)
+        }
+      } catch (err) {
+        console.error('Error reading latest cache', err)
+      }
     } finally {
       setLoading(false)
       setIsRefreshing(false)
@@ -83,10 +100,21 @@ export default function Dashboard() {
       const response = await fetch(`/api/sensor/history?range=24h&hiveId=${selectedHive}`)
       if (response.ok) {
         const result = await response.json()
-        setHistory24h(result.slice(-24)) // Last 24 data points
+        const slice = result.slice(-24)
+        setHistory24h(slice) // Last 24 data points
+        try { await idbAddItem(DB_NAME, HISTORY_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: result }) } catch (e) {}
+        return
       }
     } catch (error) {
       console.error('Chyba pri načítaní histórie:', error)
+      // fallback to cached history
+      try {
+        const cached = await idbGetAllItems(DB_NAME, HISTORY_STORE)
+        const latest = (cached || []).reverse().find(c => c.hiveId === selectedHive)
+        if (latest && latest.items) setHistory24h((latest.items || []).slice(-24))
+      } catch (err) {
+        console.error('Error reading history cache', err)
+      }
     }
   }
 
