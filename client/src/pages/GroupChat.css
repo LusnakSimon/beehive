@@ -188,7 +188,7 @@
   right: 0;
 }
 
-.group-message { display: contents; }
+.group-message { /* ensure message wrapper remains a layout element for consistent alignment */ }
 
 .group-message.own { }
 
