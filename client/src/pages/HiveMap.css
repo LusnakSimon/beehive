@@ -404,3 +404,35 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
+
+/* Leaflet popup theming to respect app color variables (fix dark-mode contrast) */
+.leaflet-container .leaflet-popup-content-wrapper {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--card-shadow-md) !important;
+  border: 2px solid var(--border) !important;
+}
+
+.leaflet-container .leaflet-popup-content {
+  margin: 6px 8px !important;
+  color: var(--text) !important;
+  font-weight: 500;
+}
+
+.leaflet-container .leaflet-popup-tip-container {
+  width: 20px !important;
+  height: 10px !important;
+}
+
+.leaflet-container .leaflet-popup-tip {
+  background: var(--card-bg) !important;
+}
+
+.leaflet-container .leaflet-popup-content-wrapper a {
+  color: var(--primary) !important;
+}
+
+.leaflet-container .leaflet-popup-content-wrapper * {
+  color: var(--text) !important;
+}

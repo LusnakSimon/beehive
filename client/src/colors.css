@@ -76,6 +76,11 @@
   --btn-success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --btn-danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   --btn-secondary-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+
+  /* Aliases for older styles/components */
+  --surface: var(--card-bg);
+  --shadow: var(--card-shadow);
+  --background: var(--bg);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -118,5 +123,10 @@
     --input-placeholder: #6b7280;
     --input-disabled-bg: #1f2937;
     --input-disabled-text: #6b7280;
+
+    /* Aliases for older styles/components (dark) */
+    --surface: var(--card-bg);
+    --shadow: var(--card-shadow);
+    --background: var(--bg);
   }
 }
