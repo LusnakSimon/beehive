@@ -82,7 +82,7 @@ export function HiveProvider({ children }) {
   const deleteHive = (id) => {
     setHives(prev => prev.filter(h => h.id !== id))
     if (selectedHive === id) {
-      setSelectedHive(hives[0]?.id || 'HIVE-001')
+      setSelectedHive(hives[0]?.id || null)
     }
   }
 

@@ -207,9 +207,9 @@ module.exports = async function handler(req, res) {
       });
 
       if (!user) {
-        // Generate unique hive ID for new user
-        const firstHiveId = await generateUniqueHiveId();
-        
+        // Do NOT auto-create a hive for new users.
+        // New users start with an empty `ownedHives` array and will be
+        // prompted in the UI to create their first hive explicitly.
         user = new UserModel({
           username: userInfo.email.split('@')[0],
           email: userInfo.email,
@@ -221,7 +221,8 @@ module.exports = async function handler(req, res) {
               email: userInfo.email,
             }
           },
-          ownedHives: [firstHiveId],
+          ownedHives: [],
+          profile: { onboarded: false }
         });
         await user.save();
       } else {
