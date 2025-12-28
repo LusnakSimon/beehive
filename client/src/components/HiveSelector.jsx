@@ -67,35 +67,42 @@ export default function HiveSelector() {
         <>
           <div className="hive-dropdown-overlay" onClick={() => setIsOpen(false)} />
           <div className="hive-dropdown">
-            {hives.map(hive => (
+              {hives.map(hive => (
+                <button
+                  key={hive.id}
+                  className={`hive-dropdown-item ${hive.id === selectedHive ? 'active' : ''}`}
+                  onClick={() => handleSelect(hive.id)}
+                >
+                  <div className="hive-icon" style={{ backgroundColor: hive.color }}>
+                    🐝
+                  </div>
+                  <div className="hive-info">
+                    <div className="hive-name">{hive.name}</div>
+                    <div className="hive-location">{hive.location}</div>
+                  </div>
+                  {hive.id === selectedHive && (
+                    <div className="check-icon">✓</div>
+                  )}
+                </button>
+              ))}
+
+              {/* Styled add-new-hive item to match hive rows */}
               <button
-                key={hive.id}
-                className={`hive-dropdown-item ${hive.id === selectedHive ? 'active' : ''}`}
-                onClick={() => handleSelect(hive.id)}
-              >
-                <div className="hive-icon" style={{ backgroundColor: hive.color }}>
-                  🐝
-                </div>
-                <div className="hive-info">
-                  <div className="hive-name">{hive.name}</div>
-                  <div className="hive-location">{hive.location}</div>
-                </div>
-                {hive.id === selectedHive && (
-                  <div className="check-icon">✓</div>
-                )}
-              </button>
-            ))}
-            <div className="hive-dropdown-footer">
-              <button
-                className="hive-dropdown-add"
+                key="__add_hive"
+                className="hive-dropdown-item add"
                 onClick={() => {
                   setIsOpen(false)
                   navigate('/settings?addHive=1')
                 }}
               >
-                ➕ Pridať nový úľ
+                <div className="hive-icon" style={{ backgroundColor: 'var(--primary)' }}>
+                  ➕
+                </div>
+                <div className="hive-info">
+                  <div className="hive-name">Pridať nový úľ</div>
+                  <div className="hive-location">Vytvoriť nový úľ</div>
+                </div>
               </button>
-            </div>
           </div>
         </>
       )}

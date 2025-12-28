@@ -35,7 +35,6 @@ const HiveMap = lazy(() => import('./pages/HiveMap'))
 
 import './colors.css'
 import './App.css'
-import FirstHiveModal from './components/FirstHiveModal'
 
 // Loading fallback component
 function PageLoader() {
@@ -104,7 +103,6 @@ function App() {
             </Suspense>
           </main>
 
-          <FirstHiveModal />
           <VarroaReminder />
         </div>
       </HiveProvider>
