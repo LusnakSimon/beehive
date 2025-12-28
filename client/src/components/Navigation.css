@@ -42,7 +42,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.5rem 0.5rem;
+  padding: 0.4rem 0.4rem;
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: 8px;
@@ -55,11 +55,11 @@
 }
 
 .nav-link .icon {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 
 .nav-link span:not(.icon) {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   text-align: center;
 }
 
