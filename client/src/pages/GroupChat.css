@@ -39,9 +39,9 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--btn-success-gradient);
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+  box-shadow: var(--card-shadow-md);
   border-radius: 0;
 }
 

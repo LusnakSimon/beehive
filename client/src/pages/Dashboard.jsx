@@ -111,7 +111,7 @@ export default function Dashboard() {
         if (value < 30) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
         return { status: 'good', color: 'var(--success)', text: 'Dobrá' }
       default:
-        return { status: 'good', color: '#10b981', text: 'OK' }
+        return { status: 'good', color: 'var(--success)', text: 'OK' }
     }
   }
 
@@ -227,7 +227,7 @@ export default function Dashboard() {
               <div className="device-info-item">
                 <span className="device-info-label">Signál (RSSI):</span>
                 <span className="device-info-value" style={{ 
-                  color: getCurrentHive().device.signalStrength > -100 ? '#10b981' : '#f59e0b' 
+                  color: getCurrentHive().device.signalStrength > -100 ? 'var(--success)' : 'var(--warning)' 
                 }}>
                   {getCurrentHive().device.signalStrength} dBm
                 </span>
@@ -237,7 +237,7 @@ export default function Dashboard() {
               <div className="device-info-item">
                 <span className="device-info-label">Batéria:</span>
                 <span className="device-info-value" style={{ 
-                  color: getCurrentHive().device.batteryLevel > 30 ? '#10b981' : getCurrentHive().device.batteryLevel > 15 ? '#f59e0b' : '#ef4444'
+                  color: getCurrentHive().device.batteryLevel > 30 ? 'var(--success)' : getCurrentHive().device.batteryLevel > 15 ? 'var(--warning)' : 'var(--danger)'
                 }}>
                   🔋 {getCurrentHive().device.batteryLevel}%
                 </span>

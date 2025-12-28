@@ -439,7 +439,7 @@
 
 .group-detail-error h3 {
   font-size: 1.5rem;
-  color: #ef4444;
+  color: var(--danger);
   margin: 0 0 2rem;
 }
 
@@ -451,7 +451,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: none;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--btn-primary-gradient);
   color: white;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
@@ -541,7 +541,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--danger);
   color: white;
   border: none;
   cursor: pointer;
@@ -560,13 +560,13 @@
 }
 
 .remove-member-btn:hover {
-  background: #dc2626;
+  background: var(--danger-dark);
 }
 
 /* Admin Section Enhancements */
 .admin-section {
   background: var(--bg-tertiary);
-  border-left: 4px solid #f59e0b;
+  border-left: 4px solid var(--warning);
 }
 
 .admin-section h2 {
@@ -599,12 +599,12 @@
 }
 
 .admin-btn.share-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border-color: #3b82f6;
+  background: var(--btn-primary-gradient);
+  border-color: var(--primary);
   color: white;
 }
 
 .admin-btn.share-btn:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  border-color: #2563eb;
+  background: var(--btn-primary-gradient);
+  border-color: var(--primary-dark);
 }
