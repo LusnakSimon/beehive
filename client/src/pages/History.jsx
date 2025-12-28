@@ -8,6 +8,7 @@ import { useHive } from '../context/HiveContext'
 import HiveSelector from '../components/HiveSelector'
 import './History.css'
 import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+import useOfflineStatus from '../hooks/useOfflineStatus'
 
 const DB_NAME = 'beehive-cache-v1'
 const HISTORY_STORE = 'sensor-history'
@@ -24,6 +25,7 @@ export default function History() {
   const [selectedMetric, setSelectedMetric] = useState('all')
   const [loading, setLoading] = useState(true)
   const [queuedInspections, setQueuedInspections] = useState([])
+  const { queuedCount, isOnline, isReplaying, retry, refreshCount } = useOfflineStatus(selectedHive)
 
   useEffect(() => {
     if (!selectedHive) {
@@ -48,6 +50,12 @@ export default function History() {
       // ignore
     }
   }
+
+  // refresh queued list when outbox changes (for simplicity trigger on visibility or manual refresh)
+  useEffect(() => {
+    refreshCount()
+    loadQueuedInspections()
+  }, [selectedHive])
 
   const fetchHistoricalData = async () => {
     if (!selectedHive) return
@@ -270,6 +278,11 @@ export default function History() {
       {queuedInspections.length > 0 && (
         <div className="queued-inspections">
           <h3>🕒 Neodoslané inšpekcie (offline)</h3>
+          <div style={{ marginBottom: 8 }}>
+            <button className="btn btn-sm" onClick={() => retry()} disabled={isReplaying}>
+              {isReplaying ? 'Odosielam…' : `Odoslať ${queuedCount} teraz`}
+            </button>
+          </div>
           {queuedInspections.map(q => (
             <div key={q._id} className="queued-inspection-card">
               <div className="queued-time">{new Date(q.timestamp).toLocaleString()}</div>

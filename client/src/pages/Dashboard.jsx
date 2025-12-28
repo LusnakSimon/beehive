@@ -11,6 +11,7 @@ import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/ind
 const DB_NAME = 'beehive-cache-v1'
 const LATEST_STORE = 'sensor-latest'
 const HISTORY_STORE = 'sensor-history'
+import useOfflineStatus from '../hooks/useOfflineStatus'
 
 export default function Dashboard() {
   const { selectedHive, getCurrentHive } = useHive()
@@ -27,7 +28,7 @@ export default function Dashboard() {
   const [history24h, setHistory24h] = useState([])
   const [loading, setLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [queuedCount, setQueuedCount] = useState(0)
+  const { queuedCount, isOnline, isReplaying, retry } = useOfflineStatus(selectedHive)
 
   // Helper function to format time ago
   const formatTimeAgo = (date) => {
@@ -53,24 +54,12 @@ export default function Dashboard() {
     setLoading(true) // Start loading when hive is available
     fetchLatestData()
     fetch24hHistory()
-    loadQueuedCount()
     const interval = setInterval(() => {
       fetchLatestData()
       fetch24hHistory()
     }, 30000) // Refresh every 30s
     return () => clearInterval(interval)
   }, [selectedHive]) // Re-fetch when hive changes
-
-  const loadQueuedCount = async () => {
-    if (!selectedHive) return
-    try {
-      const out = await idbGetAllItems('beehive-offline-v1', 'outbox')
-      const matches = (out || []).map(o => o.payload).filter(p => p && p.hiveId === selectedHive)
-      setQueuedCount(matches.length)
-    } catch (err) {
-      // ignore
-    }
-  }
 
   const fetchLatestData = async () => {
     if (!selectedHive) return
@@ -224,6 +213,9 @@ export default function Dashboard() {
       {queuedCount > 0 && (
         <div className="queued-count-banner">
           🔁 Máte {queuedCount} položiek čakajúcich na odoslanie (offline)
+          <button className="btn btn-sm" onClick={() => retry()} disabled={isReplaying} style={{ marginLeft: '12px' }}>
+            {isReplaying ? 'Odosielam…' : 'Odoslať teraz'}
+          </button>
         </div>
       )}
       
