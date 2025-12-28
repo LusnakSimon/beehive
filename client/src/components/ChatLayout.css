@@ -144,6 +144,52 @@
   }
 }
 
+/* Unified input area internals to ensure both Chat and GroupChat match */
+.bh-message-input-area .message-input-wrapper,
+.bh-message-input-area .input-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+}
+
+.bh-message-input-area .attach-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bh-message-input-area .message-input,
+.bh-message-input-area input[type="text"],
+.bh-message-input-area textarea {
+  flex: 1 1 auto;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 22px;
+  box-sizing: border-box;
+}
+
+.bh-message-input-area .send-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+}
+
+/* ensure send button sits to the right edge on small viewports */
+@media (max-width: 768px) {
+  .bh-message-input-area .send-button { margin-left: auto; }
+}
+
 /* Ensure inputs and textareas inherit proper bg/text */
 .bh-message-input-area .message-input, .bh-message-input-area input[type="text"], .bh-message-input-area textarea {
   background: var(--input-bg);

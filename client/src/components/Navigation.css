@@ -37,6 +37,14 @@
   justify-content: space-around;
 }
 
+/* Normalize mobile nav link visual so no single item gets an unexpected box */
+.nav-mobile .nav-link {
+  background: transparent;
+  border: none;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
 .nav-link {
   display: flex;
   flex-direction: column;
