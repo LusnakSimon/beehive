@@ -208,6 +208,11 @@
   font-size: 1.1rem;
 }
 
+.no-users {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 @media (max-width: 768px) {
   .users-grid {
     grid-template-columns: 1fr;

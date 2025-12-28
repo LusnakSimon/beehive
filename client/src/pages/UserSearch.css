@@ -18,7 +18,7 @@
 }
 
 .search-container h1 {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: var(--btn-warning-gradient);
   color: white;
   font-size: 1.75rem;
   font-weight: 700;
@@ -76,7 +76,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: none;
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: var(--btn-warning-gradient);
   color: white;
   white-space: nowrap;
 }
@@ -185,6 +185,11 @@
   text-align: center;
   padding: 3rem;
   color: var(--text-secondary);
+}
+
+.loading {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .empty-state {
@@ -329,7 +334,7 @@
   cursor: pointer;
   transition: all 0.2s;
   border: none;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--btn-primary-gradient);
   color: white;
 }
 

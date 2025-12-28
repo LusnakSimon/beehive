@@ -469,6 +469,11 @@
   color: var(--text);
 }
 
+.loading {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .group-detail-page {

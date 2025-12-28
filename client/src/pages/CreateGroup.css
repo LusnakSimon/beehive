@@ -237,6 +237,11 @@
   font-weight: 500;
 }
 
+.form-error {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 /* Actions */
 .form-actions {
   display: flex;
@@ -298,6 +303,11 @@
   padding: 4rem 2rem;
   font-size: 1.125rem;
   color: var(--text-secondary);
+}
+
+.loading {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 /* Mobile Responsive */

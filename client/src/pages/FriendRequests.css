@@ -59,12 +59,22 @@
   color: var(--text-secondary);
 }
 
+.loading {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .empty-icon {

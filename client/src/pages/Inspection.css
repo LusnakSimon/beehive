@@ -15,7 +15,7 @@
 }
 
 .inspection-header {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--btn-success-gradient);
   color: white;
   padding: 1.5rem 1rem;
   margin: 1rem;
@@ -46,7 +46,7 @@
 
 /* Success Banner */
 .success-banner {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--btn-success-gradient);
   color: white;
   padding: 1rem;
   margin: 1rem;
@@ -172,7 +172,7 @@
 /* Save Button */
 .save-btn {
   width: 100%;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--btn-success-gradient);
   color: white;
   border: none;
   border-radius: 12px;

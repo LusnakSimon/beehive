@@ -211,6 +211,11 @@
   color: var(--text-secondary);
 }
 
+.loading {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .no-groups h3 {
   font-size: 1.5rem;
   color: var(--text);

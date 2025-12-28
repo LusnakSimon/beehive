@@ -9,6 +9,11 @@
   min-height: 200px;
 }
 
+.empty-state {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .empty-state-default {
   background: var(--surface);
   border-radius: 16px;

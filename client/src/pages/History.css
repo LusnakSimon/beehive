@@ -191,7 +191,7 @@
 }
 
 .control-btn.active {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: var(--btn-warning-gradient);
   border-color: #fbbf24;
   color: white;
   box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);

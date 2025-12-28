@@ -208,7 +208,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: var(--btn-warning-gradient);
   color: white;
 }
 
@@ -245,6 +245,11 @@
   padding: 4rem 2rem;
   color: var(--text-secondary);
   font-size: 18px;
+}
+
+.loading {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 /* Mobile Responsive */

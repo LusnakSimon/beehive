@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--btn-secondary-gradient);
   padding: 20px;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .login-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--btn-secondary-gradient);
   color: white;
   padding: 40px 30px;
   text-align: center;
