@@ -12,6 +12,8 @@ import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/ind
 const DB_NAME = 'beehive-cache-v1'
 const HISTORY_STORE = 'sensor-history'
 const STATS_STORE = 'sensor-stats'
+const OUTBOX_DB = 'beehive-offline-v1'
+const OUTBOX_STORE = 'outbox'
 
 export default function History() {
   const { selectedHive } = useHive()
@@ -21,6 +23,7 @@ export default function History() {
   const [chartType, setChartType] = useState('line')
   const [selectedMetric, setSelectedMetric] = useState('all')
   const [loading, setLoading] = useState(true)
+  const [queuedInspections, setQueuedInspections] = useState([])
 
   useEffect(() => {
     if (!selectedHive) {
@@ -29,7 +32,22 @@ export default function History() {
     }
     fetchHistoricalData()
     fetchStats()
+    // also load queued offline inspections for this hive
+    loadQueuedInspections()
   }, [timeRange, selectedHive]) // Re-fetch when hive changes
+
+  const loadQueuedInspections = async () => {
+    if (!selectedHive) return
+    try {
+      const out = await idbGetAllItems(OUTBOX_DB, OUTBOX_STORE)
+      const matches = (out || []).map(o => o.payload).filter(p => p && p.hiveId === selectedHive && p.checklist)
+      // Normalize to history-like items for display
+      const normalized = matches.map((p, idx) => ({ _id: `queued-${idx}-${p.timestamp || Date.now()}`, timestamp: p.timestamp || Date.now(), checklist: p.checklist, notes: p.notes, offline: true }))
+      setQueuedInspections(normalized)
+    } catch (err) {
+      // ignore
+    }
+  }
 
   const fetchHistoricalData = async () => {
     if (!selectedHive) return
@@ -249,6 +267,18 @@ export default function History() {
 
   return (
     <div className="history">
+      {queuedInspections.length > 0 && (
+        <div className="queued-inspections">
+          <h3>🕒 Neodoslané inšpekcie (offline)</h3>
+          {queuedInspections.map(q => (
+            <div key={q._id} className="queued-inspection-card">
+              <div className="queued-time">{new Date(q.timestamp).toLocaleString()}</div>
+              <div className="queued-summary">{q.notes || Object.keys(q.checklist || {}).filter(k => q.checklist[k]).join(', ') || 'Inšpekcia'}</div>
+              <div className="queued-badge">Offline</div>
+            </div>
+          ))}
+        </div>
+      )}
       <header className="history-header">
         <div>
           <h1>📊 História & Analýza</h1>

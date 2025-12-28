@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [history24h, setHistory24h] = useState([])
   const [loading, setLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [queuedCount, setQueuedCount] = useState(0)
 
   // Helper function to format time ago
   const formatTimeAgo = (date) => {
@@ -52,12 +53,24 @@ export default function Dashboard() {
     setLoading(true) // Start loading when hive is available
     fetchLatestData()
     fetch24hHistory()
+    loadQueuedCount()
     const interval = setInterval(() => {
       fetchLatestData()
       fetch24hHistory()
     }, 30000) // Refresh every 30s
     return () => clearInterval(interval)
   }, [selectedHive]) // Re-fetch when hive changes
+
+  const loadQueuedCount = async () => {
+    if (!selectedHive) return
+    try {
+      const out = await idbGetAllItems('beehive-offline-v1', 'outbox')
+      const matches = (out || []).map(o => o.payload).filter(p => p && p.hiveId === selectedHive)
+      setQueuedCount(matches.length)
+    } catch (err) {
+      // ignore
+    }
+  }
 
   const fetchLatestData = async () => {
     if (!selectedHive) return
@@ -208,6 +221,11 @@ export default function Dashboard() {
       <div className="hive-selector-container">
         <HiveSelector />
       </div>
+      {queuedCount > 0 && (
+        <div className="queued-count-banner">
+          🔁 Máte {queuedCount} položiek čakajúcich na odoslanie (offline)
+        </div>
+      )}
       
       <div className="status-banner-modern" style={{ borderLeftColor: overallStatus.color }}>
         <div className="status-icon" style={{ backgroundColor: overallStatus.color }}>
