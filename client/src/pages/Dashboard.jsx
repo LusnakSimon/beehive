@@ -93,23 +93,23 @@ export default function Dashboard() {
   const getMetricStatus = (type, value) => {
     switch(type) {
       case 'temperature':
-        if (value < 28) return { status: 'critical', color: '#3b82f6', text: 'Príliš nízka' }
-        if (value < 30) return { status: 'warning', color: '#f59e0b', text: 'Nízka' }
-        if (value <= 36) return { status: 'good', color: '#10b981', text: 'Optimálna' }
-        if (value <= 38) return { status: 'warning', color: '#f59e0b', text: 'Vysoká' }
-        return { status: 'critical', color: '#ef4444', text: 'Príliš vysoká' }
+        if (value < 28) return { status: 'critical', color: 'var(--primary)', text: 'Príliš nízka' }
+        if (value < 30) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
+        if (value <= 36) return { status: 'good', color: 'var(--success)', text: 'Optimálna' }
+        if (value <= 38) return { status: 'warning', color: 'var(--warning)', text: 'Vysoká' }
+        return { status: 'critical', color: 'var(--danger)', text: 'Príliš vysoká' }
       case 'humidity':
-        if (value < 40) return { status: 'warning', color: '#f59e0b', text: 'Nízka' }
-        if (value <= 70) return { status: 'good', color: '#10b981', text: 'Optimálna' }
-        return { status: 'warning', color: '#f59e0b', text: 'Vysoká' }
+        if (value < 40) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
+        if (value <= 70) return { status: 'good', color: 'var(--success)', text: 'Optimálna' }
+        return { status: 'warning', color: 'var(--warning)', text: 'Vysoká' }
       case 'weight':
-        if (value < 20) return { status: 'critical', color: '#ef4444', text: 'Kriticky nízka' }
-        if (value < 40) return { status: 'warning', color: '#f59e0b', text: 'Nízka' }
-        return { status: 'good', color: '#10b981', text: 'V norme' }
+        if (value < 20) return { status: 'critical', color: 'var(--danger)', text: 'Kriticky nízka' }
+        if (value < 40) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
+        return { status: 'good', color: 'var(--success)', text: 'V norme' }
       case 'battery':
-        if (value < 15) return { status: 'critical', color: '#ef4444', text: 'Kritická' }
-        if (value < 30) return { status: 'warning', color: '#f59e0b', text: 'Nízka' }
-        return { status: 'good', color: '#10b981', text: 'Dobrá' }
+        if (value < 15) return { status: 'critical', color: 'var(--danger)', text: 'Kritická' }
+        if (value < 30) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
+        return { status: 'good', color: 'var(--success)', text: 'Dobrá' }
       default:
         return { status: 'good', color: '#10b981', text: 'OK' }
     }
@@ -118,9 +118,9 @@ export default function Dashboard() {
   const getTrend = (current, previous) => {
     if (!previous) return null
     const diff = current - previous
-    if (Math.abs(diff) < 0.1) return { icon: '→', text: 'Stabilná', color: '#6b7280' }
-    if (diff > 0) return { icon: '↗', text: `+${diff.toFixed(1)}`, color: '#10b981' }
-    return { icon: '↘', text: diff.toFixed(1), color: '#ef4444' }
+    if (Math.abs(diff) < 0.1) return { icon: '→', text: 'Stabilná', color: 'var(--text-secondary)' }
+    if (diff > 0) return { icon: '↗', text: `+${diff.toFixed(1)}`, color: 'var(--success)' }
+    return { icon: '↘', text: diff.toFixed(1), color: 'var(--danger)' }
   }
 
   const getMiniChartData = (field) => {
@@ -136,12 +136,12 @@ export default function Dashboard() {
     const weightStatus = getMetricStatus('weight', data.weight)
     
     if (tempStatus.status === 'critical' || humidStatus.status === 'critical' || weightStatus.status === 'critical') {
-      return { text: 'KRITICKÝ STAV', color: '#ef4444', icon: '⚠️' }
+      return { text: 'KRITICKÝ STAV', color: 'var(--danger)', icon: '⚠️' }
     }
     if (tempStatus.status === 'warning' || humidStatus.status === 'warning' || weightStatus.status === 'warning') {
-      return { text: 'VYŽADUJE POZORNOSŤ', color: '#f59e0b', icon: '⚡' }
+      return { text: 'VYŽADUJE POZORNOSŤ', color: 'var(--warning)', icon: '⚡' }
     }
-    return { text: 'VŠETKO V PORIADKU', color: '#10b981', icon: '✓' }
+    return { text: 'VŠETKO V PORIADKU', color: 'var(--success)', icon: '✓' }
   }
 
   if (loading) {
