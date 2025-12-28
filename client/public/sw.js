@@ -5,9 +5,9 @@ const ASSET_CACHE = 'beehive-assets-v2';
 
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
-  // Pre-cache the app shell (root) so we can fallback when offline
+  // Pre-cache the app shell (index.html and root) so we can fallback when offline
   event.waitUntil(
-    caches.open(ASSET_CACHE).then(cache => cache.addAll(['/'])).catch(err => {
+    caches.open(ASSET_CACHE).then(cache => cache.addAll(['/', '/index.html'])).catch(err => {
       console.warn('SW: precache failed', err);
     }).then(() => self.skipWaiting())
   );
@@ -97,9 +97,9 @@ self.addEventListener('fetch', (event) => {
       fetch(request).then(response => {
         // update cache with latest index
         const copy = response.clone();
-        caches.open(ASSET_CACHE).then(cache => cache.put('/', copy)).catch(()=>{})
+        caches.open(ASSET_CACHE).then(cache => cache.put('/index.html', copy)).catch(()=>{})
         return response;
-      }).catch(() => caches.match('/'))
+      }).catch(() => caches.match('/index.html'))
     );
     return;
   }
@@ -109,7 +109,12 @@ self.addEventListener('fetch', (event) => {
     fetch(request).then(response => {
       try { caches.open(ASSET_CACHE).then(cache => cache.put(request, response.clone())); } catch (e) {}
       return response;
-    }).catch(() => caches.match(request))
+    }).catch(async () => {
+      const cached = await caches.match(request);
+      if (cached) return cached;
+      // as a last resort for missing assets, return the cached index (so SPA can render)
+      return caches.match('/index.html');
+    })
   );
 });
 
