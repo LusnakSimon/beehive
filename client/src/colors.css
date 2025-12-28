@@ -82,6 +82,10 @@
   --surface: var(--card-bg);
   --shadow: var(--card-shadow);
   --background: var(--bg);
+
+  /* Skeleton shimmer defaults */
+  --skeleton-base: rgba(255, 255, 255, 0.05);
+  --skeleton-shine: rgba(255, 255, 255, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -129,5 +133,8 @@
     --surface: var(--card-bg);
     --shadow: var(--card-shadow);
     --background: var(--bg);
+    /* Skeleton shimmer defaults (dark) */
+    --skeleton-base: rgba(255, 255, 255, 0.03);
+    --skeleton-shine: rgba(255, 255, 255, 0.06);
   }
 }

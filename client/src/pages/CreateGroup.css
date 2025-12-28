@@ -1,6 +1,6 @@
 .create-group-page {
   min-height: 100vh;
-  background: var(--bg-secondary, #f3f4f6);
+  background: var(--bg-secondary);
   padding: 2rem 1.5rem 8rem;
 }
 

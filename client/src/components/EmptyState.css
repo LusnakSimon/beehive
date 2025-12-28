@@ -10,7 +10,7 @@
 }
 
 .empty-state-default {
-  background: var(--surface, #1a1a2e);
+  background: var(--surface);
   border-radius: 16px;
   margin: 1rem;
 }
@@ -57,13 +57,13 @@
 .empty-state-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text, #fff);
+  color: var(--text);
   margin: 0 0 0.5rem;
 }
 
 .empty-state-description {
   font-size: 0.9rem;
-  color: var(--text-secondary, #888);
+  color: var(--text-secondary);
   max-width: 300px;
   line-height: 1.5;
   margin: 0 0 1.5rem;
