@@ -48,6 +48,7 @@ export function HiveProvider({ children }) {
         }
       });
       setHives(userHives);
+      try { localStorage.setItem('cachedHives', JSON.stringify(userHives)) } catch (e) {}
       
       // Set first hive as selected if none selected or selected hive not in user's hives
       const hiveIds = userHives.map(h => h.id);
@@ -55,6 +56,18 @@ export function HiveProvider({ children }) {
         setSelectedHive(userHives[0].id);
       }
     } else {
+      // Try to load cached hives (for offline). If available, use them.
+      try {
+        const cached = JSON.parse(localStorage.getItem('cachedHives') || 'null')
+        if (cached && Array.isArray(cached) && cached.length > 0) {
+          setHives(cached)
+          const hiveIds = cached.map(h => h.id)
+          if (!selectedHive || !hiveIds.includes(selectedHive)) setSelectedHive(cached[0].id)
+          return
+        }
+      } catch (e) {
+        // ignore JSON errors
+      }
       // User has no hives - set empty state
       setHives([]);
       setSelectedHive(null);
