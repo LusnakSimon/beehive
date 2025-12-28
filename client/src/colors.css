@@ -80,6 +80,10 @@
   --btn-info-gradient: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
   --btn-pink-gradient: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
 
+  /* Layout measurements */
+  --nav-height: 56px; /* mobile bottom navigation height */
+  --chat-input-height: 56px; /* chat input bar height on mobile */
+
   /* Aliases for older styles/components */
   --surface: var(--card-bg);
   --shadow: var(--card-shadow);

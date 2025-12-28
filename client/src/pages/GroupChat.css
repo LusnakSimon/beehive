@@ -139,7 +139,8 @@
 @media (max-width: 768px) {
   .group-messages-container {
     padding: 0.75rem;
-    padding-bottom: 160px; /* Zvýšené - input field + navbar + extra spacing */
+    /* Reserve space for chat input and bottom nav using shared variables */
+    padding-bottom: calc(var(--chat-input-height) + var(--nav-height) + 24px);
   }
 }
 

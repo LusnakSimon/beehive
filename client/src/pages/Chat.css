@@ -148,7 +148,8 @@
 @media (max-width: 768px) {
   .messages-area {
     padding: 0.75rem;
-    padding-bottom: calc(3.5rem + 70px); /* Input field + navbar s extra spacingom */
+    /* Reserve space for input and bottom navigation using theme vars */
+    padding-bottom: calc(var(--chat-input-height) + var(--nav-height) + 16px);
   }
 }
 
@@ -343,12 +344,15 @@
   .message-input-area {
     padding: 0.75rem;
     position: fixed;
-    bottom: 3.5rem;
+    bottom: var(--nav-height);
     left: 0;
     right: 0;
     background: var(--card-bg);
     z-index: 10;
     border-top: 2px solid var(--border);
+    height: var(--chat-input-height);
+    display: flex;
+    align-items: center;
   }
 }
 
