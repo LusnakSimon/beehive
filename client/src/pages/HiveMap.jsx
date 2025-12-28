@@ -175,13 +175,11 @@ export default function HiveMap() {
     return luminance(rgb) > 0.6
   }
 
-  const getLineColor = (hex) => {
+  const getLineColor = (_hex) => {
     try {
-      const rootPrimary = getComputedStyle(document.documentElement).getPropertyValue('--primary')?.trim() || '#2563eb'
-      if (!hex) return rootPrimary
-      return isLightColor(hex) ? rootPrimary : hex
+      return getComputedStyle(document.documentElement).getPropertyValue('--primary')?.trim() || '#2563eb'
     } catch (e) {
-      return hex || '#2563eb'
+      return '#2563eb'
     }
   }
 
