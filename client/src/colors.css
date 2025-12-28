@@ -140,3 +140,33 @@
     --skeleton-shine: rgba(255, 255, 255, 0.06);
   }
 }
+
+/* Global button baseline to normalize spacing and sizes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  border: none;
+  text-align: center;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 1rem 1.25rem;
+  font-size: 1.125rem;
+}
