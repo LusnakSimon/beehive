@@ -98,7 +98,12 @@ export default function MyHives() {
         })
 
         if (res.ok) {
+          const created = await res.json().catch(() => null)
           await refreshUser()
+          // If backend didn't persist data-URL image, keep it locally so the UI shows it
+          if (form.imageDataUrl && created && created.id) {
+            updateHive(created.id, { image: form.imageDataUrl })
+          }
           toast.success(`Úľ "${form.name}" bol vytvorený`)
         } else {
           const err = await res.json().catch(() => ({ message: 'Neznáma chyba' }))
@@ -125,6 +130,10 @@ export default function MyHives() {
 
         if (res.ok) {
           await refreshUser()
+          // If backend didn't persist image, keep it locally so UI reflects the edit
+          if (form.imageDataUrl) {
+            updateHive(hiveId, { image: form.imageDataUrl })
+          }
           toast.success('Úľ upravený')
         } else {
           const err = await res.json().catch(() => ({ message: 'Neznáma chyba' }))
