@@ -96,7 +96,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
   return (
     <div className="settings">
       <h1>⚙️ Nastavenia</h1>
-      <!-- Hive management moved to MyHives; keep Settings focused on global app settings -->
+      
       <div className="settings-section">
         <h2>Základné nastavenia</h2>
 
