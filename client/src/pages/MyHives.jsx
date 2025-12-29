@@ -28,7 +28,16 @@ export default function MyHives() {
 
   const openEditModal = (hive) => {
     setModalMode('edit')
-    setForm({ id: hive.id, name: hive.name || '', location: hive.location || '', color: hive.color || 'var(--warning)', imageDataUrl: hive.image || '' })
+    setForm({
+      id: hive.id,
+      name: hive.name || '',
+      location: hive.location || '',
+      color: hive.color || 'var(--warning)',
+      imageDataUrl: hive.image || '',
+      coordinates: hive.coordinates || { lat: '', lng: '' },
+      visibility: hive.visibility || 'private',
+      device: hive.device || { type: 'manual', devEUI: '', deviceId: '' }
+    })
     setShowModal(true)
   }
 

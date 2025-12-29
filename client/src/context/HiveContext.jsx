@@ -38,12 +38,16 @@ export function HiveProvider({ children }) {
             color: colors[index % colors.length]
           };
         } else {
-          // New format - use metadata from DB
+          // New format - use metadata from DB and preserve extra fields
           return {
             id: hive.id,
             name: hive.name,
             location: hive.location || '',
-            color: hive.color || 'var(--warning)'
+            color: hive.color || 'var(--warning)',
+            image: hive.image || '',
+            coordinates: hive.coordinates || { lat: '', lng: '' },
+            visibility: hive.visibility || 'private',
+            device: hive.device || { type: 'manual', devEUI: '', deviceId: '' }
           };
         }
       });

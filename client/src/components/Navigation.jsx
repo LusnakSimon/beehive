@@ -268,6 +268,10 @@ export default function Navigation() {
                     <span className="icon">👤</span>
                     <span>Profil</span>
                   </NavLink>
+                  <NavLink to="/my-hives" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
+                    <span className="icon">🐝</span>
+                    <span>Moje úle</span>
+                  </NavLink>
                   {user?.role === 'admin' && (
                     <NavLink to="/admin" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                       <span className="icon">🔧</span>

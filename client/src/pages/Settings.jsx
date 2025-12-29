@@ -165,69 +165,7 @@ const char* appKey = "${lorawanConfig.appKey}";`;
         <SocialNotificationSettings />
       </div>
 
-      <div className="settings-section">
-        <h2>📡 LoRaWAN Konfigurácia</h2>
-        <p className="section-description">
-          Nastav parametre pre pripojenie úľa cez LoRaWAN sieť
-        </p>
-        
-        <div className="form-group">
-          <label htmlFor="devEUI">Device EUI</label>
-          <input
-            id="devEUI"
-            type="text"
-            value={lorawanConfig.devEUI}
-            onChange={(e) => handleLorawanChange('devEUI', e.target.value)}
-            placeholder="70B3D57ED005XXXX"
-            className="monospace-input"
-            maxLength={16}
-          />
-          <small>Unikátny identifikátor zariadenia (16 hex znakov) - {lorawanConfig.devEUI.length}/16</small>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="appEUI">Application EUI</label>
-          <input
-            id="appEUI"
-            type="text"
-            value={lorawanConfig.appEUI}
-            onChange={(e) => handleLorawanChange('appEUI', e.target.value)}
-            placeholder="0000000000000000"
-            className="monospace-input"
-            maxLength={16}
-          />
-          <small>Identifikátor aplikácie (16 hex znakov) - {lorawanConfig.appEUI.length}/16</small>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="appKey">Application Key</label>
-          <input
-            id="appKey"
-            type="password"
-            value={lorawanConfig.appKey}
-            onChange={(e) => handleLorawanChange('appKey', e.target.value)}
-            placeholder="********************************"
-            className="monospace-input"
-            maxLength={32}
-          />
-          <small>Šifrovací kľúč (32 hex znakov) - udržuj v tajnosti - {lorawanConfig.appKey.length}/32</small>
-        </div>
-
-        <div className="info-box" style={{ marginTop: '15px' }}>
-          <p>💡 <strong>Tip:</strong> Tieto údaje získaš z TTN (The Things Network) konzoly po registrácii zariadenia.</p>
-        </div>
-
-        {isLorawanConfigComplete() && (
-          <button 
-            type="button"
-            onClick={copyLorawanConfig}
-            className="btn-copy-lorawan"
-            style={{ marginTop: '15px', width: '100%' }}
-          >
-            📋 Kopírovať konfiguráciu pre ESP32
-          </button>
-        )}
-      </div>
+      {/* LoRaWAN configuration moved to per-hive device setup in MyHives */}
 
       <div className="settings-section">
         <h2>O aplikácii</h2>

@@ -21,12 +21,12 @@ export default function HiveSelector() {
     )
   }
 
-  if (Array.isArray(hives) && hives.length === 0) {
+    if (Array.isArray(hives) && hives.length === 0) {
     return (
       <div className="hive-selector">
         <button
           className="hive-selector-btn empty"
-          onClick={() => navigate('/settings?addHive=1')}
+          onClick={() => navigate('/my-hives')}
         >
           <div className="hive-icon empty">➕</div>
           <div className="hive-info">
@@ -89,7 +89,7 @@ export default function HiveSelector() {
               <button
                 key="__add_hive"
                 className="hive-dropdown-item add"
-                onClick={() => { setIsOpen(false); navigate('/settings?addHive=1') }}
+                onClick={() => { setIsOpen(false); navigate('/my-hives') }}
               >
                 <div className="hive-icon" style={{ backgroundColor: 'var(--primary)' }}>
                   ➕
