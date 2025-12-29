@@ -111,6 +111,8 @@
     border-bottom: 1px solid var(--border);
     justify-content: flex-start;
     gap: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   @media (prefers-color-scheme: dark) {
@@ -123,6 +125,9 @@
   .nav-desktop {
     display: flex;
     flex: 1;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: nowrap;
   }
 
   .nav-mobile {
@@ -131,7 +136,9 @@
   
   .nav-link {
     flex-direction: row;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1rem;
+    min-width: auto;
+    white-space: nowrap;
   }
   
   .nav-user-section {
