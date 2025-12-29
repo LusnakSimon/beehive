@@ -1,5 +1,6 @@
 .my-hives-page {
   padding: 1rem;
+  padding-bottom: calc(var(--nav-height) + 2rem);
 }
 .my-hives-header {
   display:flex;

@@ -217,15 +217,13 @@ export default function Navigation() {
               <span className="icon">📜</span>
               <span>História</span>
             </NavLink>
-            <NavLink to="/messages" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">💬</span>
-              <span>Správy</span>
-              {totalUnread > 0 && <span className="nav-badge">{totalUnread}</span>}
+            <NavLink to="/my-hives" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <span className="icon">🐝</span>
+              <span>Moje úle</span>
             </NavLink>
-            <NavLink to="/notifications" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">🔔</span>
-              <span>Notif.</span>
-              {notificationUnread > 0 && <span className="nav-badge">{notificationUnread}</span>}
+            <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <span className="icon">🗺️</span>
+              <span>Mapa</span>
             </NavLink>
             <div className="nav-more">
               <button 
@@ -240,13 +238,19 @@ export default function Navigation() {
               </button>
               {showMobileMenu && (
                 <div className="mobile-dropdown">
+                  <NavLink to="/messages" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
+                    <span className="icon">💬</span>
+                    <span>Správy</span>
+                    {totalUnread > 0 && <span className="nav-badge">{totalUnread}</span>}
+                  </NavLink>
+                  <NavLink to="/notifications" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
+                    <span className="icon">🔔</span>
+                    <span>Notifikácie</span>
+                    {notificationUnread > 0 && <span className="nav-badge">{notificationUnread}</span>}
+                  </NavLink>
                   <NavLink to="/inspection" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">📋</span>
                     <span>Kontrola</span>
-                  </NavLink>
-                  <NavLink to="/map" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">🗺️</span>
-                    <span>Mapa</span>
                   </NavLink>
                   <NavLink to="/groups" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">👥</span>
