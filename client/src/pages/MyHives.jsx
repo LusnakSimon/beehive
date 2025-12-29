@@ -249,7 +249,10 @@ export default function MyHives() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{modalMode === 'add' ? '➕ Pridať úľ' : '✏️ Upraviť úľ'}</h3>
+            <h3>
+              <span>{modalMode === 'add' ? '➕ Pridať úľ' : '✏️ Upraviť úľ'}</span>
+              <button className="modal-close" type="button" onClick={() => setShowModal(false)} aria-label="Zatvoriť">✖</button>
+            </h3>
             <form onSubmit={handleSave} className="modal-form">
               <label>Názov *</label>
               <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
