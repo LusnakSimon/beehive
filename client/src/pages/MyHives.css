@@ -18,7 +18,8 @@
 .hives-grid { display:flex; flex-direction:column; gap:1rem }
 .hive-card { display:flex; flex-direction:row; border-radius:12px; overflow:hidden; background:var(--card-bg); align-items:stretch; padding:0; box-shadow:var(--card-shadow); transition:transform .18s ease, box-shadow .18s ease; border:1px solid transparent }
 .hive-card:hover { transform:translateY(-4px); box-shadow:var(--card-shadow-lg) }
-.hive-image { width:140px; min-width:140px; height:120px; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; flex-shrink:0 }
+.hive-image { width:140px; min-width:140px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
+.hive-image-el { width:100%; height:100%; object-fit:cover; display:block }
 .hive-initial { font-size:1.75rem; color:rgba(255,255,255,0.95); font-weight:700 }
 .hive-body { padding:0.9rem 1rem; display:flex; flex-direction:column; gap:0.5rem; flex:1 }
 .hive-name { font-weight:700; font-size:1rem }
@@ -47,11 +48,16 @@
   width: 100%;
   max-width: 520px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  max-height: 80vh;
+  overflow: auto;
 }
 .modal-form label { display:block; margin-top:0.75rem; font-weight:600 }
 .modal-form input[type="text"], .modal-form input[type="color"], .modal-form input[type="file"], .modal-form input { width:100%; padding:0.5rem; margin-top:0.25rem }
-.image-preview { width:100%; max-height:200px; object-fit:cover; margin-top:0.5rem; border-radius:6px }
+.image-preview { width:100%; max-height:240px; object-fit:cover; margin-top:0.5rem; border-radius:6px; display:block }
 .modal-form .form-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem }
+
+/* Slightly larger small buttons for better tap targets on cards */
+.btn-sm{padding:.55rem .9rem;font-size:.95rem}
 
 /* Undo banner */
 .undo-banner {

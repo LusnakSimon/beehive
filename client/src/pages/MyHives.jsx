@@ -205,8 +205,12 @@ export default function MyHives() {
       <div className="hives-grid">
         {hives && hives.length > 0 ? hives.map(h => (
           <div className="hive-card" key={h.id} style={{ borderColor: h.color || 'var(--border)' }}>
-            <div className="hive-image" style={{ backgroundImage: h.image ? `url(${h.image})` : 'none', backgroundColor: h.color || 'var(--card-bg)' }}>
-              {!h.image && <div className="hive-initial">{(h.name || '').charAt(0) || 'U'}</div>}
+            <div className="hive-image" style={{ backgroundColor: h.color || 'var(--card-bg)' }}>
+              {h.image ? (
+                <img src={h.image} alt={h.name || 'úl'} className="hive-image-el" />
+              ) : (
+                <div className="hive-initial">{(h.name || '').charAt(0) || 'U'}</div>
+              )}
             </div>
             <div className="hive-body">
               <div className="hive-name">{h.name}</div>
