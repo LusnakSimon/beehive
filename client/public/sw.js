@@ -86,36 +86,48 @@ self.addEventListener('notificationclick', (event) => {
 // Basic fetch handler: network-first for navigations, network-with-cache-fallback for assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  // Only handle GET requests
   if (request.method !== 'GET') return;
-
   const accept = request.headers.get('accept') || '';
 
-  // Navigation requests (HTML) - try network, fall back to cached root
+  // Navigation requests (HTML) - network-first with safe caching
   if (request.mode === 'navigate' || accept.includes('text/html')) {
-    event.respondWith(
-      fetch(request).then(response => {
-        // update cache with latest index
-        const copy = response.clone();
-        caches.open(ASSET_CACHE).then(cache => cache.put('/index.html', copy)).catch(()=>{})
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request);
+        // attempt to update cached index.html without breaking response
+        try {
+          const cache = await caches.open(ASSET_CACHE);
+          await cache.put('/index.html', response.clone());
+        } catch (err) {
+          // swallow caching errors (could be body used or opaque responses)
+          console.warn('SW: failed to cache index.html', err);
+        }
         return response;
-      }).catch(() => caches.match('/index.html'))
-    );
+      } catch (err) {
+        const cached = await caches.match('/index.html');
+        return cached || Response.error();
+      }
+    })());
     return;
   }
 
-  // For assets (css/js/images), try network then fallback to cache
-  event.respondWith(
-    fetch(request).then(response => {
-      try { caches.open(ASSET_CACHE).then(cache => cache.put(request, response.clone())); } catch (e) {}
+  // Asset requests - network-first then cache, fallback to index.html as last resort
+  event.respondWith((async () => {
+    try {
+      const response = await fetch(request);
+      try {
+        const cache = await caches.open(ASSET_CACHE);
+        await cache.put(request, response.clone());
+      } catch (err) {
+        // ignore caching errors
+      }
       return response;
-    }).catch(async () => {
+    } catch (err) {
       const cached = await caches.match(request);
       if (cached) return cached;
-      // as a last resort for missing assets, return the cached index (so SPA can render)
-      return caches.match('/index.html');
-    })
-  );
+      return (await caches.match('/index.html')) || Response.error();
+    }
+  })());
 });
 
 // Periodic background sync for checking conditions

@@ -3,6 +3,11 @@ import { useHive } from '../context/HiveContext'
 import { useToast } from '../contexts/ToastContext'
 import HiveSelector from '../components/HiveSelector'
 import './Inspection.css'
+import useOfflineQueue from '../hooks/useOfflineQueue'
+import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+
+const DB_NAME = 'beehive-cache-v1'
+const INSPECTION_STORE = 'inspections'
 
 export default function Inspection() {
   const { selectedHive } = useHive()
@@ -30,6 +35,19 @@ export default function Inspection() {
     }
   }, [selectedHive]) // Re-fetch when hive changes
 
+  // Setup offline queue with a send function that posts to the server
+  const sendInspection = async (payload) => {
+    const res = await fetch('/api/inspection/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    if (!res.ok) throw new Error('Network response not ok')
+    return res
+  }
+
+  const { enqueue } = useOfflineQueue(sendInspection)
+
   const fetchInspectionHistory = async () => {
     if (!selectedHive) return
     
@@ -38,9 +56,25 @@ export default function Inspection() {
       if (response.ok) {
         const data = await response.json()
         setHistory(data)
+        try {
+          // cache the fetched history locally for offline fallback
+          await idbAddItem(DB_NAME, INSPECTION_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: data })
+        } catch (err) {
+          // ignore cache errors
+        }
+        return
       }
     } catch (error) {
       console.error('Chyba pri načítaní histórie inšpekcií:', error)
+      // fallback to cached history
+      try {
+        const cached = await idbGetAllItems(DB_NAME, INSPECTION_STORE)
+        // find latest cache for this hive
+        const latest = (cached || []).reverse().find(c => c.hiveId === selectedHive)
+        if (latest && latest.items) setHistory(latest.items)
+      } catch (err) {
+        console.error('Error reading inspection cache', err)
+      }
     }
   }
 
@@ -54,21 +88,23 @@ export default function Inspection() {
   const handleSave = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/inspection/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          checklist,
-          notes,
-          timestamp: new Date(),
-          hiveId: selectedHive
-        })
-      })
+      const payload = {
+        checklist,
+        notes,
+        timestamp: new Date(),
+        hiveId: selectedHive
+      }
 
-      if (response.ok) {
+      const result = await enqueue(payload)
+
+      // If offline (queued), optimistically add to local history and cache
+      const optimisticItem = { _id: `offline-${Date.now()}`, checklist, notes, timestamp: payload.timestamp }
+      setHistory(prev => [optimisticItem, ...prev])
+      try { await idbAddItem(DB_NAME, INSPECTION_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: [optimisticItem] }) } catch (e) {}
+
+      if (result.sent) {
         setShowSuccess(true)
         setTimeout(() => setShowSuccess(false), 3000)
-        
         // Reset form
         setChecklist({
           pollen: false,
@@ -81,9 +117,10 @@ export default function Inspection() {
           inspectionNeeded: false
         })
         setNotes('')
-        
-        // Refresh history
+        // Refresh history from server
         fetchInspectionHistory()
+      } else {
+        toast.info('Práca v režime offline — inšpekcia uložená lokálne a odošle sa pri návrate online')
       }
     } catch (error) {
       console.error('Chyba pri ukladaní inšpekcie:', error)

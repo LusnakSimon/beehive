@@ -18,12 +18,11 @@
   }
 }
 
-.chat-container {
-    .messages-area {
-      flex: 1;
-      overflow-y: auto;
-      background: var(--bg-primary);
-      padding: 1rem;
+.chat-container .messages-area {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -82,14 +81,6 @@
 
 .back-button {
   background: rgba(255, 255, 255, 0.2);
-    .message-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
   border: 2px solid rgba(255, 255, 255, 0.3);
   padding: 0.625rem;
   cursor: pointer;
@@ -102,7 +93,15 @@
   justify-content: center;
   backdrop-filter: blur(10px);
 }
-    .message-avatar-spacer { width: 36px; flex-shrink: 0; }
+.back-button .message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.message-avatar-spacer { width: 36px; flex-shrink: 0; }
 
 .back-button:hover {
   background: rgba(255, 255, 255, 0.3);
@@ -115,8 +114,8 @@
   width: 24px;
   text-align: center;
   font-weight: bold;
-    .message-content { max-width: 70%; display:flex; flex-direction:column; }
 }
+.back-arrow .message-content { max-width: 70%; display:flex; flex-direction:column; }
 
 .chat-user-avatar {
   width: 48px;
@@ -139,16 +138,16 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.chat-user-info p .message-bubble {
+  padding: 0.625rem 0.875rem;
+  border-radius: 16px;
+  position: relative;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+  max-width: 100%;
+}
 .chat-user-info p {
-    .message-bubble {
-      padding: 0.625rem 0.875rem;
-      border-radius: 16px;
-      position: relative;
-      word-wrap: break-word;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-      transition: all 0.2s;
-      max-width: 100%;
-    }
   font-size: 0.875rem;
   margin: 0;
   color: rgba(255, 255, 255, 0.9);
@@ -271,8 +270,8 @@
 @media (max-width: 768px) {
   .message-avatar-spacer {
     width: 32px;
-    .message-input { width:100%; padding:0.75rem 1rem; border-radius:22px; background:var(--input-bg); color:var(--text); }
   }
+  .message-input { width:100%; padding:0.75rem 1rem; border-radius:22px; background:var(--input-bg); color:var(--text); }
 }
 
 .message-content {
