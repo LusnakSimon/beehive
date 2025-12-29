@@ -11,6 +11,9 @@ export default function Navigation() {
   const [notificationUnread, setNotificationUnread] = useState(0)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const lastNotificationCheck = useRef(new Set())
+  const navDesktopRef = useRef(null)
+  const [visibleCount, setVisibleCount] = useState(10)
+  const [showDesktopMore, setShowDesktopMore] = useState(false)
 
   const fetchUnreadCount = async () => {
     if (!isAuthenticated) return
@@ -106,61 +109,101 @@ export default function Navigation() {
       }
     }
   }, [isAuthenticated])
+
+  // Adjust how many desktop nav items fit and move remainder into the 'More' dropdown
+  useEffect(() => {
+    const el = navDesktopRef.current
+    if (!el) return
+
+    const calculate = () => {
+      const first = el.querySelector('.nav-link')
+      const itemWidth = first ? Math.max(80, first.offsetWidth) : 100
+      const available = Math.floor(el.clientWidth / itemWidth)
+      const maxVisible = Math.max(1, Math.min(12, available))
+      setVisibleCount(maxVisible)
+    }
+
+    // Initial calculation
+    calculate()
+
+    const ro = new ResizeObserver(() => calculate())
+    ro.observe(el)
+    window.addEventListener('resize', calculate)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', calculate)
+    }
+  }, [totalUnread, notificationUnread, user?.role])
   
   return (
     <nav className="navigation">
       {isAuthenticated ? (
         <>
-          {/* Desktop Navigation - All items */}
-          <div className="nav-desktop">
-            <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">🏠</span>
-              <span>Dashboard</span>
-            </NavLink>
-            <NavLink to="/history" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">📊</span>
-              <span>História</span>
-            </NavLink>
-            <NavLink to="/inspection" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">📋</span>
-              <span>Kontrola</span>
-            </NavLink>
-            <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">🗺️</span>
-              <span>Mapa</span>
-            </NavLink>
-            <NavLink to="/search" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">🔍</span>
-              <span>Hľadať</span>
-            </NavLink>
-            <NavLink to="/friends" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">👫</span>
-              <span>Priatelia</span>
-            </NavLink>
-            <NavLink to="/messages" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">💬</span>
-              <span>Správy</span>
-              {totalUnread > 0 && <span className="nav-badge">{totalUnread}</span>}
-            </NavLink>
-            <NavLink to="/groups" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">👥</span>
-              <span>Skupiny</span>
-            </NavLink>
-            <NavLink to="/notifications" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">🔔</span>
-              <span>Upozornenia</span>
-              {notificationUnread > 0 && <span className="nav-badge">{notificationUnread}</span>}
-            </NavLink>
-            <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">⚙️</span>
-              <span>Nastavenia</span>
-            </NavLink>
-            {user?.role === 'admin' && (
-              <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-                <span className="icon">🔧</span>
-                <span>Admin</span>
-              </NavLink>
-            )}
+          {/* Desktop Navigation - responsive with overflow 'More' menu */}
+          <div className="nav-desktop" ref={navDesktopRef}>
+            {(() => {
+              // Define nav items in priority order
+              const items = [
+                { key: 'dashboard', to: '/', icon: '🏠', label: 'Dashboard' },
+                { key: 'history', to: '/history', icon: '📊', label: 'História' },
+                { key: 'inspection', to: '/inspection', icon: '📋', label: 'Kontrola' },
+                { key: 'map', to: '/map', icon: '🗺️', label: 'Mapa' },
+                { key: 'search', to: '/search', icon: '🔍', label: 'Hľadať' },
+                { key: 'friends', to: '/friends', icon: '👫', label: 'Priatelia' },
+                { key: 'messages', to: '/messages', icon: '💬', label: 'Správy', badge: totalUnread },
+                { key: 'groups', to: '/groups', icon: '👥', label: 'Skupiny' },
+                { key: 'notifications', to: '/notifications', icon: '🔔', label: 'Upozornenia', badge: notificationUnread },
+                { key: 'settings', to: '/settings', icon: '⚙️', label: 'Nastavenia' }
+              ]
+
+              if (user?.role === 'admin') {
+                items.push({ key: 'admin', to: '/admin', icon: '🔧', label: 'Admin' })
+              }
+
+              // Determine visible / overflow based on visibleCount
+              const visible = items.slice(0, visibleCount)
+              const overflow = items.slice(visibleCount)
+
+              return (
+                <>
+                  {visible.map(it => (
+                    <NavLink key={it.key} to={it.to} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                      <span className="icon">{it.icon}</span>
+                      <span>{it.label}</span>
+                      {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
+                    </NavLink>
+                  ))}
+
+                  {overflow.length > 0 && (
+                    <div className="nav-more-desktop">
+                      <button
+                        className={`nav-link ${showDesktopMore ? 'active' : ''}`}
+                        onClick={() => setShowDesktopMore(s => !s)}
+                        aria-expanded={showDesktopMore}
+                        aria-haspopup="true"
+                        aria-label="More navigation items"
+                      >
+                        <span className="icon">⋯</span>
+                        <span>Viac</span>
+                      </button>
+
+                      {showDesktopMore && (
+                        <div className="desktop-dropdown">
+                          {overflow.map(it => (
+                            <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
+                              <span className="icon">{it.icon}</span>
+                              <span>{it.label}</span>
+                              {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
+                            </NavLink>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )
+            })()}
           </div>
 
           {/* Mobile Navigation - Core items only */}
