@@ -14,7 +14,8 @@ export default function MyHives() {
   const [modalMode, setModalMode] = useState('add') // 'add' | 'edit'
   const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
 
-  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
+  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
+  const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
   const [deletedHive, setDeletedHive] = useState(null)
@@ -44,9 +45,30 @@ export default function MyHives() {
   const handleFileChange = (e) => {
     const file = e.target.files && e.target.files[0]
     if (!file) return
+    // Validate type and size (limit 5MB)
+    if (!file.type.startsWith('image/')) {
+      setErrors(prev => ({ ...prev, image: 'Prosím nahraj obrázok (jpg, png, ...).' }))
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, image: 'Obrázok nesmie byť väčší než 5 MB.' }))
+      return
+    }
+    setErrors(prev => ({ ...prev, image: null }))
     const reader = new FileReader()
-    reader.onload = () => setForm(prev => ({ ...prev, imageDataUrl: reader.result }))
+    reader.onload = () => setForm(prev => ({ ...prev, imageDataUrl: reader.result, imageFile: file }))
     reader.readAsDataURL(file)
+  }
+
+  const validateForm = () => {
+    const e = {}
+    if (!form.name || form.name.trim().length === 0) e.name = 'Názov je povinný.'
+    if (form.device?.type === 'esp32-lorawan' && form.device.devEUI && form.device.devEUI.length !== 16) e.devEUI = 'DevEUI musí mať 16 hex znakov.'
+    if (form.device?.type === 'esp32-wifi' && form.device.deviceId && form.device.deviceId.trim().length < 3) e.deviceId = 'Device ID je príliš krátke.'
+    if (form.coordinates?.lat && isNaN(parseFloat(form.coordinates.lat))) e.coordinates = 'Lat musí byť číslo.'
+    if (form.coordinates?.lng && isNaN(parseFloat(form.coordinates.lng))) e.coordinates = 'Lng musí byť číslo.'
+    setErrors(e)
+    return Object.keys(e).length === 0
   }
 
   const getCurrentLocation = () => {
@@ -84,18 +106,37 @@ export default function MyHives() {
         setSelectedHive(tempId)
         navigate('/inspection')
 
-        const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
-        if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
-        if (form.device?.type === 'esp32-lorawan' && form.device.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
-        if (form.device?.type === 'esp32-wifi' && form.device.deviceId) hiveData.device.deviceId = form.device.deviceId
-        if (form.imageDataUrl) hiveData.image = form.imageDataUrl
+        // Prepare payload; use FormData if imageFile present
+        let res
+        if (form.imageFile) {
+          const fd = new FormData()
+          fd.append('image', form.imageFile)
+          fd.append('name', form.name)
+          fd.append('location', form.location)
+          fd.append('color', form.color)
+          fd.append('visibility', form.visibility)
+          fd.append('device', JSON.stringify({ type: form.device.type, devEUI: form.device.devEUI, deviceId: form.device.deviceId }))
+          if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
 
-        const res = await fetch('/api/users/me/hives', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(hiveData)
-        })
+          res = await fetch('/api/users/me/hives', {
+            method: 'POST',
+            credentials: 'include',
+            body: fd
+          })
+        } else {
+          const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
+          if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
+          if (form.device?.type === 'esp32-lorawan' && form.device.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
+          if (form.device?.type === 'esp32-wifi' && form.device.deviceId) hiveData.device.deviceId = form.device.deviceId
+          if (form.imageDataUrl) hiveData.image = form.imageDataUrl
+
+          res = await fetch('/api/users/me/hives', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(hiveData)
+          })
+        }
 
         if (res.ok) {
           const created = await res.json().catch(() => null)
@@ -115,18 +156,37 @@ export default function MyHives() {
         updateHive(hiveId, { name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, visibility: form.visibility, device: form.device })
         setShowModal(false)
 
-        const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
-        if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
-        if (form.device?.type === 'esp32-lorawan' && form.device.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
-        if (form.device?.type === 'esp32-wifi' && form.device.deviceId) hiveData.device.deviceId = form.device.deviceId
-        if (form.imageDataUrl) hiveData.image = form.imageDataUrl
+        // PATCH: use FormData if imageFile present
+        let res
+        if (form.imageFile) {
+          const fd = new FormData()
+          fd.append('image', form.imageFile)
+          fd.append('name', form.name)
+          fd.append('location', form.location)
+          fd.append('color', form.color)
+          fd.append('visibility', form.visibility)
+          fd.append('device', JSON.stringify({ type: form.device.type, devEUI: form.device.devEUI, deviceId: form.device.deviceId }))
+          if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
 
-        const res = await fetch(`/api/users/me/hives/${hiveId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(hiveData)
-        })
+          res = await fetch(`/api/users/me/hives/${hiveId}`, {
+            method: 'PATCH',
+            credentials: 'include',
+            body: fd
+          })
+        } else {
+          const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
+          if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
+          if (form.device?.type === 'esp32-lorawan' && form.device.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
+          if (form.device?.type === 'esp32-wifi' && form.device.deviceId) hiveData.device.deviceId = form.device.deviceId
+          if (form.imageDataUrl) hiveData.image = form.imageDataUrl
+
+          res = await fetch(`/api/users/me/hives/${hiveId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(hiveData)
+          })
+        }
 
         if (res.ok) {
           await refreshUser()
@@ -270,6 +330,7 @@ export default function MyHives() {
 
                 <label>Fotka (voliteľné)</label>
                 <input type="file" accept="image/*" onChange={handleFileChange} />
+                {errors.image && <div className="error-text">{errors.image}</div>}
                 {form.imageDataUrl && <img src={form.imageDataUrl} alt="preview" className="image-preview" />}
 
                 <label>GPS súradnice (voliteľné)</label>
@@ -286,10 +347,16 @@ export default function MyHives() {
                   <option value="esp32-lorawan">📶 ESP32 LoRaWAN</option>
                 </select>
                 {form.device.type === 'esp32-lorawan' && (
-                  <input placeholder="DevEUI (16 hex)" value={form.device.devEUI} onChange={e => setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } }))} maxLength={16} />
+                  <>
+                    <input placeholder="DevEUI (16 hex)" value={form.device.devEUI} onChange={e => setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } }))} maxLength={16} />
+                    {errors.devEUI && <div className="error-text">{errors.devEUI}</div>}
+                  </>
                 )}
                 {form.device.type === 'esp32-wifi' && (
-                  <input placeholder="Device ID" value={form.device.deviceId} onChange={e => setForm(f => ({ ...f, device: { ...f.device, deviceId: e.target.value } }))} />
+                  <>
+                    <input placeholder="Device ID" value={form.device.deviceId} onChange={e => setForm(f => ({ ...f, device: { ...f.device, deviceId: e.target.value } }))} />
+                    {errors.deviceId && <div className="error-text">{errors.deviceId}</div>}
+                  </>
                 )}
 
                 <label>Viditeľnosť</label>

@@ -55,6 +55,8 @@
 .modal-form label { display:block; margin-top:0.75rem; font-weight:600 }
 .modal-form input[type="text"], .modal-form input[type="color"], .modal-form input[type="file"], .modal-form input { width:100%; padding:0.5rem; margin-top:0.25rem }
 .image-preview { width:100%; max-height:240px; object-fit:cover; margin-top:0.5rem; border-radius:6px; display:block }
+.error-text{color:var(--danger);font-size:0.85rem;margin-top:0.35rem}
+.modal-form input[aria-invalid="true"], .modal-form select[aria-invalid="true"]{outline:2px solid rgba(239,68,68,0.12)}
 .modal-form .form-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem }
 
 /* Slightly larger small buttons for better tap targets on cards */
