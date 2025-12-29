@@ -146,6 +146,7 @@ export default function Navigation() {
               // Define nav items in priority order
               const items = [
                 { key: 'dashboard', to: '/', icon: '🏠', label: 'Dashboard' },
+                  { key: 'my-hives', to: '/my-hives', icon: '🐝', label: 'Moje úle' },
                 { key: 'history', to: '/history', icon: '📊', label: 'História' },
                 { key: 'inspection', to: '/inspection', icon: '📋', label: 'Kontrola' },
                 { key: 'map', to: '/map', icon: '🗺️', label: 'Mapa' },
