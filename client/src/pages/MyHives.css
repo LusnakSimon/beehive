@@ -15,11 +15,11 @@
 }
 .add-hive-form input { padding:0.5rem; border-radius:8px; border:1px solid var(--border); background:var(--input-bg); color:var(--text) }
 .form-actions { display:flex; gap:0.5rem }
-.hives-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem }
-.hive-card { display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--card-bg) }
-.hive-image { height:120px; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center }
+.hives-grid { display:flex; flex-direction:column; gap:0.75rem }
+.hive-card { display:flex; flex-direction:row; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--card-bg); align-items:stretch }
+.hive-image { width:160px; min-width:160px; height:120px; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center }
 .hive-initial { font-size:2rem; color:rgba(255,255,255,0.9); font-weight:700 }
-.hive-body { padding:0.75rem; display:flex; flex-direction:column; gap:0.5rem }
+.hive-body { padding:0.75rem; display:flex; flex-direction:column; gap:0.5rem; flex:1 }
 .hive-name { font-weight:700 }
 .hive-location { color:var(--text-secondary); font-size:0.9rem }
 .hive-actions { display:flex; gap:0.5rem; margin-top:auto }
