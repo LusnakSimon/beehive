@@ -24,3 +24,49 @@
 .hive-location { color:var(--text-secondary); font-size:0.9rem }
 .hive-actions { display:flex; gap:0.5rem; margin-top:auto }
 .empty-state { padding:2rem; color:var(--text-secondary); text-align:center }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+}
+.modal-content {
+  background: var(--bg);
+  color: var(--text-primary);
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+}
+.modal-form label { display:block; margin-top:0.75rem; font-weight:600 }
+.modal-form input[type="text"], .modal-form input[type="color"], .modal-form input[type="file"], .modal-form input { width:100%; padding:0.5rem; margin-top:0.25rem }
+.image-preview { width:100%; max-height:200px; object-fit:cover; margin-top:0.5rem; border-radius:6px }
+.modal-form .form-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem }
+
+/* Undo banner */
+.undo-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 16px;
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  border-radius: 8px;
+  z-index: 1300;
+}
+.btn-link { background: none; border: none; color: var(--primary); cursor:pointer }
