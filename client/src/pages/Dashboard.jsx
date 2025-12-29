@@ -160,9 +160,9 @@ export default function Dashboard() {
     }))
   }
 
-  // Compute approximate deltas for a metric based on nearest historical point
+  // Compute approximate deltas and %/rate for a metric based on nearest historical points
   const computeDeltas = (field) => {
-    if (!history24h || history24h.length === 0) return { delta1h: null, delta24h: null }
+    if (!history24h || history24h.length === 0) return { delta1h: null, delta24h: null, pct1h: null, pct24h: null, rate1h: null, rate24h: null }
     const now = data.lastUpdate ? new Date(data.lastUpdate).getTime() : Date.now()
 
     const findNearest = (targetMs) => {
@@ -179,7 +179,6 @@ export default function Dashboard() {
       return best
     }
 
-    // target times: ~1 hour ago, ~24 hours ago
     const oneHourMs = 60 * 60 * 1000
     const oneHourTarget = now - oneHourMs
     const dayTarget = now - (24 * oneHourMs)
@@ -194,7 +193,14 @@ export default function Dashboard() {
     const delta1h = (latestVal != null && val1h != null) ? (latestVal - val1h) : null
     const delta24h = (latestVal != null && val24h != null) ? (latestVal - val24h) : null
 
-    return { delta1h, delta24h }
+    const pct1h = (delta1h != null && val1h !== 0 && val1h != null) ? (delta1h / Math.abs(val1h)) * 100 : null
+    const pct24h = (delta24h != null && val24h !== 0 && val24h != null) ? (delta24h / Math.abs(val24h)) * 100 : null
+
+    // rate per hour: for 1h it's just delta1h, for 24h average per hour is delta24h / 24
+    const rate1h = delta1h != null ? delta1h : null
+    const rate24h = delta24h != null ? (delta24h / 24) : null
+
+    return { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h }
   }
 
   const getOverallStatus = () => {
@@ -363,14 +369,14 @@ export default function Dashboard() {
           )}
           {/* Hourly / 24h deltas for temperature */}
           {(() => {
-            const { delta1h, delta24h } = computeDeltas('temperature')
+            const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('temperature')
             return (
               <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}°C`}
+                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}°C`} {pct1h != null ? `(${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)}°C/h` : ''}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}°C`}
+                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}°C`} {pct24h != null ? `(${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)}°C/h` : ''}
                 </div>
               </div>
             )
@@ -413,14 +419,14 @@ export default function Dashboard() {
           )}
           {/* Hourly / 24h deltas for humidity */}
           {(() => {
-            const { delta1h, delta24h } = computeDeltas('humidity')
+            const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('humidity')
             return (
               <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}%`}
+                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}%`} {pct1h != null ? `(${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)}%/h` : ''}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}%`}
+                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}%`} {pct24h != null ? `(${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)}%/h` : ''}
                 </div>
               </div>
             )
@@ -463,14 +469,14 @@ export default function Dashboard() {
           )}
             {/* Hourly / 24h deltas */}
             {(() => {
-              const { delta1h, delta24h } = computeDeltas('weight')
+              const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('weight')
               return (
                 <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                   <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                    1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(2)} kg`}
+                    1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(2)} kg`} {pct1h != null ? ` (${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)} kg/h` : ''}
                   </div>
                   <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                    24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(2)} kg`}
+                    24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(2)} kg`} {pct24h != null ? ` (${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)} kg/h` : ''}
                   </div>
                 </div>
               )
@@ -507,14 +513,14 @@ export default function Dashboard() {
           </div>
           {/* Hourly / 24h deltas for battery */}
           {(() => {
-            const { delta1h, delta24h } = computeDeltas('battery')
+            const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('battery')
             return (
               <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(0)}%`}
+                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(0)}%`} {pct1h != null ? `(${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)}%/h` : ''}
                 </div>
                 <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(0)}%`}
+                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(0)}%`} {pct24h != null ? `(${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)}%/h` : ''}
                 </div>
               </div>
             )
