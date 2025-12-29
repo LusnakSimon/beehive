@@ -361,6 +361,20 @@ export default function Dashboard() {
               <span>{getTrend(data.temperature, previousData.temperature).text}</span>
             </div>
           )}
+          {/* Hourly / 24h deltas for temperature */}
+          {(() => {
+            const { delta1h, delta24h } = computeDeltas('temperature')
+            return (
+              <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}°C`}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}°C`}
+                </div>
+              </div>
+            )
+          })()}
           <div className="metric-status-badge" style={{ backgroundColor: getMetricStatus('temperature', data.temperature).color }}>
             {getMetricStatus('temperature', data.temperature).text}
           </div>
@@ -397,6 +411,20 @@ export default function Dashboard() {
               <span>{getTrend(data.humidity, previousData.humidity).text}</span>
             </div>
           )}
+          {/* Hourly / 24h deltas for humidity */}
+          {(() => {
+            const { delta1h, delta24h } = computeDeltas('humidity')
+            return (
+              <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}%`}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}%`}
+                </div>
+              </div>
+            )
+          })()}
           <div className="metric-status-badge" style={{ backgroundColor: getMetricStatus('humidity', data.humidity).color }}>
             {getMetricStatus('humidity', data.humidity).text}
           </div>
@@ -477,6 +505,20 @@ export default function Dashboard() {
             <span className="metric-value-large">{data.battery}</span>
             <span className="metric-unit">%</span>
           </div>
+          {/* Hourly / 24h deltas for battery */}
+          {(() => {
+            const { delta1h, delta24h } = computeDeltas('battery')
+            return (
+              <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(0)}%`}
+                </div>
+                <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(0)}%`}
+                </div>
+              </div>
+            )
+          })()}
           <div className="battery-bar">
             <div 
               className="battery-fill" 
