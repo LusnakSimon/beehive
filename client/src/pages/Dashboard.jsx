@@ -160,6 +160,43 @@ export default function Dashboard() {
     }))
   }
 
+  // Compute approximate deltas for a metric based on nearest historical point
+  const computeDeltas = (field) => {
+    if (!history24h || history24h.length === 0) return { delta1h: null, delta24h: null }
+    const now = data.lastUpdate ? new Date(data.lastUpdate).getTime() : Date.now()
+
+    const findNearest = (targetMs) => {
+      let best = null
+      let bestDiff = Infinity
+      for (const it of history24h) {
+        const t = new Date(it.timestamp).getTime()
+        const diff = Math.abs(t - targetMs)
+        if (diff < bestDiff) {
+          bestDiff = diff
+          best = it
+        }
+      }
+      return best
+    }
+
+    // target times: ~1 hour ago, ~24 hours ago
+    const oneHourMs = 60 * 60 * 1000
+    const oneHourTarget = now - oneHourMs
+    const dayTarget = now - (24 * oneHourMs)
+
+    const oneHourPoint = findNearest(oneHourTarget)
+    const dayPoint = findNearest(dayTarget)
+
+    const latestVal = data[field]
+    const val1h = oneHourPoint ? (oneHourPoint[field] ?? null) : null
+    const val24h = dayPoint ? (dayPoint[field] ?? null) : null
+
+    const delta1h = (latestVal != null && val1h != null) ? (latestVal - val1h) : null
+    const delta24h = (latestVal != null && val24h != null) ? (latestVal - val24h) : null
+
+    return { delta1h, delta24h }
+  }
+
   const getOverallStatus = () => {
     const tempStatus = getMetricStatus('temperature', data.temperature)
     const humidStatus = getMetricStatus('humidity', data.humidity)
@@ -396,6 +433,20 @@ export default function Dashboard() {
               <span>{getTrend(data.weight, previousData.weight).text}</span>
             </div>
           )}
+            {/* Hourly / 24h deltas */}
+            {(() => {
+              const { delta1h, delta24h } = computeDeltas('weight')
+              return (
+                <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                    1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(2)} kg`}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
+                    24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(2)} kg`}
+                  </div>
+                </div>
+              )
+            })()}
           <div className="metric-status-badge" style={{ backgroundColor: getMetricStatus('weight', data.weight).color }}>
             {getMetricStatus('weight', data.weight).text}
           </div>
