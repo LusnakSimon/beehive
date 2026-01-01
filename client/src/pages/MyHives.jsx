@@ -282,7 +282,7 @@ export default function MyHives() {
 
       <div className="hives-grid">
         {hives && hives.length > 0 ? hives.map(h => (
-          <div className="hive-card" key={h.id} style={{ borderColor: h.color || 'var(--border)' }}>
+          <div className="hive-card" key={h.id} style={{ '--hive-color': h.color || 'var(--primary)' }}>
             <div className="hive-image" style={{ backgroundColor: h.color || 'var(--card-bg)' }}>
               {h.image ? (
                 <img src={h.image} alt={h.name || 'úl'} className="hive-image-el" />
@@ -292,10 +292,10 @@ export default function MyHives() {
             </div>
             <div className="hive-body">
               <div className="hive-name">{h.name}</div>
-              <div className="hive-location">{h.location}</div>
+              {h.location && <div className="hive-location">{h.location}</div>}
               <div className="hive-actions">
-                <button className="btn btn-sm" onClick={() => goTo(h.id, '/history')}>História</button>
-                <button className="btn btn-sm" onClick={() => goTo(h.id, '/inspection')}>Kontroly</button>
+                <button className="btn btn-sm" onClick={() => goTo(h.id, '/history')}>📊 História</button>
+                <button className="btn btn-sm" onClick={() => goTo(h.id, '/inspection')}>✅ Kontroly</button>
                 <button className="btn btn-sm" onClick={() => openEditModal(h)}>✏️</button>
                 <button className="btn btn-sm btn-danger" onClick={() => handleDelete(h)}>🗑️</button>
               </div>
@@ -334,10 +334,10 @@ export default function MyHives() {
                 {form.imageDataUrl && <img src={form.imageDataUrl} alt="preview" className="image-preview" />}
 
                 <label>GPS súradnice (voliteľné)</label>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div className="gps-inputs">
                   <input placeholder="lat" value={form.coordinates.lat} onChange={e => setForm(f => ({ ...f, coordinates: { ...f.coordinates, lat: e.target.value } }))} />
                   <input placeholder="lng" value={form.coordinates.lng} onChange={e => setForm(f => ({ ...f, coordinates: { ...f.coordinates, lng: e.target.value } }))} />
-                  <button type="button" className="btn" onClick={getCurrentLocation}>📍 Použiť moju polohu</button>
+                  <button type="button" className="btn" onClick={getCurrentLocation}>📍 GPS</button>
                 </div>
 
                 <label>Typ zariadenia</label>

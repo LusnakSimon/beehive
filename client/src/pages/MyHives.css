@@ -1,12 +1,28 @@
 .my-hives-page {
-  padding: 1rem;
+  padding: 1.5rem;
   padding-bottom: calc(var(--nav-height) + 2rem);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 .my-hives-header {
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:1rem;
+  margin-bottom:1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.my-hives-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.my-hives-header h1::before {
+  content: '🐝';
 }
 .add-hive-form {
   display:flex;
@@ -16,92 +32,404 @@
 }
 .add-hive-form input { padding:0.5rem; border-radius:8px; border:1px solid var(--border); background:var(--input-bg); color:var(--text) }
 .form-actions { display:flex; gap:0.5rem }
-.hives-grid { display:flex; flex-direction:column; gap:1rem }
-.hive-card { display:flex; flex-direction:row; border-radius:12px; overflow:hidden; background:var(--card-bg); align-items:stretch; padding:0; box-shadow:var(--card-shadow); transition:transform .18s ease, box-shadow .18s ease; border:1px solid transparent }
-.hive-card:hover { transform:translateY(-4px); box-shadow:var(--card-shadow-lg) }
-.hive-image { width:140px; min-width:140px; height:120px; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0 }
-.hive-image-el { width:100%; height:100%; object-fit:cover; display:block }
-.hive-initial { font-size:1.75rem; color:rgba(255,255,255,0.95); font-weight:700 }
-.hive-body { padding:0.9rem 1rem; display:flex; flex-direction:column; gap:0.5rem; flex:1 }
-.hive-name { font-weight:700; font-size:1rem }
-.hive-location { color:var(--text-secondary); font-size:0.9rem }
-.hive-actions { display:flex; gap:0.5rem; margin-top:auto }
-.empty-state { padding:2rem; color:var(--text-secondary); text-align:center }
 
-/* Modal */
+/* Hives Grid - Modern card layout */
+.hives-grid { 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Hive Card - Modern design */
+.hive-card { 
+  display: flex; 
+  flex-direction: column;
+  border-radius: 16px; 
+  overflow: hidden; 
+  background: var(--card-bg); 
+  box-shadow: var(--card-shadow); 
+  transition: transform 0.2s ease, box-shadow 0.2s ease; 
+  border: 1px solid var(--border);
+  position: relative;
+}
+.hive-card:hover { 
+  transform: translateY(-6px); 
+  box-shadow: var(--card-shadow-lg);
+}
+.hive-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--hive-color, var(--primary));
+}
+.hive-image { 
+  width: 100%;
+  height: 180px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  overflow: hidden; 
+  flex-shrink: 0;
+  position: relative;
+}
+.hive-image-el { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block;
+  transition: transform 0.3s ease;
+}
+.hive-card:hover .hive-image-el {
+  transform: scale(1.05);
+}
+.hive-initial { 
+  font-size: 3rem; 
+  color: rgba(255,255,255,0.95); 
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.hive-body { 
+  padding: 1.25rem; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.75rem; 
+  flex: 1;
+}
+.hive-name { 
+  font-weight: 700; 
+  font-size: 1.125rem;
+  color: var(--text-primary);
+}
+.hive-location { 
+  color: var(--text-secondary); 
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.hive-location::before {
+  content: '📍';
+  font-size: 0.85rem;
+}
+.hive-actions { 
+  display: flex; 
+  flex-wrap: wrap;
+  gap: 0.5rem; 
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+.hive-actions .btn-sm {
+  flex: 1;
+  min-width: fit-content;
+  justify-content: center;
+}
+.empty-state { 
+  grid-column: 1 / -1;
+  padding: 3rem 2rem; 
+  color: var(--text-secondary); 
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 2px dashed var(--border);
+}
+.empty-state::before {
+  content: '🏠';
+  display: block;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Modal - Modern overlay design */
 .modal-overlay {
   position: fixed;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1200;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .modal-content {
   background: var(--bg);
   color: var(--text-primary);
-  padding: 1rem 1.25rem;
-  border-radius: 8px;
+  padding: 0;
+  border-radius: 16px;
   width: 100%;
-  max-width: 520px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-  max-height: 80vh;
-  overflow: auto;
+  max-width: 560px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.25s ease;
 }
-.modal-form label { display:block; margin-top:0.75rem; font-weight:600 }
-.modal-form input[type="text"], .modal-form input[type="color"], .modal-form input[type="file"], .modal-form input { width:100%; padding:0.5rem; margin-top:0.25rem }
-.image-preview { width:100%; max-height:240px; object-fit:cover; margin-top:0.5rem; border-radius:6px; display:block }
-.error-text{color:var(--danger);font-size:0.85rem;margin-top:0.35rem}
-.modal-form input[aria-invalid="true"], .modal-form select[aria-invalid="true"]{outline:2px solid rgba(239,68,68,0.12)}
-.modal-form .form-actions { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem }
-
-/* Slightly larger small buttons for better tap targets on cards */
-.btn-sm{padding:.55rem .9rem;font-size:.95rem}
-
-/* Modal header styling */
-.modal-content h3{margin:0 0 .5rem;font-size:1.125rem;display:flex;align-items:center;justify-content:space-between}
-.modal-close{background:transparent;border:none;font-size:1.25rem;cursor:pointer;color:var(--text-secondary)}
-
-/* Color picker options */
-.color-picker{display:flex;align-items:center;gap:.5rem;margin-top:0.5rem}
-.color-option{width:28px;height:28px;border-radius:6px;border:2px solid transparent;cursor:pointer}
-.color-option.active{outline:3px solid rgba(0,0,0,0.08);transform:scale(1.05)}
-.color-picker input[type="color"]{width:36px;height:32px;padding:0;border-radius:6px;border:1px solid var(--border);background:transparent}
-
-/* Responsive: stack cards on small screens */
-@media (max-width: 720px){
-  .hive-card{flex-direction:column;align-items:stretch}
-  .hive-image{width:100%;min-width:100%;height:180px}
-  .hive-body{padding:0.75rem}
-  .hive-actions{flex-wrap:wrap;gap:0.5rem}
-  .my-hives-header{flex-direction:column;align-items:flex-start;gap:0.75rem}
-  .modal-content{max-width:92%;padding:1rem}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal-content h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-muted);
+}
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.modal-close:hover {
+  background: var(--card-bg);
+  color: var(--text-primary);
 }
 
-@media (max-width: 420px){
-  .hive-image{height:140px}
-  .btn-sm{padding:.6rem 1rem;font-size:1rem}
+/* Modal Form */
+.modal-form {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.modal-form label { 
+  display: block; 
+  margin-top: 1rem; 
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.modal-form label:first-child {
+  margin-top: 0;
+}
+.modal-form input[type="text"], 
+.modal-form input[type="color"], 
+.modal-form input[type="file"], 
+.modal-form input,
+.modal-form select { 
+  width: 100%; 
+  padding: 0.75rem 1rem; 
+  margin-top: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.modal-form input:focus,
+.modal-form select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
+}
+.modal-form select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+.image-preview { 
+  width: 100%; 
+  max-height: 200px; 
+  object-fit: cover; 
+  margin-top: 0.75rem; 
+  border-radius: 10px; 
+  display: block;
+  border: 1px solid var(--border);
+}
+.error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+.modal-form input[aria-invalid="true"], 
+.modal-form select[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+.modal-form .form-actions { 
+  display: flex; 
+  gap: 0.75rem; 
+  justify-content: flex-end; 
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.modal-form .form-actions .btn {
+  min-width: 100px;
 }
 
-/* Undo banner */
+/* Better tap targets */
+.btn-sm {
+  padding: .6rem 1rem;
+  font-size: .9rem;
+  border-radius: 8px;
+}
+
+/* Color picker - improved */
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.color-option {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.color-option:hover {
+  transform: scale(1.1);
+}
+.color-option.active {
+  border-color: var(--text-primary);
+  transform: scale(1.1);
+}
+.color-picker input[type="color"] {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  margin-top: 0;
+}
+
+/* Form section for GPS */
+.gps-inputs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+.gps-inputs input {
+  flex: 1;
+  margin-top: 0 !important;
+}
+.gps-inputs .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .my-hives-page {
+    padding: 1rem;
+  }
+  .hives-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .hive-image {
+    height: 160px;
+  }
+  .hive-body {
+    padding: 1rem;
+  }
+  .hive-actions {
+    gap: 0.4rem;
+  }
+  .hive-actions .btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  .my-hives-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .modal-content {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+    margin-top: auto;
+  }
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .hive-image {
+    height: 140px;
+  }
+  .btn-sm {
+    padding: .55rem .85rem;
+    font-size: .85rem;
+  }
+  .gps-inputs {
+    flex-wrap: wrap;
+  }
+  .gps-inputs .btn {
+    width: 100%;
+  }
+}
+
+/* Undo banner - improved */
 .undo-banner {
   position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 16px;
-  background: var(--bg-muted);
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--nav-height) + 1rem);
+  background: var(--card-bg);
   color: var(--text-primary);
   border: 1px solid var(--border);
-  padding: 0.6rem 1rem;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 12px;
-  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 12px;
   z-index: 1300;
+  box-shadow: var(--card-shadow-lg);
+  max-width: calc(100% - 2rem);
+  animation: slideUp 0.3s ease;
 }
-.btn-link { background: none; border: none; color: var(--primary); cursor:pointer }
+.btn-link { 
+  background: none; 
+  border: none; 
+  color: var(--primary); 
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.btn-link:hover {
+  background: rgba(251, 191, 36, 0.1);
+}

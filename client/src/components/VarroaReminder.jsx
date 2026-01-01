@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import './VarroaReminder.css'
 
 export default function VarroaReminder() {
+  const { isAuthenticated } = useAuth()
   const [lastCheck, setLastCheck] = useState(null)
   const [showReminder, setShowReminder] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
+    // Don't show reminder if not authenticated
+    if (!isAuthenticated) {
+      setShowReminder(false)
+      return
+    }
+
     // Load last check from localStorage
     const stored = localStorage.getItem('lastVarroaCheck')
     if (stored) {
@@ -25,7 +33,7 @@ export default function VarroaReminder() {
     
     // Check if reminder should show
     checkReminder()
-  }, [])
+  }, [isAuthenticated])
 
   const checkReminder = () => {
     if (dismissed) return
@@ -62,7 +70,7 @@ export default function VarroaReminder() {
     setShowReminder(false)
   }
 
-  if (!showReminder || dismissed) return null
+  if (!isAuthenticated || !showReminder || dismissed) return null
 
   return (
     <div className="varroa-reminder">

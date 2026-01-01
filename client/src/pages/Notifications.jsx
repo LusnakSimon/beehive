@@ -12,7 +12,9 @@ export default function Notifications() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('/api/social-notifications?limit=100')
+      const response = await fetch('/api/social-notifications?limit=100', {
+        credentials: 'include'
+      })
       if (!response.ok) throw new Error('Failed to fetch notifications')
       const data = await response.json()
       setNotifications(data.notifications || [])
@@ -37,7 +39,8 @@ export default function Notifications() {
   const markAsRead = async (notificationId) => {
     try {
       const response = await fetch(`/api/social-notifications/${notificationId}/read`, {
-        method: 'PATCH'
+        method: 'PATCH',
+        credentials: 'include'
       })
       if (!response.ok) throw new Error('Failed to mark as read')
       
@@ -56,7 +59,8 @@ export default function Notifications() {
   const markAllAsRead = async () => {
     try {
       const response = await fetch('/api/social-notifications/mark-all-read', {
-        method: 'PATCH'
+        method: 'PATCH',
+        credentials: 'include'
       })
       if (!response.ok) throw new Error('Failed to mark all as read')
       
@@ -74,7 +78,8 @@ export default function Notifications() {
   const deleteNotification = async (notificationId) => {
     try {
       const response = await fetch(`/api/social-notifications/${notificationId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       })
       if (!response.ok) throw new Error('Failed to delete notification')
       

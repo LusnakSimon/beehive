@@ -49,10 +49,10 @@ const Chat = () => {
         setOtherUser(data.conversation.otherUser);
       } else {
         // Fallback: find the other user manually
-        // Handle both user.id and user._id
-        const currentUserId = user?.id || user?._id;
+        // Handle both user.id and user._id, normalize to strings for comparison
+        const currentUserId = (user?._id || user?.id)?.toString?.() || (user?._id || user?.id);
         const other = data.conversation.participants.find(p => {
-          const participantId = p._id?.toString() || p.id?.toString();
+          const participantId = (p._id || p.id)?.toString?.() || (p._id || p.id);
           return participantId !== currentUserId;
         });
         setOtherUser(other);
@@ -392,16 +392,19 @@ const Chat = () => {
           ) : (
             <div className="messages-list bh-messages-list">
               {messages.map((message, index) => {
-                // API returns sender.id (not sender._id) and message.id (not message._id)
-                const senderId = message.sender?.id || message.sender?._id || message.sender;
-                const currentUserId = user?.id || user?._id;
+                // Normalize IDs to strings for comparison (MongoDB ObjectIds can come as objects or strings)
+                const senderId = (message.sender?._id || message.sender?.id || message.sender)?.toString?.() || 
+                                 (message.sender?._id || message.sender?.id || message.sender);
+                const currentUserId = (user?._id || user?.id)?.toString?.() || (user?._id || user?.id);
                 const isOwn = senderId === currentUserId;
                 
                 const prevSenderId = index > 0 
-                  ? (messages[index - 1].sender?.id || messages[index - 1].sender?._id || messages[index - 1].sender)
+                  ? ((messages[index - 1].sender?._id || messages[index - 1].sender?.id || messages[index - 1].sender)?.toString?.() || 
+                     (messages[index - 1].sender?._id || messages[index - 1].sender?.id || messages[index - 1].sender))
                   : null;
                 const nextSenderId = index < messages.length - 1
-                  ? (messages[index + 1].sender?.id || messages[index + 1].sender?._id || messages[index + 1].sender)
+                  ? ((messages[index + 1].sender?._id || messages[index + 1].sender?.id || messages[index + 1].sender)?.toString?.() ||
+                     (messages[index + 1].sender?._id || messages[index + 1].sender?.id || messages[index + 1].sender))
                   : null;
                 
                 const showAvatar = index === 0 || prevSenderId !== senderId;
