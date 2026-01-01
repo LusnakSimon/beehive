@@ -89,7 +89,7 @@
 }
 
 .error-actions .btn-secondary {
-  background: white;
+  background: var(--card-bg);
   color: var(--text);
   border: 2px solid var(--border);
 }

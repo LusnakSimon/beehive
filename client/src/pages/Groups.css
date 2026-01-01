@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: var(--bg-primary);
   padding: 0;
-  padding-bottom: 8rem;
+  padding-bottom: calc(var(--nav-height) + 4rem);
 }
 
 @media (min-width: 768px) {
@@ -73,6 +73,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   white-space: nowrap;
 }
@@ -180,9 +181,15 @@
   border-radius: 10px;
   font-size: 1rem;
   background: var(--card-bg);
+  color: var(--text);
   cursor: pointer;
   transition: all 0.2s;
   min-width: 200px;
+}
+
+.category-select option {
+  background: var(--card-bg);
+  color: var(--text);
 }
 
 .category-select:focus {
@@ -455,7 +462,6 @@
   .filter-tabs {
     overflow-x: auto;
     flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
   }
 
   .search-filter-row {

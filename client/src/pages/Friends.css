@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: var(--bg-primary);
   padding: 0;
-  padding-bottom: 6rem;
+  padding-bottom: calc(var(--nav-height) + 4rem);
   margin: 0;
 }
 
@@ -71,6 +71,7 @@
   border: 2px solid var(--border);
   background: var(--surface);
   color: var(--text);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   white-space: nowrap;
 }

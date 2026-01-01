@@ -110,11 +110,17 @@ const char* appKey = "${lorawanConfig.appKey}";`;
             min="10"
             max="300"
           />
+          <small className="settings-hint">Ako často sa majú aktualizovať dáta z API (10-300s). Kratší interval = viac žiadostí na server.</small>
         </div>
       </div>
 
       <div className="settings-section">
         <h2>Optimálne rozsahy</h2>
+        <p className="settings-description">
+          Nastav optimálne hodnoty pre tvoje včely. Ak hodnoty prekročia tieto limity, dostaneš upozornenie.
+          <br />
+          <em>Tip: Pre zdravé včely je optimálna teplota 30-36°C a vlhkosť 40-70%.</em>
+        </p>
         
         <div className="range-group">
           <label>Teplota (°C)</label>

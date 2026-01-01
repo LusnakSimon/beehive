@@ -5,8 +5,8 @@
   right: 0;
   height: var(--nav-height);
   background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -104,8 +104,8 @@
     bottom: auto;
     padding: 1rem 2rem;
     background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     border-top: none;
     border-bottom: 1px solid var(--border);
@@ -268,8 +268,8 @@
   bottom: calc(100% + 0.75rem);
   right: 0;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--border);
   border-radius: 12px;
   min-width: 200px;
@@ -293,8 +293,8 @@
   top: calc(100% + 0.5rem);
   left: 0;
   background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--border);
   border-radius: 8px;
   min-width: 220px;

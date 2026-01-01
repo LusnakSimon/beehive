@@ -49,3 +49,30 @@
   align-items: flex-start;
   justify-content: center;
 }
+
+/* Offline banner */
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--warning);
+  color: #1f2937;
+  text-align: center;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 768px) {
+  .offline-banner {
+    top: 0;
+  }
+  
+  /* Push navigation down when offline banner is visible */
+  .offline-banner + .navigation {
+    top: 40px;
+  }
+}

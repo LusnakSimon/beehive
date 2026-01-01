@@ -1,6 +1,6 @@
 .hive-map-page {
   padding: 80px 20px 20px 20px; /* Top padding for desktop navbar */
-  padding-bottom: 120px; /* Extra padding for mobile nav */
+  padding-bottom: calc(var(--nav-height) + 4rem); /* Proper mobile nav spacing */
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -57,6 +57,7 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   font-weight: 600;
   color: var(--text);
@@ -376,12 +377,13 @@
 }
 
 .error-hint code {
-  background: #fff;
+  background: var(--card-bg);
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;
   font-size: 13px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
+  color: var(--text);
 }
 
 .error-hint a {

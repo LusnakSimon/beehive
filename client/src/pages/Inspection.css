@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: var(--background);
   padding: 0;
-  padding-bottom: 8rem;
+  padding-bottom: calc(var(--nav-height) + 4rem);
   margin: 0;
 }
 

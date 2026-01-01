@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: var(--bg-secondary, #f3f4f6);
   padding: 0;
-  padding-bottom: 8rem;
+  padding-bottom: calc(var(--nav-height) + 4rem);
 }
 
 @media (min-width: 768px) {
@@ -72,6 +72,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
@@ -285,7 +286,8 @@
 
 @media (max-width: 767px) {
   .notifications-page {
-    padding: 1rem 0.5rem 8rem;
+    padding: 1rem 0.5rem;
+    padding-bottom: calc(var(--nav-height) + 6rem);
   }
 
   .notifications-header {

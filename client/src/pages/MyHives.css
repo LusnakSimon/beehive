@@ -1,6 +1,6 @@
 .my-hives-page {
   padding: 1.5rem;
-  padding-bottom: calc(var(--nav-height) + 2rem);
+  padding-bottom: calc(var(--nav-height) + 6rem); /* Extra space for bottom nav */
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -126,6 +126,20 @@
   flex: 1;
   min-width: fit-content;
   justify-content: center;
+  font-weight: 600;
+  box-shadow: var(--card-shadow);
+}
+/* Primary action buttons (Historia, Kontroly) - more prominent */
+.hive-actions .btn-sm:first-child,
+.hive-actions .btn-sm:nth-child(2) {
+  background: var(--btn-secondary-gradient);
+  color: white;
+  border: none;
+}
+.hive-actions .btn-sm:first-child:hover,
+.hive-actions .btn-sm:nth-child(2):hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-md);
 }
 .empty-state { 
   grid-column: 1 / -1;
@@ -349,6 +363,7 @@
 @media (max-width: 720px) {
   .my-hives-page {
     padding: 1rem;
+    padding-bottom: calc(var(--nav-height) + 8rem); /* Extra space on mobile */
   }
   .hives-grid {
     grid-template-columns: 1fr;

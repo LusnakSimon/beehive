@@ -325,7 +325,7 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .profile-page {
-    padding-bottom: 8rem;
+    padding-bottom: calc(var(--nav-height) + 4rem);
   }
 
   .profile-container {

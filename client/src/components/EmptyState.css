@@ -22,7 +22,7 @@
 
 .empty-state-compact {
   padding: 2rem 1.5rem;
-  min-height: auto;
+  min-height: 0;
 }
 
 .empty-state-error {

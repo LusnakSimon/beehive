@@ -1,11 +1,20 @@
 // Service Worker for Push Notifications and basic offline asset handling
+// Increment this version when deploying new code to bust cache
+const SW_VERSION = '2.0.0';
+const CACHE_NAME = 'beehive-v2';
+const ASSET_CACHE = 'beehive-assets-v3';
 
-const CACHE_NAME = 'beehive-v1';
-const ASSET_CACHE = 'beehive-assets-v2';
+// Files that should never be cached (always fetch fresh)
+const NO_CACHE_PATTERNS = [
+  '/api/',
+  '/socket.io/',
+  '.hot-update.',
+  'sockjs-node'
+];
 
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...');
-  // Pre-cache the app shell (index.html and root) so we can fallback when offline
+  console.log('Service Worker installing... version:', SW_VERSION);
+  // Skip waiting to activate immediately
   event.waitUntil(
     caches.open(ASSET_CACHE).then(cache => cache.addAll(['/', '/index.html'])).catch(err => {
       console.warn('SW: precache failed', err);
@@ -14,7 +23,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...');
+  console.log('Service Worker activating... version:', SW_VERSION);
   // Remove old caches so stale assets don't persist
   event.waitUntil((async () => {
     const keys = await caches.keys();
@@ -34,6 +43,11 @@ self.addEventListener('message', (event) => {
   if (!event.data) return;
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
+  }
+  if (event.data === 'clearCache') {
+    caches.keys().then(names => {
+      names.forEach(name => caches.delete(name));
+    });
   }
 });
 
@@ -87,6 +101,15 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
+  
+  const url = new URL(request.url);
+  
+  // Never cache API calls, socket.io, or hot updates
+  const shouldSkipCache = NO_CACHE_PATTERNS.some(pattern => url.pathname.includes(pattern));
+  if (shouldSkipCache) {
+    return; // Let browser handle normally
+  }
+  
   const accept = request.headers.get('accept') || '';
 
   // Navigation requests (HTML) - network-first with safe caching
@@ -115,11 +138,14 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     try {
       const response = await fetch(request);
-      try {
-        const cache = await caches.open(ASSET_CACHE);
-        await cache.put(request, response.clone());
-      } catch (err) {
-        // ignore caching errors
+      // Only cache successful responses for static assets
+      if (response.ok && (url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|woff2?)$/) || url.pathname === '/')) {
+        try {
+          const cache = await caches.open(ASSET_CACHE);
+          await cache.put(request, response.clone());
+        } catch (err) {
+          // ignore caching errors
+        }
       }
       return response;
     } catch (err) {

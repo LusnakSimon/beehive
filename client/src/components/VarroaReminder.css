@@ -89,6 +89,7 @@
 .varroa-actions .btn-secondary {
   background: rgba(255, 255, 255, 0.06);
   color: white;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
