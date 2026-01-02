@@ -131,6 +131,7 @@ export default function History() {
   const [loading, setLoading] = useState(true)
   const [queuedInspections, setQueuedInspections] = useState([])
   const [showAnalysis, setShowAnalysis] = useState(true)
+  const [showAllAnomalies, setShowAllAnomalies] = useState(false)
   const { queuedCount, isOnline, isReplaying, retry, refreshCount } = useOfflineStatus(selectedHive)
 
   // Calculate analysis insights
@@ -606,36 +607,49 @@ export default function History() {
                     <span className="anomalies-hint">Automaticky zistené výkyvy mimo bežný rozsah</span>
                   </div>
                   <div className="anomalies-list">
-                    {[...analysis.tempAnomalies, ...analysis.humidityAnomalies, ...analysis.weightAnomalies]
-                      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                      .slice(0, 5)
-                      .map((a, idx) => (
-                      <div key={idx} className={`anomaly-card anomaly-${a.severity}`}>
-                        <div className="anomaly-icon">
-                          {a.key === 'temperature' ? '🌡️' : a.key === 'humidity' ? '💧' : '⚖️'}
-                        </div>
-                        <div className="anomaly-content">
-                          <div className="anomaly-description">{a.description}</div>
-                          <div className="anomaly-details">
-                            <span className="anomaly-value-display">
-                              {a.key === 'weight' ? `${a.value.toFixed(2)} kg` : `${a.value.toFixed(1)}${a.key === 'temperature' ? '°C' : '%'}`}
-                            </span>
-                            <span className="anomaly-time">
-                              {new Date(a.timestamp).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          </div>
-                        </div>
-                        <div className={`anomaly-badge ${a.isHigh ? 'high' : 'low'}`}>
-                          {a.isHigh ? '↑ Vysoké' : '↓ Nízke'}
-                        </div>
-                      </div>
-                    ))}
+                    {(() => {
+                      const allAnomalies = [...analysis.tempAnomalies, ...analysis.humidityAnomalies, ...analysis.weightAnomalies]
+                        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                      const displayAnomalies = showAllAnomalies ? allAnomalies : allAnomalies.slice(0, 5)
+                      const remainingCount = allAnomalies.length - 5
+                      
+                      return (
+                        <>
+                          {displayAnomalies.map((a, idx) => (
+                            <div key={idx} className={`anomaly-card anomaly-${a.severity}`}>
+                              <div className="anomaly-icon">
+                                {a.key === 'temperature' ? '🌡️' : a.key === 'humidity' ? '💧' : '⚖️'}
+                              </div>
+                              <div className="anomaly-content">
+                                <div className="anomaly-description">{a.description}</div>
+                                <div className="anomaly-details">
+                                  <span className="anomaly-value-display">
+                                    {a.key === 'weight' ? `${a.value.toFixed(2)} kg` : `${a.value.toFixed(1)}${a.key === 'temperature' ? '°C' : '%'}`}
+                                  </span>
+                                  <span className="anomaly-time">
+                                    {new Date(a.timestamp).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className={`anomaly-badge ${a.isHigh ? 'high' : 'low'}`}>
+                                {a.isHigh ? '↑ Vysoké' : '↓ Nízke'}
+                              </div>
+                            </div>
+                          ))}
+                          {remainingCount > 0 && (
+                            <button 
+                              className="anomalies-toggle-btn"
+                              onClick={() => setShowAllAnomalies(!showAllAnomalies)}
+                            >
+                              {showAllAnomalies 
+                                ? '▲ Zobraziť menej' 
+                                : `▼ Zobraziť všetkých ${allAnomalies.length} anomálií`}
+                            </button>
+                          )}
+                        </>
+                      )
+                    })()}
                   </div>
-                  {(analysis.tempAnomalies.length + analysis.humidityAnomalies.length + analysis.weightAnomalies.length) > 5 && (
-                    <div className="anomalies-more">
-                      +{analysis.tempAnomalies.length + analysis.humidityAnomalies.length + analysis.weightAnomalies.length - 5} ďalších nezvyčajných hodnôt
-                    </div>
-                  )}
                 </div>
               )}
             </div>
