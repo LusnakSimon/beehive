@@ -1,0 +1,133 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "🏠 Dashboard" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: 🏠
+          - generic [ref=e8]: Dashboard
+        - link "🐝 Moje úle" [ref=e9] [cursor=pointer]:
+          - /url: /my-hives
+          - generic [ref=e10]: 🐝
+          - generic [ref=e11]: Moje úle
+        - link "📊 História" [ref=e12] [cursor=pointer]:
+          - /url: /history
+          - generic [ref=e13]: 📊
+          - generic [ref=e14]: História
+        - link "📋 Kontrola" [ref=e15] [cursor=pointer]:
+          - /url: /inspection
+          - generic [ref=e16]: 📋
+          - generic [ref=e17]: Kontrola
+        - link "🍯 Zbery" [ref=e18] [cursor=pointer]:
+          - /url: /harvests
+          - generic [ref=e19]: 🍯
+          - generic [ref=e20]: Zbery
+        - link "🗺️ Mapa" [ref=e21] [cursor=pointer]:
+          - /url: /map
+          - generic [ref=e22]: 🗺️
+          - generic [ref=e23]: Mapa
+        - link "🔍 Hľadať" [ref=e24] [cursor=pointer]:
+          - /url: /search
+          - generic [ref=e25]: 🔍
+          - generic [ref=e26]: Hľadať
+        - link "👫 Priatelia" [ref=e27] [cursor=pointer]:
+          - /url: /friends
+          - generic [ref=e28]: 👫
+          - generic [ref=e29]: Priatelia
+        - link "💬 Správy" [ref=e30] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e31]: 💬
+          - generic [ref=e32]: Správy
+        - link "👥 Skupiny" [ref=e33] [cursor=pointer]:
+          - /url: /groups
+          - generic [ref=e34]: 👥
+          - generic [ref=e35]: Skupiny
+        - button "More navigation items" [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: ⋯
+          - generic [ref=e39]: Viac
+      - generic [ref=e40]:
+        - link "Zobraziť profil" [ref=e41] [cursor=pointer]:
+          - /url: /profile
+          - img [ref=e42]
+          - generic [ref=e43]: dongfeng
+        - button "Odhlásiť sa" [ref=e44] [cursor=pointer]:
+          - generic [ref=e45]: 🚪
+    - main [ref=e46]:
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - heading "🐝 Beehive Monitor" [level=1] [ref=e50]
+            - paragraph [ref=e51]: Real-time monitorovanie
+          - button "🔄 Obnoviť" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: 🔄
+            - generic [ref=e54]: Obnoviť
+        - button "➕ Pridať úľ" [ref=e57] [cursor=pointer]:
+          - generic [ref=e58]: ➕
+          - generic [ref=e60]: Pridať úľ
+        - generic [ref=e61]:
+          - generic [ref=e62]: ⚠️
+          - generic [ref=e63]:
+            - generic [ref=e64]: KRITICKÝ STAV
+            - generic [ref=e65]: Žiadne dáta
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - generic [ref=e69]: 🌡️
+              - generic [ref=e70]: Teplota
+            - generic [ref=e71]:
+              - generic [ref=e72]: "0.0"
+              - generic [ref=e73]: °C
+            - generic [ref=e74]: Príliš nízka
+            - generic [ref=e75]: "Optimum: 30-36°C"
+          - generic [ref=e76]:
+            - generic [ref=e77]:
+              - generic [ref=e78]: 💧
+              - generic [ref=e79]: Vlhkosť
+            - generic [ref=e80]:
+              - generic [ref=e81]: "0.0"
+              - generic [ref=e82]: "%"
+            - generic [ref=e83]: Nízka
+            - generic [ref=e84]: "Optimum: 40-70%"
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - generic [ref=e87]: ⚖️
+              - generic [ref=e88]: Hmotnosť
+            - generic [ref=e89]:
+              - generic [ref=e90]: "0.00"
+              - generic [ref=e91]: kg
+            - generic [ref=e92]: Kriticky nízka
+            - generic [ref=e93]: "Minimum: 20 kg"
+          - generic [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]: 🔋
+              - generic [ref=e97]: Batéria
+            - generic [ref=e98]:
+              - generic [ref=e99]: "0"
+              - generic [ref=e100]: "%"
+            - generic [ref=e102]: Kritická
+            - generic [ref=e103]: ⚠️ Nabite batériu
+        - generic [ref=e105]:
+          - generic [ref=e106]: 🐛
+          - generic [ref=e107]:
+            - 'heading "Pripomienka: Kontrola kliešťov Varroa" [level=3] [ref=e108]'
+            - paragraph [ref=e109]: Ešte ste neurobili kontrolu klieštov Varroa.
+            - paragraph [ref=e110]: Odporúčame pravidelné kontroly každé 2 týždne, najmä v letných mesiacoch.
+          - generic [ref=e111]:
+            - button "✅ Kontrola vykonaná" [ref=e112] [cursor=pointer]
+            - button "⏰ Pripomenúť o týždeň" [ref=e113] [cursor=pointer]
+            - button "✕ Zavrieť" [ref=e114] [cursor=pointer]
+    - generic [ref=e116]:
+      - generic [ref=e117]: 🐛
+      - generic [ref=e118]:
+        - 'heading "Pripomienka: Kontrola kliešťov Varroa" [level=3] [ref=e119]'
+        - paragraph [ref=e120]: Ešte ste neurobili kontrolu klieštov Varroa.
+        - paragraph [ref=e121]: Odporúčame pravidelné kontroly každé 2 týždne, najmä v letných mesiacoch.
+      - generic [ref=e122]:
+        - button "✅ Kontrola vykonaná" [ref=e123] [cursor=pointer]
+        - button "⏰ Pripomenúť o týždeň" [ref=e124] [cursor=pointer]
+        - button "✕ Zavrieť" [ref=e125] [cursor=pointer]
+  - region "Notifications"
+```

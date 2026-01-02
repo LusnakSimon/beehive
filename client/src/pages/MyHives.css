@@ -75,6 +75,21 @@
   flex-shrink: 0;
   position: relative;
 }
+.device-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+  cursor: help;
+  backdrop-filter: blur(4px);
+}
+.api-badge {
+  background: rgba(59, 130, 246, 0.85);
+  color: white;
+}
 .hive-image-el { 
   width: 100%; 
   height: 100%; 
@@ -286,8 +301,9 @@
   margin-top: 0.35rem;
 }
 .modal-form input[aria-invalid="true"], 
-.modal-form select[aria-invalid="true"] {
-  border-color: var(--danger);
+.modal-form select[aria-invalid="true"],
+.modal-form .input-error {
+  border-color: var(--danger) !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 .modal-form .form-actions { 

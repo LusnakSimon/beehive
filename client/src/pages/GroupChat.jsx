@@ -79,10 +79,15 @@ function GroupChat() {
 
   const markGroupAsRead = async () => {
     try {
-      await fetch(`/api/groups/${groupId}/read`, {
+      const response = await fetch(`/api/groups/${groupId}/read`, {
         method: 'POST',
         credentials: 'include'
       });
+      
+      if (response.ok) {
+        // Dispatch event to update Navigation badge
+        window.dispatchEvent(new CustomEvent('messagesRead'));
+      }
     } catch (error) {
       console.error('Error marking group as read:', error);
     }

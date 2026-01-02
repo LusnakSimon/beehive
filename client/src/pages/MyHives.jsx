@@ -89,8 +89,14 @@ export default function MyHives() {
 
   const handleSave = async (e) => {
     e && e.preventDefault()
-    if (!form.name) {
-      toast.warning('Vyplň názov úľa')
+    
+    // Use comprehensive validation
+    if (!validateForm()) {
+      // Show specific validation errors
+      if (errors.name) toast.warning(errors.name)
+      else if (errors.devEUI) toast.warning(errors.devEUI)
+      else if (errors.coordinates) toast.warning(errors.coordinates)
+      else toast.warning('Skontroluj vyplnené údaje')
       return
     }
 
@@ -103,7 +109,7 @@ export default function MyHives() {
         addHive(optimistic)
         setShowModal(false)
         setSelectedHive(tempId)
-        navigate('/inspection')
+        // Stay on my-hives page instead of redirecting to inspection
 
         // Prepare payload; use FormData if imageFile present
         let res
@@ -143,7 +149,14 @@ export default function MyHives() {
           if (form.imageDataUrl && created && created.id) {
             updateHive(created.id, { image: form.imageDataUrl })
           }
-          toast.success(`Úľ "${form.name}" bol vytvorený`)
+          
+          // If API hive, show the generated API key in a special toast
+          if (created?.hive?.device?.apiKey) {
+            toast.success(`Úľ "${form.name}" bol vytvorený. API kľúč: ${created.hive.device.apiKey}`, { duration: 8000 })
+            toast.info('💡 Tip: API kľúč nájdete kedykoľvek v úprave úľa (kliknite na úľ)', { duration: 6000 })
+          } else {
+            toast.success(`Úľ "${form.name}" bol vytvorený`)
+          }
         } else {
           const err = await res.json().catch(() => ({ message: 'Neznáma chyba' }))
           deleteHive(tempId)
@@ -286,6 +299,9 @@ export default function MyHives() {
               ) : (
                 <div className="hive-initial">{(h.name || '').charAt(0) || 'U'}</div>
               )}
+              {h.device?.type === 'api' && (
+                <span className="device-badge api-badge" title="API zariadenie - kliknite ✏️ pre API kľúč">📡</span>
+              )}
             </div>
             <div className="hive-body">
               <div className="hive-name">{h.name}</div>
@@ -313,7 +329,12 @@ export default function MyHives() {
             </h3>
             <form onSubmit={handleSave} className="modal-form">
               <label>Názov *</label>
-              <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <input 
+                value={form.name} 
+                onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(err => ({ ...err, name: null })) }} 
+                className={errors.name ? 'input-error' : ''}
+              />
+              {errors.name && <div className="error-text">{errors.name}</div>}
 
               <label>Lokalita (voliteľné)</label>
               <input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} />
@@ -333,10 +354,21 @@ export default function MyHives() {
 
                 <label>GPS súradnice (voliteľné)</label>
                 <div className="gps-inputs">
-                  <input placeholder="lat" value={form.coordinates.lat} onChange={e => setForm(f => ({ ...f, coordinates: { ...f.coordinates, lat: e.target.value } }))} />
-                  <input placeholder="lng" value={form.coordinates.lng} onChange={e => setForm(f => ({ ...f, coordinates: { ...f.coordinates, lng: e.target.value } }))} />
+                  <input 
+                    placeholder="lat" 
+                    value={form.coordinates.lat} 
+                    onChange={e => { setForm(f => ({ ...f, coordinates: { ...f.coordinates, lat: e.target.value } })); setErrors(err => ({ ...err, coordinates: null })) }} 
+                    className={errors.coordinates ? 'input-error' : ''}
+                  />
+                  <input 
+                    placeholder="lng" 
+                    value={form.coordinates.lng} 
+                    onChange={e => { setForm(f => ({ ...f, coordinates: { ...f.coordinates, lng: e.target.value } })); setErrors(err => ({ ...err, coordinates: null })) }}
+                    className={errors.coordinates ? 'input-error' : ''}
+                  />
                   <button type="button" className="btn" onClick={getCurrentLocation}>📍 GPS</button>
                 </div>
+                {errors.coordinates && <div className="error-text">{errors.coordinates}</div>}
 
                 <label>Typ zariadenia</label>
                 <select value={form.device.type} onChange={e => setForm(f => ({ ...f, device: { ...f.device, type: e.target.value } }))}>
@@ -385,9 +417,11 @@ export default function MyHives() {
                         <input 
                           placeholder="Pre LoRaWAN webhook (16 hex)" 
                           value={form.device.devEUI || ''} 
-                          onChange={e => setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } }))} 
-                          maxLength={16} 
+                          onChange={e => { setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } })); setErrors(err => ({ ...err, devEUI: null })) }} 
+                          maxLength={16}
+                          className={errors.devEUI ? 'input-error' : ''}
                         />
+                        {errors.devEUI && <div className="error-text">{errors.devEUI}</div>}
                         <small className="field-hint">Len ak používate TTN/Chirpstack webhook</small>
                       </>
                     ) : (
