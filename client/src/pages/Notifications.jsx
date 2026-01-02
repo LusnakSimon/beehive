@@ -112,7 +112,7 @@ export default function Notifications() {
       } else if (notification.type === 'new_message' && notification.content.conversationId) {
         navigate(`/chat/${notification.content.conversationId}`)
       } else if (notification.type === 'group_message' && notification.content.groupId) {
-        navigate(`/groups/${notification.content.groupId}/chat`)
+        navigate(`/groups/${notification.content?.groupId}/chat`)
       }
     }
   }
@@ -125,8 +125,26 @@ export default function Notifications() {
         return '✅'
       case 'new_message':
         return '💬'
+      case 'group_message':
+        return '👥💬'
       default:
         return '🔔'
+    }
+  }
+
+  const getDefaultNotificationText = (notification) => {
+    const fromName = notification.from?.name || 'Niekto'
+    switch (notification.type) {
+      case 'friend_request':
+        return `${fromName} vám poslal žiadosť o priateľstvo`
+      case 'friend_request_accepted':
+        return `${fromName} prijal vašu žiadosť o priateľstvo`
+      case 'new_message':
+        return `${fromName} vám poslal správu`
+      case 'group_message':
+        return `${fromName} poslal správu do skupiny`
+      default:
+        return 'Nové upozornenie'
     }
   }
 
@@ -200,13 +218,13 @@ export default function Notifications() {
                   {notification.from?.image && (
                     <img 
                       src={notification.from.image} 
-                      alt={notification.from.name}
+                      alt={notification.from?.name || 'User'}
                       className="notification-avatar"
                     />
                   )}
                   <div className="notification-text">
                     <p className="notification-message">
-                      {notification.content.text}
+                      {notification.content?.text || getDefaultNotificationText(notification)}
                     </p>
                     <span className="notification-time">
                       {formatTimestamp(notification.createdAt)}
