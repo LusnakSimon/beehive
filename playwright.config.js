@@ -16,7 +16,12 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['html'],
+    ['list']
+  ],
+  /* Global timeout for each test */
+  timeout: 30000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -27,17 +32,45 @@ export default defineConfig({
     
     /* Take screenshot on failure */
     screenshot: 'only-on-failure',
+    
+    /* Video on failure */
+    video: 'on-first-retry',
   },
 
   /* Configure projects for major browsers */
   projects: [
+    // Setup project for authentication
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.js/,
+    },
+    
+    // Desktop Chrome (depends on setup)
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Use stored auth state
+        storageState: './playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
+    
+    // Mobile Chrome
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: { 
+        ...devices['Pixel 5'],
+        storageState: './playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
+    },
+    
+    // Tests that don't need auth
+    {
+      name: 'no-auth',
+      testMatch: /login\.spec\.js/,
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 });
