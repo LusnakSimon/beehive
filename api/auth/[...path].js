@@ -58,15 +58,25 @@ module.exports = async function handler(req, res) {
 
   // Route: /api/auth/github
   if (path === 'github') {
-    const redirectUri = `${process.env.NEXTAUTH_URL || 'https://ebeehive.vercel.app'}/api/auth/callback`;
-    const params = new URLSearchParams({
-      client_id: process.env.GITHUB_ID,
-      redirect_uri: redirectUri,
-      scope: 'read:user user:email',
-      state: 'github'
-    });
-    const authUrl = `https://github.com/login/oauth/authorize?${params.toString()}`;
-    return res.redirect(authUrl);
+    try {
+      const clientId = process.env.GITHUB_ID;
+      if (!clientId) {
+        console.error('GITHUB_ID not configured');
+        return res.redirect('/login?error=' + encodeURIComponent('GitHub login not configured'));
+      }
+      const redirectUri = `${process.env.NEXTAUTH_URL || 'https://ebeehive.vercel.app'}/api/auth/callback`;
+      const params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        scope: 'read:user user:email',
+        state: 'github'
+      });
+      const authUrl = `https://github.com/login/oauth/authorize?${params.toString()}`;
+      return res.redirect(authUrl);
+    } catch (err) {
+      console.error('GitHub auth error:', err);
+      return res.redirect('/login?error=' + encodeURIComponent(err.message));
+    }
   }
 
   // Route: /api/auth/google
