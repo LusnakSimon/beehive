@@ -226,16 +226,21 @@ module.exports = async function handler(req, res) {
         });
         await user.save();
       } else {
-        // Update OAuth info if provider changed
-        if (!user.oauth) user.oauth = {};
-        user.oauth[userInfo.provider] = {
-          id: userInfo.id,
-          email: userInfo.email,
+        // Update OAuth info if provider changed - use updateOne to avoid full validation
+        // This prevents validation errors on existing hive data
+        const updateData = {
+          [`oauth.${userInfo.provider}`]: {
+            id: userInfo.id,
+            email: userInfo.email,
+          }
         };
         if (userInfo.picture && !user.avatar) {
-          user.avatar = userInfo.picture;
+          updateData.avatar = userInfo.picture;
         }
-        await user.save();
+        await UserModel.updateOne({ _id: user._id }, { $set: updateData });
+        
+        // Reload user to get updated data
+        user = await UserModel.findById(user._id);
       }
 
       // Create JWT token with all user data
