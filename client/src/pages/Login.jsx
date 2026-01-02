@@ -15,16 +15,20 @@ const Login = () => {
     }
   }, [isAuthenticated]);
 
-  // Show error from URL if OAuth failed
+  // Show error from URL if OAuth failed - only run once
   useEffect(() => {
     const error = searchParams.get('error');
     if (error) {
       console.error('OAuth error:', error);
-      toast.error(`Prihlásenie zlyhalo: ${decodeURIComponent(error)}`);
-      // Clear the error from URL
+      // Use setTimeout to ensure toast is ready
+      setTimeout(() => {
+        toast.error(`Prihlásenie zlyhalo: ${decodeURIComponent(error)}`);
+      }, 100);
+      // Clear the error from URL immediately to prevent re-firing
       window.history.replaceState({}, '', '/login');
     }
-  }, [searchParams, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   const handleGoogleLogin = async () => {
     try {
