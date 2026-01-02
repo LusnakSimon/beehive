@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { connectDB } = require('../lib/utils/db');
 
 // Lazy load User model
 let User;
@@ -22,6 +23,7 @@ module.exports = async (req, res) => {
     // Fetch full user data from database to get ownedHives
     let ownedHives = [];
     try {
+      await connectDB();
       const UserModel = getUser();
       const user = await UserModel.findById(decoded.id).lean();
       if (user) {
@@ -45,6 +47,7 @@ module.exports = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error('Session verification error:', err);
     return res.json({ user: null });
   }
 };
