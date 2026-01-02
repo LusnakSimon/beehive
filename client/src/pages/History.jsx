@@ -102,24 +102,27 @@ export default function History() {
 
   // Calculate analysis insights
   const analysis = useMemo(() => {
-    if (!data || data.length < 5 || !stats) return null
+    // Show analysis section even with minimal data - just need stats
+    if (!stats) return null
     
-    const temps = data.map(d => d.temperature).filter(Boolean)
-    const humidities = data.map(d => d.humidity).filter(Boolean)
-    const weights = data.map(d => d.weight).filter(Boolean)
+    const temps = (data || []).map(d => d.temperature).filter(Boolean)
+    const humidities = (data || []).map(d => d.humidity).filter(Boolean)
+    const weights = (data || []).map(d => d.weight).filter(Boolean)
     
-    const tempTrend = calculateTrend(temps)
-    const humidityTrend = calculateTrend(humidities)
-    const weightTrend = calculateTrend(weights)
+    // Only calculate trends if we have enough data
+    const tempTrend = temps.length >= 2 ? calculateTrend(temps) : { direction: 'stable', change: 0 }
+    const humidityTrend = humidities.length >= 2 ? calculateTrend(humidities) : { direction: 'stable', change: 0 }
+    const weightTrend = weights.length >= 2 ? calculateTrend(weights) : { direction: 'stable', change: 0 }
     
-    const tempAnomalies = detectAnomalies(data, 'temperature')
-    const humidityAnomalies = detectAnomalies(data, 'humidity')
-    const weightAnomalies = detectAnomalies(data, 'weight')
+    // Only detect anomalies if we have enough data
+    const tempAnomalies = data && data.length >= 10 ? detectAnomalies(data, 'temperature') : []
+    const humidityAnomalies = data && data.length >= 10 ? detectAnomalies(data, 'humidity') : []
+    const weightAnomalies = data && data.length >= 10 ? detectAnomalies(data, 'weight') : []
     
     const seasonal = getSeasonalInsight()
     
     // Current values for bee estimate
-    const latestData = data[data.length - 1] || {}
+    const latestData = (data && data.length > 0) ? data[data.length - 1] : {}
     const beeEstimate = estimateBeePopulation(
       latestData.weight || stats.weight?.avg || 30,
       latestData.temperature || stats.temperature?.avg || 30,
