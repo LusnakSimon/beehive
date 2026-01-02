@@ -39,21 +39,14 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    // Setup project for authentication
-    {
-      name: 'setup',
-      testMatch: /auth\.setup\.js/,
-    },
-    
-    // Desktop Chrome (depends on setup)
+    // Desktop Chrome - uses auth from login-helper.js
     {
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        // Use stored auth state
+        // Use stored auth state (run login-helper.js first if needed)
         storageState: './playwright/.auth/user.json',
       },
-      dependencies: ['setup'],
     },
     
     // Mobile Chrome
@@ -63,7 +56,6 @@ export default defineConfig({
         ...devices['Pixel 5'],
         storageState: './playwright/.auth/user.json',
       },
-      dependencies: ['setup'],
     },
     
     // Tests that don't need auth

@@ -1,8 +1,8 @@
 /**
  * Manual Login Helper for E2E Tests
  * 
- * Run this script to open a browser, log in manually, and save your session.
- * The session will be reused by all E2E tests.
+ * Opens Edge browser for manual OAuth login.
+ * Uses readline to wait for user confirmation.
  * 
  * Usage: node e2e/login-helper.js
  */
@@ -11,14 +11,27 @@ import { chromium } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import readline from 'readline';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const authFile = path.join(__dirname, '../playwright/.auth/user.json');
 
+function waitForEnter(prompt) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  
+  return new Promise(resolve => {
+    rl.question(prompt, () => {
+      rl.close();
+      resolve();
+    });
+  });
+}
+
 async function manualLogin() {
   console.log('\n🐝 eBeeHive E2E Login Helper\n');
-  console.log('Opening browser for manual login...');
-  console.log('Please log in with Google or GitHub.\n');
   
   // Ensure auth directory exists
   const authDir = path.dirname(authFile);
@@ -26,10 +39,12 @@ async function manualLogin() {
     fs.mkdirSync(authDir, { recursive: true });
   }
   
-  // Launch browser in headed mode (visible)
+  console.log('Launching Microsoft Edge...\n');
+  
+  // Launch Edge
   const browser = await chromium.launch({ 
     headless: false,
-    slowMo: 100 // Slight delay so you can see what's happening
+    channel: 'msedge'
   });
   
   const context = await browser.newContext();
@@ -39,34 +54,40 @@ async function manualLogin() {
   const baseUrl = process.env.E2E_BASE_URL || 'https://ebeehive.vercel.app';
   await page.goto(`${baseUrl}/login`);
   
-  console.log('📝 Instructions:');
-  console.log('   1. Click "Pokračovať s Google" or "Pokračovať s GitHub"');
-  console.log('   2. Complete the OAuth login');
-  console.log('   3. Wait until you see the Dashboard');
-  console.log('   4. The browser will close automatically\n');
+  console.log('════════════════════════════════════════════════════');
+  console.log('');
+  console.log('  📝 INSTRUCTIONS:');
+  console.log('');
+  console.log('  1. In the Edge browser that just opened:');
+  console.log('     → Click "Pokračovať s GitHub" (GitHub works better)');
+  console.log('     → Or try Google if you prefer');
+  console.log('     → Complete the login');
+  console.log('');
+  console.log('  2. Wait until you see the Dashboard');
+  console.log('');
+  console.log('  3. Come back here and press ENTER');
+  console.log('');
+  console.log('  ⚠️  DO NOT close the browser manually!');
+  console.log('');
+  console.log('════════════════════════════════════════════════════');
+  console.log('');
   
-  // Wait for successful login (user lands on dashboard, not login page)
+  await waitForEnter('Press ENTER when you are logged in and see the Dashboard... ');
+  
+  console.log('\n💾 Saving session...');
+  
   try {
-    await page.waitForURL(url => !url.toString().includes('/login'), { 
-      timeout: 120000 // 2 minutes for manual login
-    });
-    
-    console.log('✅ Login successful! Saving session...\n');
-    
     // Save the authentication state
     await context.storageState({ path: authFile });
     
-    console.log(`💾 Session saved to: ${authFile}`);
-    console.log('\n🎉 You can now run E2E tests with authentication:');
+    console.log(`✅ Session saved to: ${authFile}`);
+    console.log('\n🎉 Success! You can now run E2E tests:');
     console.log('   npx playwright test\n');
-    
   } catch (error) {
-    console.log('❌ Login timed out or failed.');
-    console.log('   Please try again.\n');
+    console.log('❌ Failed to save session:', error.message);
   }
   
   await browser.close();
 }
 
-// Run the helper
 manualLogin().catch(console.error);
