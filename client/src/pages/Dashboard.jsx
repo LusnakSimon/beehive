@@ -373,57 +373,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Device Status Card - LoRaWAN Info */}
-      {getCurrentHive()?.device?.type === 'esp32-lorawan' && (
-        <div className="device-status-card">
-          <div className="device-header">
-            <span className="device-icon">📶</span>
-            <span className="device-title">LoRaWAN Zariadenie</span>
-          </div>
-          <div className="device-info-grid">
-            <div className="device-info-item">
-              <span className="device-info-label">DevEUI:</span>
-              <span className="device-info-value" style={{ fontFamily: 'monospace', fontSize: '0.9em' }}>
-                {getCurrentHive()?.device?.devEUI || 'Nezadané'}
-              </span>
-            </div>
-            {getCurrentHive()?.device?.lastSeen && (
-              <div className="device-info-item">
-                <span className="device-info-label">Naposledy videné:</span>
-                <span className="device-info-value">
-                  {formatTimeAgo(new Date(getCurrentHive().device.lastSeen))}
-                </span>
-              </div>
-            )}
-            {getCurrentHive()?.device?.signalStrength !== null && getCurrentHive()?.device?.signalStrength !== undefined && (
-              <div className="device-info-item">
-                <span className="device-info-label">Signál (RSSI):</span>
-                <span className="device-info-value" style={{ 
-                  color: getCurrentHive().device.signalStrength > -100 ? 'var(--success)' : 'var(--warning)' 
-                }}>
-                  {getCurrentHive().device.signalStrength} dBm
-                </span>
-              </div>
-            )}
-            {getCurrentHive()?.device?.batteryLevel !== null && getCurrentHive()?.device?.batteryLevel !== undefined && (
-              <div className="device-info-item">
-                <span className="device-info-label">Batéria:</span>
-                <span className="device-info-value" style={{ 
-                  color: getCurrentHive().device.batteryLevel > 30 ? 'var(--success)' : getCurrentHive().device.batteryLevel > 15 ? 'var(--warning)' : 'var(--danger)'
-                }}>
-                  🔋 {getCurrentHive().device.batteryLevel}%
-                </span>
-              </div>
-            )}
-          </div>
-          {!getCurrentHive()?.device?.lastSeen && (
-            <div className="device-waiting">
-              ⏳ Čakám na prvé dáta z LoRaWAN siete...
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Device type info */}
       {getCurrentHive()?.device?.type && (
         <div className="device-status-card">

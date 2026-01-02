@@ -54,7 +54,7 @@ NEXTAUTH_URL=http://localhost:5173
 
 Ak nechceš nastavovať lokálnu databázu, môžeš testovať priamo na production:
 
-**URL:** https://sbeehive.vercel.app
+**URL:** https://ebeehive.vercel.app
 
 Tam je už všetko nastavené a funkčné.
 

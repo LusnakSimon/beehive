@@ -118,14 +118,15 @@ Green  (S-)   →  HX711 A-
 1. Otvor Arduino IDE
 2. **Tools → Manage Libraries**
 3. Nainštaluj:
-   - `MCCI LoRaWAN LMIC library` by IBM
-   - `DHT sensor library` by Adafruit
-   - `Adafruit Unified Sensor`
+   - `RadioHead` by Mike McCauley (pre RFM95)
+   - `Adafruit AHTX0` by Adafruit
    - `HX711 Arduino Library` by Bogdan Necula
 
 ### 3.2 Arduino kód
 
-Vytvor nový sketch `beehive_lorawan.ino`:
+Pre aktuálny kód pozri `arduino/beehive_node/beehive_node.ino` a `arduino/beehive_gateway/beehive_gateway.ino`.
+
+**Príklad odosielania dát (z beehive_node):**
 
 ```cpp
 #include <lmic.h>

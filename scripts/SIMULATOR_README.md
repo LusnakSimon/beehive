@@ -119,8 +119,8 @@ Stlač `Ctrl+C` pre ukončenie simulátora.
 
 ## 🔗 API Endpoints
 
-- **WiFi**: `POST /api/esp32/data`
-- **LoRaWAN**: `POST /api/lorawan/webhook`
+- **Sensor Data**: `POST /api/sensor`
+- **LoRaWAN Webhook**: `POST /api/lorawan/webhook`
 
 ## 🐛 Troubleshooting
 

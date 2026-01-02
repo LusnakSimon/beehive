@@ -18,7 +18,7 @@ generate_data() {
   
   echo "📊 Odosielam: T=${TEMP}°C, H=${HUMIDITY}%, W=${WEIGHT}kg, B=${BATTERY}%"
   
-  curl -X POST "${SERVER}/api/esp32/data" \
+  curl -X POST "${SERVER}/api/sensor" \
     -H "Content-Type: application/json" \
     -H "X-API-Key: ${API_KEY}" \
     -d "{

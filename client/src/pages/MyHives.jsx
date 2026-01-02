@@ -63,8 +63,7 @@ export default function MyHives() {
   const validateForm = () => {
     const e = {}
     if (!form.name || form.name.trim().length === 0) e.name = 'Názov je povinný.'
-    if (form.device?.type === 'esp32-lorawan' && form.device.devEUI && form.device.devEUI.length !== 16) e.devEUI = 'DevEUI musí mať 16 hex znakov.'
-    if (form.device?.type === 'esp32-wifi' && form.device.deviceId && form.device.deviceId.trim().length < 3) e.deviceId = 'Device ID je príliš krátke.'
+    if (form.device?.devEUI && form.device.devEUI.length !== 16) e.devEUI = 'DevEUI musí mať 16 hex znakov.'
     if (form.coordinates?.lat && isNaN(parseFloat(form.coordinates.lat))) e.coordinates = 'Lat musí byť číslo.'
     if (form.coordinates?.lng && isNaN(parseFloat(form.coordinates.lng))) e.coordinates = 'Lng musí byť číslo.'
     setErrors(e)
@@ -126,8 +125,7 @@ export default function MyHives() {
         } else {
           const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
-          if (form.device?.type === 'esp32-lorawan' && form.device.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
-          if (form.device?.type === 'esp32-wifi' && form.device.deviceId) hiveData.device.deviceId = form.device.deviceId
+          if (form.device?.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
           if (form.imageDataUrl) hiveData.image = form.imageDataUrl
 
           res = await fetch('/api/users/me/hives', {
@@ -176,8 +174,7 @@ export default function MyHives() {
         } else {
           const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
-          if (form.device?.type === 'esp32-lorawan' && form.device.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
-          if (form.device?.type === 'esp32-wifi' && form.device.deviceId) hiveData.device.deviceId = form.device.deviceId
+          if (form.device?.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
           if (form.imageDataUrl) hiveData.image = form.imageDataUrl
 
           res = await fetch(`/api/users/me/hives/${hiveId}`, {

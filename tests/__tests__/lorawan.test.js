@@ -227,12 +227,15 @@ describe('LoRaWAN Payload Parsing', () => {
       expect(hive).toBeDefined();
     });
 
-    it('should not match WiFi devices', () => {
+    it('should not match devices without devEUI', () => {
       const devEUI = '70B3D57ED005A4B2';
       const apiHivesWithoutDevEUI = mockHives.filter(h => h.device?.type === 'api' && !h.device?.devEUI);
-      const matchedWifi = wifiHives.find(h => h.device?.devEUI === devEUI);
+      const matchedManual = mockHives.find(h => h.device?.type === 'manual' && h.device?.devEUI === devEUI);
       
-      expect(matchedWifi).toBeUndefined();
+      // API devices without devEUI should not match
+      expect(apiHivesWithoutDevEUI.length).toBe(1); // hive-3 has no devEUI
+      // Manual devices won't have devEUI
+      expect(matchedManual).toBeUndefined();
     });
   });
 });

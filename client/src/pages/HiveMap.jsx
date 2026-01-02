@@ -232,7 +232,7 @@ export default function HiveMap() {
               <li>Skontroluj či si prihlásený</li>
               <li>Skontroluj browser console (F12) pre viac detailov</li>
               <li>Pre lokálny development pozri <code>LOCAL_DEVELOPMENT.md</code></li>
-              <li>Alebo testuj na production: <a href="https://sbeehive.vercel.app" target="_blank">sbeehive.vercel.app</a></li>
+              <li>Alebo testuj na production: <a href="https://ebeehive.vercel.app" target="_blank">ebeehive.vercel.app</a></li>
             </ul>
           </div>
         </div>

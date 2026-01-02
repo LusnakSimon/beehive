@@ -107,8 +107,8 @@ beehive/
 │   └── utils/                 # Utilities
 │
 ├── arduino/                   # ESP32 Firmware
-│   ├── beehive_monitor/       # WiFi version
-│   └── beehive_lorawan/       # LoRaWAN version
+│   ├── beehive_node/          # Sensor node (LoRa TX)
+│   └── beehive_gateway/       # Gateway (LoRa RX + WiFi)
 │
 ├── docs/                      # Documentation
 └── .github/workflows/         # CI/CD pipelines

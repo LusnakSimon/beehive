@@ -35,10 +35,10 @@ function generateSensorData() {
   return { temperature, humidity, weight, battery }
 }
 
-// Send data via WiFi endpoint
+// Send data via API endpoint
 async function sendWiFiData(data) {
   try {
-    const response = await fetch(`${BACKEND_URL}/api/esp32/data`, {
+    const response = await fetch(`${BACKEND_URL}/api/sensor`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -188,10 +188,16 @@ export default function LoRaWANSetupGuide({ devEUI, onClose }) {
         <>
           <p>Stiahni a uprav Arduino kód:</p>
           <ol>
-            <li>Otvor <code>arduino/beehive_lorawan/beehive_lorawan.ino</code></li>
+            <li>Otvor <code>arduino/beehive_node/beehive_node.ino</code></li>
             <li>Vyplň DevEUI, AppEUI a AppKey z TTN konzoly</li>
             <li>Nahraj na ESP32 cez Arduino IDE</li>
             <li>Otvor Serial Monitor (115200 baud) a skontroluj pripojenie</li>
+          </ol>
+          <p style={{marginTop: '1rem'}}>Pre gateway zariadenie:</p>
+          <ol>
+            <li>Otvor <code>arduino/beehive_gateway/beehive_gateway.ino</code></li>
+            <li>Nastav WiFi credentials a API endpoint</li>
+            <li>Nahraj na ESP32 gateway</li>
           </ol>
           <div className="info-box">
             <p>💡 <strong>Tip:</strong> Pri prvom spustení môže trvať 1-2 minúty kým sa zariadenie pripojí k LoRaWAN sieti (OTAA join).</p>

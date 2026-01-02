@@ -119,23 +119,24 @@ vercel --prod
 
 ## 📱 Aktualizácia ESP32 kódu
 
-Po deploye aktualizujte Arduino kód:
+Po deploye aktualizujte Arduino gateway kód:
 
 ```cpp
-// V beehive_monitor.ino zmeňte:
-const char* serverUrl = "https://your-project.vercel.app/api/esp32/data";
-const char* apiKey = "beehive-secret-key-2024";
+// V beehive_gateway/beehive_gateway.ino zmeňte:
+const char* SERVER_HOST = "ebeehive.vercel.app";
+const char* HIVE_ID = "HIVE-001";  // Your hive ID
+const char* API_KEY = "your-api-key-from-app"; // Get from hive settings
 ```
 
-Vaša Vercel URL bude vyzerať ako: `https://beehive-monitor.vercel.app`
+API kľúč získate v aplikácii: My Hives → Upraviť úľ → Typ zariadenia: API → Skopírovať kľúč
 
 ## 🧪 Testovanie po deploye
 
 ### Test API endpoint:
 ```bash
-curl -X POST https://your-project.vercel.app/api/esp32/data \
+curl -X POST https://ebeehive.vercel.app/api/sensor \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: beehive-secret-key-2024" \
+  -H "X-API-Key: your-api-key" \
   -d '{
     "temperature": 32.5,
     "humidity": 55.2,
@@ -241,8 +242,8 @@ npm run build
 ## 🌐 Production URLs
 
 Po deploye:
-- **Frontend**: `https://beehive-monitor.vercel.app`
-- **API**: `https://beehive-monitor.vercel.app/api/*`
-- **ESP32 Endpoint**: `https://beehive-monitor.vercel.app/api/esp32/data`
+- **Frontend**: `https://ebeehive.vercel.app`
+- **API**: `https://ebeehive.vercel.app/api/*`
+- **Sensor Endpoint**: `https://ebeehive.vercel.app/api/sensor`
 
 Poznačte si tieto URLs do dokumentácie projektu!
