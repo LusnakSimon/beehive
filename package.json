@@ -17,6 +17,7 @@
     "test:client": "npm test --workspace=client",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
+    "test:e2e:login": "node e2e/login-helper.js",
     "test:all": "npm test && npm run test:client && npm run test:e2e",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

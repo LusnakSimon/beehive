@@ -388,8 +388,8 @@ test.describe('Public Page Flows', () => {
     await page.goto('/login');
     await waitForApp(page);
     
-    // Should have login UI
-    const loginCard = page.locator('.login-card, [class*="login"]');
+    // Should have login UI - use first() to avoid strict mode violation
+    const loginCard = page.locator('.login-card').first();
     await expect(loginCard).toBeVisible({ timeout: 10000 });
   });
 
@@ -440,7 +440,7 @@ test.describe('Error Handling', () => {
   });
 
   test('should not show console errors on navigation', async ({ page }) => {
-    const errors: string[] = [];
+    const errors = [];
     
     page.on('console', msg => {
       if (msg.type() === 'error') {
