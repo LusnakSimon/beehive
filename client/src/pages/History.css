@@ -459,3 +459,304 @@
 .queued-inspections .btn {
   margin-bottom: 0.5rem;
 }
+
+/* Analysis Section */
+.analysis-section {
+  background: var(--surface);
+  border-radius: 16px;
+  margin: 0 1rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  cursor: pointer;
+  user-select: none;
+}
+
+.analysis-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.125rem;
+}
+
+.analysis-header .toggle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.analysis-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Bee Estimate Card */
+.bee-estimate-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border: 2px solid #fbbf24;
+}
+
+.bee-estimate-icon {
+  font-size: 3rem;
+}
+
+.bee-estimate-content {
+  flex: 1;
+}
+
+.bee-count {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #92400e;
+  line-height: 1;
+}
+
+.bee-label {
+  font-size: 0.875rem;
+  color: #a16207;
+  margin-top: 0.25rem;
+}
+
+.bee-health {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.health-excellent {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.health-good {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.health-needs-attention {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Trends Grid */
+.trends-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 500px) {
+  .trends-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.trend-card {
+  background: var(--background);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.trend-metric {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.trend-indicator {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.trend-up {
+  color: #16a34a;
+}
+
+.trend-down {
+  color: #dc2626;
+}
+
+.trend-stable {
+  color: var(--text-secondary);
+}
+
+/* Seasonal Card */
+.seasonal-card {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #a7f3d0;
+}
+
+.seasonal-icon {
+  font-size: 2rem;
+}
+
+.seasonal-content {
+  flex: 1;
+}
+
+.seasonal-content strong {
+  display: block;
+  color: #166534;
+  margin-bottom: 0.25rem;
+}
+
+.seasonal-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #15803d;
+}
+
+/* Insights List */
+.insights-list {
+  background: var(--background);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.insights-list h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.insight-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.insight-item:last-child {
+  margin-bottom: 0;
+}
+
+.insight-icon {
+  font-size: 1.125rem;
+}
+
+.insight-text {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.insight-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.insight-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.insight-danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.insight-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+/* Anomalies Section */
+.anomalies-section {
+  background: var(--background);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+}
+
+.anomalies-section h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.anomalies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.anomaly-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #fef3c7;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: #92400e;
+}
+
+.anomaly-value {
+  font-weight: 600;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .bee-estimate-card {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+    border-color: #b45309;
+  }
+  
+  .bee-count {
+    color: #fef3c7;
+  }
+  
+  .bee-label {
+    color: #fde68a;
+  }
+  
+  .seasonal-card {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    border-color: #059669;
+  }
+  
+  .seasonal-content strong {
+    color: #a7f3d0;
+  }
+  
+  .seasonal-content p {
+    color: #6ee7b7;
+  }
+  
+  .anomaly-item {
+    background: #78350f;
+    color: #fde68a;
+  }
+}

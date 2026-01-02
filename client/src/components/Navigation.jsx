@@ -149,6 +149,7 @@ export default function Navigation() {
                   { key: 'my-hives', to: '/my-hives', icon: '🐝', label: 'Moje úle' },
                 { key: 'history', to: '/history', icon: '📊', label: 'História' },
                 { key: 'inspection', to: '/inspection', icon: '📋', label: 'Kontrola' },
+                { key: 'harvests', to: '/harvests', icon: '🍯', label: 'Zbery' },
                 { key: 'map', to: '/map', icon: '🗺️', label: 'Mapa' },
                 { key: 'search', to: '/search', icon: '🔍', label: 'Hľadať' },
                 { key: 'friends', to: '/friends', icon: '👫', label: 'Priatelia' },
@@ -251,6 +252,10 @@ export default function Navigation() {
                   <NavLink to="/inspection" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">📋</span>
                     <span>Kontrola</span>
+                  </NavLink>
+                  <NavLink to="/harvests" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
+                    <span className="icon">🍯</span>
+                    <span>Zbery</span>
                   </NavLink>
                   <NavLink to="/groups" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">👥</span>

@@ -33,6 +33,7 @@ const GroupChat = lazy(() => import('./pages/GroupChat'))
 const Notifications = lazy(() => import('./pages/Notifications'))
 const HiveMap = lazy(() => import('./pages/HiveMap'))
 const MyHives = lazy(() => import('./pages/MyHives'))
+const Harvests = lazy(() => import('./pages/Harvests'))
 
 import './colors.css'
 import './App.css'
@@ -100,6 +101,7 @@ function App() {
               <Route path="/groups/:groupId/chat" element={<ProtectedRoute><GroupChat /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="/my-hives" element={<ProtectedRoute><MyHives /></ProtectedRoute>} />
+              <Route path="/harvests" element={<ProtectedRoute><Harvests /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
             </Suspense>

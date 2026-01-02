@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, 
@@ -16,6 +16,78 @@ const STATS_STORE = 'sensor-stats'
 const OUTBOX_DB = 'beehive-offline-v1'
 const OUTBOX_STORE = 'outbox'
 
+// Analysis helper functions
+const calculateTrend = (values) => {
+  if (values.length < 2) return { direction: 'stable', change: 0 }
+  const firstHalf = values.slice(0, Math.floor(values.length / 2))
+  const secondHalf = values.slice(Math.floor(values.length / 2))
+  const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length
+  const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length
+  const change = ((avgSecond - avgFirst) / avgFirst) * 100
+  
+  if (Math.abs(change) < 2) return { direction: 'stable', change: 0 }
+  return { 
+    direction: change > 0 ? 'up' : 'down', 
+    change: Math.abs(change).toFixed(1) 
+  }
+}
+
+const detectAnomalies = (data, key) => {
+  if (data.length < 10) return []
+  const values = data.map(d => d[key]).filter(v => v !== undefined)
+  const mean = values.reduce((a, b) => a + b, 0) / values.length
+  const stdDev = Math.sqrt(values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length)
+  const threshold = 2.5 // Standard deviations for anomaly detection
+  
+  return data.filter(d => {
+    const v = d[key]
+    return v !== undefined && Math.abs(v - mean) > threshold * stdDev
+  }).map(d => ({
+    timestamp: d.timestamp,
+    value: d[key],
+    deviation: ((d[key] - mean) / stdDev).toFixed(1)
+  }))
+}
+
+const getSeasonalInsight = () => {
+  const month = new Date().getMonth()
+  if (month >= 2 && month <= 4) {
+    return { season: 'jar', icon: '🌸', tip: 'Včelstvo sa rozvíja - sledujte nárast hmotnosti a aktivity.' }
+  } else if (month >= 5 && month <= 7) {
+    return { season: 'leto', icon: '☀️', tip: 'Hlavná sezóna medových tokov - očakávajte rýchly nárast hmotnosti.' }
+  } else if (month >= 8 && month <= 10) {
+    return { season: 'jeseň', icon: '🍂', tip: 'Príprava na zimu - skontrolujte zásoby a liečenie proti varroáze.' }
+  } else {
+    return { season: 'zima', icon: '❄️', tip: 'Zimné obdobie - minimalizujte zásahy, sledujte teplotu v úli.' }
+  }
+}
+
+const estimateBeePopulation = (weight, temperature, humidity) => {
+  // Base estimation: average hive weighs ~20-30kg empty, bees add ~3-5kg per 10,000 bees
+  // A strong colony has 40,000-60,000 bees
+  const emptyHiveWeight = 25 // kg
+  const beeWeight = 0.0001 // kg per bee (0.1g)
+  const honeyWeight = Math.max(0, weight - emptyHiveWeight - 4) // subtract hive + estimated bee weight
+  
+  // Estimate: healthy hive at optimal temp (34-35°C) has more bees
+  let activityFactor = 1
+  if (temperature >= 33 && temperature <= 36) activityFactor = 1.2
+  else if (temperature >= 28 && temperature <= 32) activityFactor = 1.0
+  else if (temperature < 20 || temperature > 40) activityFactor = 0.6
+  
+  // Rough estimate based on weight and typical colony sizes
+  const estimatedBees = Math.round(Math.max(5000, Math.min(80000, 
+    (weight - emptyHiveWeight) * 2000 * activityFactor
+  )))
+  
+  return {
+    count: estimatedBees,
+    health: temperature >= 33 && temperature <= 36 ? 'excellent' : 
+            temperature >= 28 && temperature <= 38 ? 'good' : 'needs attention',
+    display: estimatedBees >= 1000 ? `${(estimatedBees / 1000).toFixed(0)}k` : estimatedBees
+  }
+}
+
 export default function History() {
   const { selectedHive } = useHive()
   const [data, setData] = useState([])
@@ -25,7 +97,78 @@ export default function History() {
   const [selectedMetric, setSelectedMetric] = useState('all')
   const [loading, setLoading] = useState(true)
   const [queuedInspections, setQueuedInspections] = useState([])
+  const [showAnalysis, setShowAnalysis] = useState(true)
   const { queuedCount, isOnline, isReplaying, retry, refreshCount } = useOfflineStatus(selectedHive)
+
+  // Calculate analysis insights
+  const analysis = useMemo(() => {
+    if (!data || data.length < 5 || !stats) return null
+    
+    const temps = data.map(d => d.temperature).filter(Boolean)
+    const humidities = data.map(d => d.humidity).filter(Boolean)
+    const weights = data.map(d => d.weight).filter(Boolean)
+    
+    const tempTrend = calculateTrend(temps)
+    const humidityTrend = calculateTrend(humidities)
+    const weightTrend = calculateTrend(weights)
+    
+    const tempAnomalies = detectAnomalies(data, 'temperature')
+    const humidityAnomalies = detectAnomalies(data, 'humidity')
+    const weightAnomalies = detectAnomalies(data, 'weight')
+    
+    const seasonal = getSeasonalInsight()
+    
+    // Current values for bee estimate
+    const latestData = data[data.length - 1] || {}
+    const beeEstimate = estimateBeePopulation(
+      latestData.weight || stats.weight?.avg || 30,
+      latestData.temperature || stats.temperature?.avg || 30,
+      latestData.humidity || stats.humidity?.avg || 50
+    )
+    
+    // Generate insights
+    const insights = []
+    
+    // Temperature insights
+    if (stats.temperature?.avg < 30) {
+      insights.push({ type: 'warning', icon: '🥶', text: 'Nízka teplota v úli - včely môžu byť v klube' })
+    } else if (stats.temperature?.avg > 38) {
+      insights.push({ type: 'danger', icon: '🔥', text: 'Vysoká teplota - riziko prehriatia plodu' })
+    } else if (stats.temperature?.avg >= 33 && stats.temperature?.avg <= 36) {
+      insights.push({ type: 'success', icon: '✅', text: 'Optimálna teplota pre plod (33-36°C)' })
+    }
+    
+    // Weight insights
+    if (weightTrend.direction === 'up' && parseFloat(weightTrend.change) > 5) {
+      insights.push({ type: 'success', icon: '📈', text: `Hmotnosť rastie (+${weightTrend.change}%) - aktívny znáškový tok` })
+    } else if (weightTrend.direction === 'down' && parseFloat(weightTrend.change) > 10) {
+      insights.push({ type: 'warning', icon: '📉', text: `Hmotnosť klesá (-${weightTrend.change}%) - skontrolujte zásoby` })
+    }
+    
+    // Humidity insights
+    if (stats.humidity?.avg > 80) {
+      insights.push({ type: 'warning', icon: '💧', text: 'Vysoká vlhkosť - riziko plesní a chorôb' })
+    } else if (stats.humidity?.avg < 40) {
+      insights.push({ type: 'info', icon: '🏜️', text: 'Nízka vlhkosť v úli' })
+    }
+    
+    // Anomaly insights
+    if (tempAnomalies.length > 0) {
+      insights.push({ type: 'info', icon: '⚠️', text: `${tempAnomalies.length} nezvyčajných teplotných výkyvov` })
+    }
+    
+    return {
+      tempTrend,
+      humidityTrend,
+      weightTrend,
+      tempAnomalies,
+      humidityAnomalies,
+      weightAnomalies,
+      seasonal,
+      beeEstimate,
+      insights
+    }
+  }, [data, stats])
 
   useEffect(() => {
     if (!selectedHive) {
@@ -343,6 +486,104 @@ export default function History() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Analysis Section */}
+      {analysis && (
+        <div className="analysis-section">
+          <div className="analysis-header" onClick={() => setShowAnalysis(!showAnalysis)}>
+            <h2>🧠 Analýza & Odhady</h2>
+            <button className="toggle-btn">{showAnalysis ? '▼' : '▶'}</button>
+          </div>
+          
+          {showAnalysis && (
+            <div className="analysis-content">
+              {/* Bee Population Estimate */}
+              <div className="analysis-card bee-estimate-card">
+                <div className="bee-estimate-icon">🐝</div>
+                <div className="bee-estimate-content">
+                  <div className="bee-count">{analysis.beeEstimate.display}</div>
+                  <div className="bee-label">Odhadovaný počet včiel</div>
+                  <div className={`bee-health health-${analysis.beeEstimate.health.replace(' ', '-')}`}>
+                    {analysis.beeEstimate.health === 'excellent' ? '🌟 Výborný stav' :
+                     analysis.beeEstimate.health === 'good' ? '✅ Dobrý stav' : '⚠️ Vyžaduje pozornosť'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Trends Grid */}
+              <div className="trends-grid">
+                <div className="trend-card">
+                  <span className="trend-metric">🌡️ Teplota</span>
+                  <span className={`trend-indicator trend-${analysis.tempTrend.direction}`}>
+                    {analysis.tempTrend.direction === 'up' ? '↗️' : 
+                     analysis.tempTrend.direction === 'down' ? '↘️' : '→'}
+                    {analysis.tempTrend.change > 0 && ` ${analysis.tempTrend.change}%`}
+                  </span>
+                </div>
+                <div className="trend-card">
+                  <span className="trend-metric">💧 Vlhkosť</span>
+                  <span className={`trend-indicator trend-${analysis.humidityTrend.direction}`}>
+                    {analysis.humidityTrend.direction === 'up' ? '↗️' : 
+                     analysis.humidityTrend.direction === 'down' ? '↘️' : '→'}
+                    {analysis.humidityTrend.change > 0 && ` ${analysis.humidityTrend.change}%`}
+                  </span>
+                </div>
+                <div className="trend-card">
+                  <span className="trend-metric">⚖️ Hmotnosť</span>
+                  <span className={`trend-indicator trend-${analysis.weightTrend.direction}`}>
+                    {analysis.weightTrend.direction === 'up' ? '↗️' : 
+                     analysis.weightTrend.direction === 'down' ? '↘️' : '→'}
+                    {analysis.weightTrend.change > 0 && ` ${analysis.weightTrend.change}%`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Seasonal Insight */}
+              <div className="seasonal-card">
+                <span className="seasonal-icon">{analysis.seasonal.icon}</span>
+                <div className="seasonal-content">
+                  <strong>Sezónny tip ({analysis.seasonal.season})</strong>
+                  <p>{analysis.seasonal.tip}</p>
+                </div>
+              </div>
+
+              {/* Insights */}
+              {analysis.insights.length > 0 && (
+                <div className="insights-list">
+                  <h3>💡 Poznatky</h3>
+                  {analysis.insights.map((insight, idx) => (
+                    <div key={idx} className={`insight-item insight-${insight.type}`}>
+                      <span className="insight-icon">{insight.icon}</span>
+                      <span className="insight-text">{insight.text}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Anomalies */}
+              {(analysis.tempAnomalies.length > 0 || analysis.weightAnomalies.length > 0) && (
+                <div className="anomalies-section">
+                  <h3>⚠️ Zistené anomálie</h3>
+                  <div className="anomalies-list">
+                    {analysis.tempAnomalies.slice(0, 3).map((a, idx) => (
+                      <div key={`temp-${idx}`} className="anomaly-item">
+                        <span>🌡️ {new Date(a.timestamp).toLocaleString('sk-SK')}</span>
+                        <span className="anomaly-value">{a.value.toFixed(1)}°C ({a.deviation > 0 ? '+' : ''}{a.deviation}σ)</span>
+                      </div>
+                    ))}
+                    {analysis.weightAnomalies.slice(0, 3).map((a, idx) => (
+                      <div key={`weight-${idx}`} className="anomaly-item">
+                        <span>⚖️ {new Date(a.timestamp).toLocaleString('sk-SK')}</span>
+                        <span className="anomaly-value">{a.value.toFixed(2)}kg ({a.deviation > 0 ? '+' : ''}{a.deviation}σ)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

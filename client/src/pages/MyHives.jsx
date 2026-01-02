@@ -296,6 +296,7 @@ export default function MyHives() {
               <div className="hive-actions">
                 <button className="btn btn-sm" onClick={() => goTo(h.id, '/history')}>📊 História</button>
                 <button className="btn btn-sm" onClick={() => goTo(h.id, '/inspection')}>✅ Kontroly</button>
+                <button className="btn btn-sm" onClick={() => goTo(h.id, '/harvests')}>🍯 Zbery</button>
                 <button className="btn btn-sm" onClick={() => openEditModal(h)}>✏️</button>
                 <button className="btn btn-sm btn-danger" onClick={() => handleDelete(h)}>🗑️</button>
               </div>

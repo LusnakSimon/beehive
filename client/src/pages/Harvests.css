@@ -1,0 +1,477 @@
+.harvests-page {
+  min-height: 100vh;
+  padding: 0;
+  padding-bottom: calc(var(--nav-height) + 4rem);
+  background: var(--bg-primary);
+}
+
+@media (min-width: 768px) {
+  .harvests-page {
+    padding-top: 4.5rem;
+    padding-bottom: 2rem;
+  }
+}
+
+/* Header */
+.harvests-header {
+  background: var(--btn-warning-gradient);
+  padding: 2rem 1.5rem;
+  margin: 0 1rem 1.5rem;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .harvests-header {
+    max-width: 800px;
+    margin: 0 auto 1.5rem;
+  }
+}
+
+.harvests-header h1 {
+  font-size: 2rem;
+  color: white;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.harvests-header .subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Hive Selector Container */
+.hive-selector-container {
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Year Filter */
+.year-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.year-filter label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.year-select {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Stats */
+.harvest-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 600px) {
+  .harvest-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.harvest-stats .stat-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+}
+
+.harvest-stats .stat-icon {
+  font-size: 2rem;
+}
+
+.harvest-stats .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.harvest-stats .stat-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Add Button */
+.add-harvest-btn {
+  display: block;
+  width: calc(100% - 2rem);
+  max-width: 768px;
+  margin: 0 auto 1.5rem;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
+/* Form Container */
+.harvest-form-container {
+  background: var(--card-bg);
+  border-radius: 16px;
+  margin: 0 1rem 1.5rem;
+  max-width: 768px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.harvest-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.harvest-form-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+/* Form */
+.harvest-form {
+  padding: 1.25rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 500px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
+}
+
+.amount-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.amount-input input {
+  flex: 1;
+}
+
+.amount-input select {
+  width: auto;
+  min-width: 80px;
+}
+
+/* Honey Type Grid */
+.honey-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 500px) {
+  .honey-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.honey-type-btn {
+  padding: 0.75rem 0.5rem;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.honey-type-btn:hover {
+  border-color: var(--type-color);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.honey-type-btn.active {
+  border-color: var(--type-color);
+  background: var(--type-color);
+  color: white;
+  font-weight: 600;
+}
+
+/* Quality Grid */
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 500px) {
+  .quality-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.quality-btn {
+  padding: 0.75rem 0.5rem;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quality-btn:hover {
+  border-color: var(--quality-color);
+}
+
+.quality-btn.active {
+  border-color: var(--quality-color);
+  background: var(--quality-color);
+  color: white;
+  font-weight: 600;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Harvest History */
+.harvest-history {
+  padding: 0 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.harvest-history h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state .hint {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+/* Harvest List */
+.harvest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.harvest-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.harvest-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-left: 4px solid var(--primary);
+}
+
+.harvest-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.harvest-date .date-day {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.harvest-date .date-month {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.harvest-main-info {
+  flex: 1;
+}
+
+.harvest-amount {
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.harvest-amount strong {
+  font-weight: 700;
+}
+
+.harvest-type {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.harvest-quality {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.harvest-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-muted);
+  border-top: 1px solid var(--border);
+}
+
+.detail-item {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.harvest-notes {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.harvest-notes p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.harvest-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-muted);
+}
+
+.harvest-actions .btn-sm {
+  flex: 1;
+  justify-content: center;
+}
+
+/* Mobile adjustments */
+@media (max-width: 500px) {
+  .harvests-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .harvest-card-header {
+    flex-wrap: wrap;
+  }
+  
+  .harvest-quality {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
