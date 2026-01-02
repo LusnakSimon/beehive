@@ -309,6 +309,49 @@
   border-radius: 8px;
 }
 
+/* API Key section for ESP32 WiFi devices */
+.api-key-section {
+  margin-top: 0.5rem;
+}
+.api-key-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.api-key-code {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Fira Code', 'Monaco', monospace;
+  font-size: 0.85rem;
+  color: var(--text);
+  word-break: break-all;
+}
+.regenerate-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+.no-api-key {
+  padding: 0.75rem;
+  background: var(--warning-bg, rgba(251, 191, 36, 0.1));
+  border: 1px dashed var(--warning);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.field-hint {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+}
+
 /* Color picker - improved */
 .color-picker {
   display: flex;

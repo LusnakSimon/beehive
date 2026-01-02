@@ -199,9 +199,9 @@ describe('LoRaWAN Payload Parsing', () => {
 
   describe('DevEUI Matching', () => {
     const mockHives = [
-      { id: 'hive-1', name: 'Úľ 1', device: { type: 'esp32-lorawan', devEUI: '70B3D57ED005A4B2' } },
-      { id: 'hive-2', name: 'Úľ 2', device: { type: 'esp32-lorawan', devEUI: '70B3D57ED005A4B3' } },
-      { id: 'hive-3', name: 'Úľ 3', device: { type: 'esp32-wifi' } },
+      { id: 'hive-1', name: 'Úľ 1', device: { type: 'api', devEUI: '70B3D57ED005A4B2' } },
+      { id: 'hive-2', name: 'Úľ 2', device: { type: 'api', devEUI: '70B3D57ED005A4B3' } },
+      { id: 'hive-3', name: 'Úľ 3', device: { type: 'api' } },
     ];
 
     it('should find hive by devEUI', () => {
@@ -229,7 +229,7 @@ describe('LoRaWAN Payload Parsing', () => {
 
     it('should not match WiFi devices', () => {
       const devEUI = '70B3D57ED005A4B2';
-      const wifiHives = mockHives.filter(h => h.device?.type === 'esp32-wifi');
+      const apiHivesWithoutDevEUI = mockHives.filter(h => h.device?.type === 'api' && !h.device?.devEUI);
       const matchedWifi = wifiHives.find(h => h.device?.devEUI === devEUI);
       
       expect(matchedWifi).toBeUndefined();

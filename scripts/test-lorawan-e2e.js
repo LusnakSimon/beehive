@@ -59,7 +59,7 @@ async function runTest() {
     // Update hive with devEUI
     if (typeof hive === 'object') {
       hive.device = hive.device || {};
-      hive.device.type = 'esp32-lorawan';
+      hive.device.type = 'api';
       hive.device.devEUI = TEST_DEV_EUI;
       // Mark as modified since ownedHives is a Mixed type
       user.markModified('ownedHives');
@@ -69,7 +69,7 @@ async function runTest() {
         id: hive,
         name: `Úľ ${hive.replace('HIVE-', '')}`,
         device: {
-          type: 'esp32-lorawan',
+          type: 'api',
           devEUI: TEST_DEV_EUI
         }
       };

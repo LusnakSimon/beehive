@@ -29,6 +29,16 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const { queuedCount, isOnline, isReplaying, retry } = useOfflineStatus(selectedHive)
+  
+  // Manual entry state
+  const [showManualEntry, setShowManualEntry] = useState(false)
+  const [manualForm, setManualForm] = useState({
+    temperature: '',
+    humidity: '',
+    weight: '',
+    battery: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Helper function to format time ago
   const formatTimeAgo = (date) => {
@@ -162,7 +172,7 @@ export default function Dashboard() {
 
   // Compute approximate deltas and %/rate for a metric based on nearest historical points
   const computeDeltas = (field) => {
-    if (!history24h || history24h.length === 0) return { delta1h: null, delta24h: null, pct1h: null, pct24h: null, rate1h: null, rate24h: null }
+    if (!history24h || history24h.length === 0) return { delta1h: null, delta24h: null, pct24h: null }
     const now = data.lastUpdate ? new Date(data.lastUpdate).getTime() : Date.now()
 
     const findNearest = (targetMs) => {
@@ -192,15 +202,96 @@ export default function Dashboard() {
 
     const delta1h = (latestVal != null && val1h != null) ? (latestVal - val1h) : null
     const delta24h = (latestVal != null && val24h != null) ? (latestVal - val24h) : null
-
-    const pct1h = (delta1h != null && val1h !== 0 && val1h != null) ? (delta1h / Math.abs(val1h)) * 100 : null
     const pct24h = (delta24h != null && val24h !== 0 && val24h != null) ? (delta24h / Math.abs(val24h)) * 100 : null
 
-    // rate per hour: for 1h it's just delta1h, for 24h average per hour is delta24h / 24
-    const rate1h = delta1h != null ? delta1h : null
-    const rate24h = delta24h != null ? (delta24h / 24) : null
+    return { delta1h, delta24h, pct24h }
+  }
+  
+  // Render compact delta badge
+  const renderDeltaBadge = (field, unit) => {
+    const { delta1h, delta24h, pct24h } = computeDeltas(field)
+    if (delta24h == null) return null
+    
+    const isPositive = delta24h >= 0
+    const isSignificant = Math.abs(delta24h) > 0.01
+    
+    // For weight, positive is usually good (honey flow), for battery negative is bad
+    const getColor = () => {
+      if (!isSignificant) return 'var(--text-secondary)'
+      if (field === 'battery') return isPositive ? 'var(--success)' : 'var(--danger)'
+      if (field === 'weight') return isPositive ? 'var(--success)' : 'var(--warning)'
+      // Temperature/humidity - depends on context, use neutral
+      return isPositive ? 'var(--success)' : 'var(--info)'
+    }
+    
+    const formatValue = (val) => {
+      if (field === 'weight') return val.toFixed(2)
+      if (field === 'battery') return val.toFixed(0)
+      return val.toFixed(1)
+    }
+    
+    return (
+      <div className="delta-badges">
+        {delta1h != null && (
+          <span className="delta-badge" style={{ color: getColor() }}>
+            <span className="delta-label">1h</span>
+            <span className="delta-value">{isPositive ? '↑' : '↓'} {formatValue(Math.abs(delta1h))}{unit}</span>
+          </span>
+        )}
+        {delta24h != null && (
+          <span className="delta-badge" style={{ color: getColor() }}>
+            <span className="delta-label">24h</span>
+            <span className="delta-value">{isPositive ? '↑' : '↓'} {formatValue(Math.abs(delta24h))}{unit}</span>
+            {pct24h != null && Math.abs(pct24h) >= 0.1 && (
+              <span className="delta-pct">({isPositive ? '+' : ''}{pct24h.toFixed(1)}%)</span>
+            )}
+          </span>
+        )}
+      </div>
+    )
+  }
 
-    return { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h }
+  // Handle manual sensor reading submission
+  const handleManualSubmit = async (e) => {
+    e.preventDefault()
+    if (isSubmitting) return
+    
+    setIsSubmitting(true)
+    try {
+      const reading = {
+        hiveId: selectedHive,
+        temperature: manualForm.temperature ? parseFloat(manualForm.temperature) : undefined,
+        humidity: manualForm.humidity ? parseFloat(manualForm.humidity) : undefined,
+        weight: manualForm.weight ? parseFloat(manualForm.weight) : undefined,
+        battery: manualForm.battery ? parseFloat(manualForm.battery) : undefined
+      }
+      
+      // Remove undefined values
+      Object.keys(reading).forEach(key => reading[key] === undefined && delete reading[key])
+      
+      const response = await fetch('/api/sensor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(reading)
+      })
+      
+      if (response.ok) {
+        setShowManualEntry(false)
+        setManualForm({ temperature: '', humidity: '', weight: '', battery: '' })
+        // Refresh data
+        await fetchLatestData()
+        await fetch24hHistory()
+      } else {
+        const err = await response.json()
+        alert(err.error || 'Chyba pri ukladaní')
+      }
+    } catch (error) {
+      console.error('Manual entry error:', error)
+      alert('Chyba pripojenia')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const getOverallStatus = () => {
@@ -333,20 +424,25 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Other device types info */}
-      {getCurrentHive()?.device?.type && getCurrentHive().device.type !== 'esp32-lorawan' && (
+      {/* Device type info */}
+      {getCurrentHive()?.device?.type && (
         <div className="device-status-card">
           <div className="device-header">
             <span className="device-icon">
-              {getCurrentHive().device.type === 'esp32-wifi' ? '📡' : 
-               getCurrentHive().device.type === 'manual' ? '📝' : '📲'}
+              {getCurrentHive().device.type === 'api' ? '📡' : '📝'}
             </span>
             <span className="device-title">
-              {getCurrentHive().device.type === 'esp32-wifi' ? 'ESP32 WiFi' :
-               getCurrentHive().device.type === 'manual' ? 'Manuálne zadávanie' : 
-               getCurrentHive().device.type === 'esp32-lte' ? 'ESP32 LTE' : 'Neznámy typ'}
+              {getCurrentHive().device.type === 'api' ? 'API zariadenie' : 'Manuálne zadávanie'}
             </span>
           </div>
+          {getCurrentHive().device.type === 'manual' && (
+            <button 
+              className="btn btn-primary btn-sm add-reading-btn"
+              onClick={() => setShowManualEntry(true)}
+            >
+              ➕ Pridať záznam
+            </button>
+          )}
         </div>
       )}
 
@@ -367,20 +463,7 @@ export default function Dashboard() {
               <span>{getTrend(data.temperature, previousData.temperature).text}</span>
             </div>
           )}
-          {/* Hourly / 24h deltas for temperature */}
-          {(() => {
-            const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('temperature')
-            return (
-              <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}°C`} {pct1h != null ? `(${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)}°C/h` : ''}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}°C`} {pct24h != null ? `(${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)}°C/h` : ''}
-                </div>
-              </div>
-            )
-          })()}
+          {renderDeltaBadge('temperature', '°C')}
           <div className="metric-status-badge" style={{ backgroundColor: getMetricStatus('temperature', data.temperature).color }}>
             {getMetricStatus('temperature', data.temperature).text}
           </div>
@@ -417,20 +500,7 @@ export default function Dashboard() {
               <span>{getTrend(data.humidity, previousData.humidity).text}</span>
             </div>
           )}
-          {/* Hourly / 24h deltas for humidity */}
-          {(() => {
-            const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('humidity')
-            return (
-              <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(1)}%`} {pct1h != null ? `(${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)}%/h` : ''}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(1)}%`} {pct24h != null ? `(${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)}%/h` : ''}
-                </div>
-              </div>
-            )
-          })()}
+          {renderDeltaBadge('humidity', '%')}
           <div className="metric-status-badge" style={{ backgroundColor: getMetricStatus('humidity', data.humidity).color }}>
             {getMetricStatus('humidity', data.humidity).text}
           </div>
@@ -467,20 +537,7 @@ export default function Dashboard() {
               <span>{getTrend(data.weight, previousData.weight).text}</span>
             </div>
           )}
-            {/* Hourly / 24h deltas */}
-            {(() => {
-              const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('weight')
-              return (
-                <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                    1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(2)} kg`} {pct1h != null ? ` (${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)} kg/h` : ''}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                    24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(2)} kg`} {pct24h != null ? ` (${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)} kg/h` : ''}
-                  </div>
-                </div>
-              )
-            })()}
+          {renderDeltaBadge('weight', 'kg')}
           <div className="metric-status-badge" style={{ backgroundColor: getMetricStatus('weight', data.weight).color }}>
             {getMetricStatus('weight', data.weight).text}
           </div>
@@ -511,20 +568,7 @@ export default function Dashboard() {
             <span className="metric-value-large">{data.battery}</span>
             <span className="metric-unit">%</span>
           </div>
-          {/* Hourly / 24h deltas for battery */}
-          {(() => {
-            const { delta1h, delta24h, pct1h, pct24h, rate1h, rate24h } = computeDeltas('battery')
-            return (
-              <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                <div style={{ fontSize: '0.8rem', color: delta1h == null ? 'var(--text-secondary)' : (delta1h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  1h: {delta1h == null ? '—' : `${delta1h >= 0 ? '+' : ''}${delta1h.toFixed(0)}%`} {pct1h != null ? `(${pct1h >= 0 ? '+' : ''}${pct1h.toFixed(2)}%)` : ''} {rate1h != null ? `· ${rate1h >= 0 ? '+' : ''}${rate1h.toFixed(2)}%/h` : ''}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: delta24h == null ? 'var(--text-secondary)' : (delta24h >= 0 ? 'var(--success)' : 'var(--danger)') }}>
-                  24h: {delta24h == null ? '—' : `${delta24h >= 0 ? '+' : ''}${delta24h.toFixed(0)}%`} {pct24h != null ? `(${pct24h >= 0 ? '+' : ''}${pct24h.toFixed(2)}%)` : ''} {rate24h != null ? `· ${rate24h >= 0 ? '+' : ''}${rate24h.toFixed(3)}%/h` : ''}
-                </div>
-              </div>
-            )
-          })()}
+          {renderDeltaBadge('battery', '%')}
           <div className="battery-bar">
             <div 
               className="battery-fill" 
@@ -601,6 +645,79 @@ export default function Dashboard() {
       </div>
       
       <VarroaReminder />
+
+      {/* Manual Entry Modal */}
+      {showManualEntry && (
+        <div className="modal-overlay" onClick={() => setShowManualEntry(false)}>
+          <div className="modal-content manual-entry-modal" onClick={e => e.stopPropagation()}>
+            <h3>📝 Pridať manuálny záznam</h3>
+            <form onSubmit={handleManualSubmit}>
+              <div className="manual-entry-grid">
+                <label>
+                  <span>🌡️ Teplota (°C)</span>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    placeholder="napr. 34.5"
+                    value={manualForm.temperature}
+                    onChange={e => setManualForm(f => ({ ...f, temperature: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  <span>💧 Vlhkosť (%)</span>
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    min="0" 
+                    max="100"
+                    placeholder="napr. 65"
+                    value={manualForm.humidity}
+                    onChange={e => setManualForm(f => ({ ...f, humidity: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  <span>⚖️ Hmotnosť (kg)</span>
+                  <input 
+                    type="number" 
+                    step="0.01" 
+                    placeholder="napr. 45.5"
+                    value={manualForm.weight}
+                    onChange={e => setManualForm(f => ({ ...f, weight: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  <span>🔋 Batéria (%)</span>
+                  <input 
+                    type="number" 
+                    step="1" 
+                    min="0" 
+                    max="100"
+                    placeholder="napr. 85"
+                    value={manualForm.battery}
+                    onChange={e => setManualForm(f => ({ ...f, battery: e.target.value }))}
+                  />
+                </label>
+              </div>
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={() => setShowManualEntry(false)}
+                >
+                  Zrušiť
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Ukladám...' : 'Uložiť'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

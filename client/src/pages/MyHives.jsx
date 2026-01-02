@@ -342,22 +342,66 @@ export default function MyHives() {
                 </div>
 
                 <label>Typ zariadenia</label>
-                <select value={form.device.type} onChange={e => setForm(f => ({ ...f, device: { ...f.device, type: e.target.value, devEUI: '', deviceId: '' } }))}>
+                <select value={form.device.type} onChange={e => setForm(f => ({ ...f, device: { ...f.device, type: e.target.value } }))}>
                   <option value="manual">📝 Manuálne zadávanie</option>
-                  <option value="esp32-wifi">📡 ESP32 WiFi</option>
-                  <option value="esp32-lorawan">📶 ESP32 LoRaWAN</option>
+                  <option value="api">📡 API zariadenie</option>
                 </select>
-                {form.device.type === 'esp32-lorawan' && (
-                  <>
-                    <input placeholder="DevEUI (16 hex)" value={form.device.devEUI} onChange={e => setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } }))} maxLength={16} />
-                    {errors.devEUI && <div className="error-text">{errors.devEUI}</div>}
-                  </>
+                {form.device.type === 'api' && (
+                  <div className="api-key-section">
+                    <label>API Kľúč</label>
+                    {form.device.apiKey ? (
+                      <>
+                        <div className="api-key-display">
+                          <code className="api-key-code">{form.device.apiKey}</code>
+                          <button type="button" className="btn btn-sm" onClick={() => {
+                            navigator.clipboard.writeText(form.device.apiKey)
+                            toast.success('API kľúč skopírovaný!')
+                          }}>📋</button>
+                        </div>
+                        <button 
+                          type="button" 
+                          className="btn btn-secondary btn-sm regenerate-btn"
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/users/me/hives/${form.id}/generate-api-key`, {
+                                method: 'POST',
+                                credentials: 'include'
+                              })
+                              const data = await res.json()
+                              if (data.success) {
+                                setForm(f => ({ ...f, device: { ...f.device, apiKey: data.apiKey } }))
+                                await refreshUser()
+                                toast.success('Nový API kľúč vygenerovaný!')
+                              } else {
+                                toast.error(data.error || 'Chyba pri generovaní')
+                              }
+                            } catch (err) {
+                              toast.error('Chyba pripojenia')
+                            }
+                          }}
+                        >
+                          🔄 Vygenerovať nový kľúč
+                        </button>
+                        <small className="field-hint">Použite tento kľúč v hlavičke X-API-Key pri POST na /api/sensor</small>
+                        
+                        <label style={{marginTop: '1rem'}}>DevEUI (voliteľné)</label>
+                        <input 
+                          placeholder="Pre LoRaWAN webhook (16 hex)" 
+                          value={form.device.devEUI || ''} 
+                          onChange={e => setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } }))} 
+                          maxLength={16} 
+                        />
+                        <small className="field-hint">Len ak používate TTN/Chirpstack webhook</small>
+                      </>
+                    ) : (
+                      <div className="no-api-key">
+                        <span>API kľúč bude vygenerovaný po uložení.</span>
+                      </div>
+                    )}
+                  </div>
                 )}
-                {form.device.type === 'esp32-wifi' && (
-                  <>
-                    <input placeholder="Device ID" value={form.device.deviceId} onChange={e => setForm(f => ({ ...f, device: { ...f.device, deviceId: e.target.value } }))} />
-                    {errors.deviceId && <div className="error-text">{errors.deviceId}</div>}
-                  </>
+                {form.device.type === 'manual' && (
+                  <small className="field-hint">Dáta zadávate manuálne cez dashboard</small>
                 )}
 
                 <label>Viditeľnosť</label>
