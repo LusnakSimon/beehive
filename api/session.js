@@ -1,5 +1,13 @@
 const jwt = require('jsonwebtoken');
-const { connectToDatabase } = require('../lib/mongo');
+
+// Lazy load User model
+let User;
+function getUser() {
+  if (!User) {
+    User = require('../lib/models/User');
+  }
+  return User;
+}
 
 module.exports = async (req, res) => {
   const token = req.headers.cookie?.split('auth-token=')[1]?.split(';')[0];
@@ -14,7 +22,7 @@ module.exports = async (req, res) => {
     // Fetch full user data from database to get ownedHives
     let ownedHives = [];
     try {
-      const { UserModel } = await connectToDatabase();
+      const UserModel = getUser();
       const user = await UserModel.findById(decoded.id).lean();
       if (user) {
         ownedHives = user.ownedHives || [];
