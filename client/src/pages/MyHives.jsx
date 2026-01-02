@@ -14,7 +14,7 @@ export default function MyHives() {
   const [modalMode, setModalMode] = useState('add') // 'add' | 'edit'
   const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
 
-  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
+  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
@@ -23,7 +23,7 @@ export default function MyHives() {
 
   const openAddModal = () => {
     setModalMode('add')
-    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
+    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
     setShowModal(true)
   }
 
@@ -34,7 +34,9 @@ export default function MyHives() {
       name: hive.name || '',
       location: hive.location || '',
       color: hive.color || 'var(--warning)',
-      imageDataUrl: hive.image || '',
+      imageDataUrl: hive.image || '',  // Store existing image URL
+      imageFile: null,  // Track if user selected a new file
+      originalImage: hive.image || '',  // Track original to detect changes
       coordinates: hive.coordinates || { lat: '', lng: '' },
       visibility: hive.visibility || 'private',
       device: hive.device || { type: 'manual', devEUI: '', deviceId: '' }
@@ -145,9 +147,17 @@ export default function MyHives() {
         if (res.ok) {
           const created = await res.json().catch(() => null)
           await refreshUser()
-          // If backend didn't persist data-URL image, keep it locally so the UI shows it
-          if (form.imageDataUrl && created && created.id) {
-            updateHive(created.id, { image: form.imageDataUrl })
+          
+          // Update local state with the real hive data from backend
+          if (created?.hive) {
+            // Delete the temporary optimistic hive and add the real one
+            deleteHive(tempId)
+            addHive(created.hive)
+            setSelectedHive(created.hive.id)
+          } else if (created?.id) {
+            // Fallback: just update the temp hive with the real ID
+            updateHive(tempId, { id: created.id })
+            setSelectedHive(created.id)
           }
           
           // If API hive, show the generated API key in a special toast
@@ -193,7 +203,12 @@ export default function MyHives() {
           const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           if (form.device?.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
-          if (form.imageDataUrl) hiveData.image = form.imageDataUrl
+          
+          // Only send image if it actually changed (new base64 data URL, not the same URL)
+          const imageChanged = form.imageDataUrl && form.imageDataUrl !== form.originalImage
+          if (imageChanged) {
+            hiveData.image = form.imageDataUrl
+          }
 
           res = await fetch(`/api/users/me/hives/${hiveId}`, {
             method: 'PATCH',
@@ -207,11 +222,6 @@ export default function MyHives() {
           const data = await res.json().catch(() => ({}))
           await refreshUser()
           
-          // If backend didn't persist image, keep it locally so UI reflects the edit
-          if (form.imageDataUrl) {
-            updateHive(hiveId, { image: form.imageDataUrl })
-          }
-          
           // If API key was generated (switched to API type), update form and show it
           if (data.hive?.device?.apiKey && wasManual) {
             setForm(f => ({ ...f, device: { ...f.device, apiKey: data.hive.device.apiKey } }))
@@ -223,7 +233,7 @@ export default function MyHives() {
             toast.success('Úľ upravený')
           }
           
-          // Update local hive state with returned data
+          // Update local hive state with returned data from backend (authoritative)
           if (data.hive) {
             updateHive(hiveId, data.hive)
           }
