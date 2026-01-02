@@ -42,11 +42,44 @@ const detectAnomalies = (data, key) => {
   return data.filter(d => {
     const v = d[key]
     return v !== undefined && Math.abs(v - mean) > threshold * stdDev
-  }).map(d => ({
-    timestamp: d.timestamp,
-    value: d[key],
-    deviation: ((d[key] - mean) / stdDev).toFixed(1)
-  }))
+  }).map(d => {
+    const deviation = (d[key] - mean) / stdDev
+    const isHigh = deviation > 0
+    
+    // Generate human-readable description based on metric and severity
+    let description = ''
+    let severity = Math.abs(deviation) > 3.5 ? 'high' : 'medium'
+    
+    if (key === 'temperature') {
+      if (isHigh) {
+        description = d[key] > 40 ? 'Kriticky vysoká teplota' : 'Nezvyčajne vysoká teplota'
+      } else {
+        description = d[key] < 20 ? 'Kriticky nízka teplota' : 'Nezvyčajne nízka teplota'
+      }
+    } else if (key === 'humidity') {
+      if (isHigh) {
+        description = d[key] > 85 ? 'Veľmi vysoká vlhkosť' : 'Zvýšená vlhkosť'
+      } else {
+        description = d[key] < 30 ? 'Veľmi nízka vlhkosť' : 'Znížená vlhkosť'
+      }
+    } else if (key === 'weight') {
+      if (isHigh) {
+        description = 'Náhly nárast hmotnosti'
+      } else {
+        description = 'Náhly pokles hmotnosti'
+      }
+    }
+    
+    return {
+      timestamp: d.timestamp,
+      value: d[key],
+      deviation: deviation.toFixed(1),
+      isHigh,
+      description,
+      severity,
+      key
+    }
+  })
 }
 
 const getSeasonalInsight = () => {
@@ -566,23 +599,43 @@ export default function History() {
               )}
 
               {/* Anomalies */}
-              {(analysis.tempAnomalies.length > 0 || analysis.weightAnomalies.length > 0) && (
+              {(analysis.tempAnomalies.length > 0 || analysis.weightAnomalies.length > 0 || analysis.humidityAnomalies.length > 0) && (
                 <div className="anomalies-section">
-                  <h3>⚠️ Zistené anomálie</h3>
+                  <div className="anomalies-header">
+                    <h3>⚠️ Nezvyčajné hodnoty</h3>
+                    <span className="anomalies-hint">Automaticky zistené výkyvy mimo bežný rozsah</span>
+                  </div>
                   <div className="anomalies-list">
-                    {analysis.tempAnomalies.slice(0, 3).map((a, idx) => (
-                      <div key={`temp-${idx}`} className="anomaly-item">
-                        <span>🌡️ {new Date(a.timestamp).toLocaleString('sk-SK')}</span>
-                        <span className="anomaly-value">{a.value.toFixed(1)}°C ({a.deviation > 0 ? '+' : ''}{a.deviation}σ)</span>
-                      </div>
-                    ))}
-                    {analysis.weightAnomalies.slice(0, 3).map((a, idx) => (
-                      <div key={`weight-${idx}`} className="anomaly-item">
-                        <span>⚖️ {new Date(a.timestamp).toLocaleString('sk-SK')}</span>
-                        <span className="anomaly-value">{a.value.toFixed(2)}kg ({a.deviation > 0 ? '+' : ''}{a.deviation}σ)</span>
+                    {[...analysis.tempAnomalies, ...analysis.humidityAnomalies, ...analysis.weightAnomalies]
+                      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                      .slice(0, 5)
+                      .map((a, idx) => (
+                      <div key={idx} className={`anomaly-card anomaly-${a.severity}`}>
+                        <div className="anomaly-icon">
+                          {a.key === 'temperature' ? '🌡️' : a.key === 'humidity' ? '💧' : '⚖️'}
+                        </div>
+                        <div className="anomaly-content">
+                          <div className="anomaly-description">{a.description}</div>
+                          <div className="anomaly-details">
+                            <span className="anomaly-value-display">
+                              {a.key === 'weight' ? `${a.value.toFixed(2)} kg` : `${a.value.toFixed(1)}${a.key === 'temperature' ? '°C' : '%'}`}
+                            </span>
+                            <span className="anomaly-time">
+                              {new Date(a.timestamp).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                        </div>
+                        <div className={`anomaly-badge ${a.isHigh ? 'high' : 'low'}`}>
+                          {a.isHigh ? '↑ Vysoké' : '↓ Nízke'}
+                        </div>
                       </div>
                     ))}
                   </div>
+                  {(analysis.tempAnomalies.length + analysis.humidityAnomalies.length + analysis.weightAnomalies.length) > 5 && (
+                    <div className="anomalies-more">
+                      +{analysis.tempAnomalies.length + analysis.humidityAnomalies.length + analysis.weightAnomalies.length - 5} ďalších nezvyčajných hodnôt
+                    </div>
+                  )}
                 </div>
               )}
             </div>
