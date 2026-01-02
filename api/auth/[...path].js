@@ -152,6 +152,11 @@ module.exports = async function handler(req, res) {
         userInfo.provider = 'google';
       } else {
         // GitHub
+        if (!process.env.GITHUB_ID || !process.env.GITHUB_SECRET) {
+          console.error('GitHub credentials missing - GITHUB_ID:', !!process.env.GITHUB_ID, 'GITHUB_SECRET:', !!process.env.GITHUB_SECRET);
+          throw new Error('GitHub OAuth not configured on server');
+        }
+        
         const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
           method: 'POST',
           headers: {
@@ -167,9 +172,11 @@ module.exports = async function handler(req, res) {
         });
 
         const tokenData = await tokenResponse.json();
-
+        
+        console.log('GitHub token response status:', tokenResponse.status);
         if (!tokenData.access_token) {
-          throw new Error(tokenData.error_description || tokenData.error || 'No access token received');
+          console.error('GitHub token error:', JSON.stringify(tokenData));
+          throw new Error(tokenData.error_description || tokenData.error || 'GitHub: No access token received');
         }
 
         const access_token = tokenData.access_token;
@@ -183,6 +190,11 @@ module.exports = async function handler(req, res) {
         });
 
         const githubUser = await userResponse.json();
+        
+        if (githubUser.message) {
+          console.error('GitHub user fetch error:', githubUser);
+          throw new Error('GitHub: Failed to get user info - ' + githubUser.message);
+        }
 
         // Get user emails
         const emailResponse = await fetch('https://api.github.com/user/emails', {
@@ -193,7 +205,19 @@ module.exports = async function handler(req, res) {
         });
 
         const emails = await emailResponse.json();
-        const primaryEmail = emails.find(e => e.primary)?.email || emails[0]?.email;
+        let primaryEmail = null;
+        
+        if (Array.isArray(emails)) {
+          primaryEmail = emails.find(e => e.primary)?.email || emails[0]?.email;
+        } else {
+          console.warn('GitHub emails response not an array:', emails);
+          // Fallback: use public email from profile if available
+          primaryEmail = githubUser.email;
+        }
+        
+        if (!primaryEmail) {
+          throw new Error('GitHub: No email found. Please make your email public in GitHub settings or add an email to your account.');
+        }
 
         userInfo = {
           id: githubUser.id.toString(),

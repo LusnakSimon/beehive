@@ -15,16 +15,18 @@ const Login = () => {
     }
   }, [isAuthenticated]);
 
-  // Show error from URL if OAuth failed - only run once
+  // Show error from URL if OAuth failed
   useEffect(() => {
-    const error = searchParams.get('error');
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
     if (error) {
       console.error('OAuth error:', error);
-      // Use setTimeout to ensure toast is ready
+      const decodedError = decodeURIComponent(error);
+      // Use setTimeout to ensure toast is ready and visible
       setTimeout(() => {
-        toast.error(`Prihlásenie zlyhalo: ${decodeURIComponent(error)}`);
-      }, 100);
-      // Clear the error from URL immediately to prevent re-firing
+        toast.error(`Prihlásenie zlyhalo: ${decodedError}`, { duration: 8000 });
+      }, 200);
+      // Clear the error from URL after showing
       window.history.replaceState({}, '', '/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
