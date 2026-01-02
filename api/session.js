@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { connectToDatabase } = require('../lib/mongo');
 
 module.exports = async (req, res) => {
   const token = req.headers.cookie?.split('auth-token=')[1]?.split(';')[0];
@@ -9,6 +10,20 @@ module.exports = async (req, res) => {
   try {
     const secret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
     const decoded = jwt.verify(token, secret);
+    
+    // Fetch full user data from database to get ownedHives
+    let ownedHives = [];
+    try {
+      const { UserModel } = await connectToDatabase();
+      const user = await UserModel.findById(decoded.id).lean();
+      if (user) {
+        ownedHives = user.ownedHives || [];
+      }
+    } catch (dbErr) {
+      console.error('Error fetching user hives:', dbErr);
+      // Fall back to empty array if DB fails
+    }
+    
     return res.json({
       user: {
         id: decoded.id,
@@ -17,7 +32,7 @@ module.exports = async (req, res) => {
         image: decoded.image,
         provider: decoded.provider,
         role: decoded.role,
-        ownedHives: decoded.ownedHives || [],
+        ownedHives: ownedHives,
         profile: decoded.profile || {},
       },
     });

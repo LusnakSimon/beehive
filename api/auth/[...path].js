@@ -277,8 +277,13 @@ module.exports = async function handler(req, res) {
         user = await UserModel.findById(user._id);
       }
 
-      // Create JWT token with all user data
+      // Create JWT token with minimal user data (avoid large ownedHives array)
+      // Full hive data is fetched from /api/session endpoint
       const jwtSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+      
+      // Only store hive IDs in JWT to keep cookie size small
+      const hiveIds = (user.ownedHives || []).map(h => typeof h === 'string' ? h : h?.id).filter(Boolean);
+      
       const token = jwt.sign(
         { 
           id: user._id.toString(),
@@ -286,7 +291,7 @@ module.exports = async function handler(req, res) {
           name: user.name,
           image: user.avatar,
           role: user.role || 'user',
-          ownedHives: user.ownedHives || []
+          hiveIds: hiveIds // Only IDs, not full objects
         },
         jwtSecret,
         { expiresIn: '7d' }
