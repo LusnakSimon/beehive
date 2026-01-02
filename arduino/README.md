@@ -1,127 +1,84 @@
-# Beehive Monitor - ESP32 Arduino
+# Beehive Arduino Sketches
 
-ESP32-C3 firmware pre monitorovanie úľov s podporou WiFi a LoRaWAN.
+Two ESP32-C3 SuperMini boards communicating via LoRa (RFM95).
 
-## 📁 Verzie firmwaru
+## 📁 Sketches
 
-### WiFi verziam (beehive_monitor/)
-Štandardná verzia s WiFi pripojením a HTTP komunikáciou.
+### beehive_node/
+Sensor node that reads temperature, humidity, weight and sends via LoRa.
 
-### LoRaWAN verzia (beehive_lorawan/)
-Verzia pre dlhý dosah s nízkou spotrebou energie.
-- Dosah: až 10+ km v otvorenom teréne
-- Batéria: mesiace až roky
-- Vyžaduje: LoRaWAN gateway + The Things Network účet
+### beehive_gateway/
+Gateway that receives LoRa packets and POSTs to the API via WiFi.
 
-## Potrebné knižnice
+### Legacy (beehive_monitor/, beehive_lorawan/)
+Old sketches, kept for reference.
 
-### Pre WiFi verziu:
-Nainštalujte v Arduino IDE cez Library Manager:
+## Hardware
 
-- **DHT sensor library** (by Adafruit) - pre DHT22 senzor
-- **Adafruit Unified Sensor** - závislosť pre DHT
-- **HX711 Arduino Library** (by Bogdan Necula) - pre váhu
+### Sensor Node
+- ESP32-C3 SuperMini
+- AHT10 (temperature + humidity) via I2C
+- HX711 + load cell (weight)
+- RFM95 LoRa module @ 868 MHz
 
-### Pre LoRaWAN verziu:
-Dodatočne k vyššie uvedeným:
+### Gateway
+- ESP32-C3 SuperMini
+- RFM95 LoRa module @ 868 MHz
+- WiFi connection to server
 
-- **MCCI LoRaWAN LMIC library** - pre LoRaWAN komunikáciu
-- **MCCI Arduino LoRaWAN Library** - higher-level LoRaWAN API
+## Wiring
 
-Pozri `beehive_lorawan/README.md` pre detailné inštrukcie.
+### Common (both boards)
+| RFM95 | ESP32-C3 |
+|-------|----------|
+| VCC   | 3.3V     |
+| GND   | GND      |
+| SCK   | GPIO4    |
+| MISO  | GPIO5    |
+| MOSI  | GPIO6    |
+| CS    | GPIO7    |
+| RST   | GPIO10   |
+| DIO0  | GPIO2 (node) / GPIO3 (gateway) |
 
-## Zapojenie senzorov
+### Node only
+| Sensor | ESP32-C3 |
+|--------|----------|
+| AHT10 SDA | GPIO8 |
+| AHT10 SCL | GPIO9 |
+| HX711 DOUT | GPIO3 |
+| HX711 SCK  | GPIO1 |
 
-### DHT22 (Teplota & Vlhkosť)
-- VCC → 3.3V
-- GND → GND
-- DATA → GPIO 4
+## Protocol
 
-### HX711 (Váha)
-- VCC → 5V
-- GND → GND
-- DOUT → GPIO 5
-- SCK → GPIO 6
-
-### Batéria (voliteľné)
-- Batéria+ → A0 cez odporový delič (ak používate batériu)
-
-## Kalibrácia váhy
-
-1. Nahrajte kód s `scale.tare()` zakomentovaným
-2. Otvorte sériový monitor
-3. Položte známu hmotnosť (napr. 1 kg)
-4. Upravte `CALIBRATION_FACTOR` kým nezobrazuje správnu hodnotu
-5. Spustite `scale.tare()` pre vynulovanie
-
-## Konfigurácia
-
-### WiFi verzia
-V kóde upravte:
-
-```cpp
-const char* ssid = "VASA_WIFI_SIET";
-const char* password = "VASE_HESLO";
-const char* serverUrl = "http://your-server.com/api/esp32/data";
-const char* apiKey = "beehive-secret-key-2024";
-#define HIVE_ID "HIVE-001"
+Node sends compact JSON via LoRa every 30s:
+```json
+{"t":21.5,"h":55.3,"w":45.12,"n":42}
 ```
+- `t` = temperature (°C)
+- `h` = humidity (%)
+- `w` = weight (kg)
+- `n` = counter
 
-### LoRaWAN verzia
-V web aplikácii prejdite do **Nastavenia → LoRaWAN Configuration**:
-1. Zadajte DevEUI, AppEUI, AppKey z The Things Network
-2. Kliknite "Copy ESP32 Code" pre vygenerovaný kód
-3. Skopírujte kód do `beehive_lorawan.ino`
+Gateway receives, adds metadata (RSSI, hiveId), and POSTs to `/api/sensor`.
 
-Viac info v `LORAWAN_SETUP.md` v root adresári.
+## Setup
 
-## Nahratie do ESP32-C3
+1. **Get API Key**: In the app, go to My Hives → Edit hive → Set device type to "API" → Copy the API key
 
-1. Otvorte Arduino IDE
-2. **Tools → Board → ESP32 Arduino → ESP32C3 Dev Module**
-3. **Tools → Port** - vyberte správny COM port
-4. Kliknite **Upload**
+2. **Configure Gateway**: Edit `beehive_gateway/beehive_gateway.ino`:
+   ```cpp
+   const char* WIFI_SSID = "your_wifi";
+   const char* WIFI_PASS = "your_password";
+   const char* HIVE_ID   = "HIVE-001";  // Your hive ID
+   const char* API_KEY   = "abc123..."; // From step 1
+   ```
 
-## Testovanie
+3. **Calibrate Scale**: Adjust `CALIBRATION_FACTOR` in `beehive_node.ino` with known weights
 
-Otvorte sériový monitor (115200 baud) a sledujte výpis:
+4. **Upload**: Use Arduino IDE or PlatformIO
 
-```
-🐝 Beehive Monitor - ESP32-C3
-✅ Senzory inicializované
-🔌 Pripájam sa na WiFi...
-✅ WiFi pripojená!
-   IP adresa: 192.168.1.100
+## Libraries Required
 
-📊 Nové meranie:
-  Teplota: 32.5°C
-  Vlhkosť: 55.2%
-  Hmotnosť: 48.75 kg
-  Batéria: 85%
-📤 Odosielam dáta...
-✅ Server odpoveď [201]: {"success":true}
-```
-
-## Napájanie
-
-- USB-C kábel pre vývoj
-- 5V napájací zdroj alebo Li-Ion batéria + TP4056 modul pre produkciu
-- Pre batériové napájanie pridajte deep sleep režim
-
-## Riešenie problémov
-
-**WiFi sa nepripojí:**
-- Skontrolujte SSID a heslo
-- ESP32-C3 podporuje len 2.4 GHz WiFi
-
-**DHT22 nefunguje:**
-- Skontrolujte zapojenie
-- Pridajte 10kΩ pull-up rezistor medzi DATA a VCC
-
-**Váha ukazuje nesprávne hodnoty:**
-- Prekalibrujte pomocou známej hmotnosti
-- Skontrolujte napájanie HX711 (potrebuje stabilných 5V)
-
-**HTTP chyba:**
-- Skontrolujte server URL
-- Overte API kľúč v `.env` súbore servera
+- RadioHead (RH_RF95)
+- Adafruit AHTX0
+- HX711 by bogde

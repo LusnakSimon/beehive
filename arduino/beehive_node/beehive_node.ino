@@ -1,6 +1,6 @@
 // ============================================================
 // BEEHIVE SENSOR NODE - ESP32-C3 SuperMini + AHT10 + HX711 + RFM95
-// Sends raw LoRa packets every 30 seconds
+// Sends JSON via LoRa every 30 seconds
 // ============================================================
 
 #include <Wire.h>
@@ -23,10 +23,9 @@
 #define RFM95_INT  2   // DIO0
 #define RFM95_FREQ 868.0
 
-// ===== Calibration =====
-// Adjust this after calibrating with known weights
-// weight_kg = raw_reading / CALIBRATION_FACTOR
-const float CALIBRATION_FACTOR = 420000.0; // example: adjust for your load cell
+// ===== Config =====
+#define TX_INTERVAL_MS 30000  // 30 seconds between transmissions
+#define CALIBRATION_FACTOR 420000.0  // Adjust for your load cell
 
 // ===== Objects =====
 Adafruit_AHTX0 aht;
@@ -85,22 +84,25 @@ void loop() {
   float h = humidity.relative_humidity;
 
   // Read HX711
-  long raw_weight = 0;
-  float weight_kg = 0.0;
-  bool hx_ok = false;
+  long raw = 0;
+  float w = 0.0;
+  bool hxOk = false;
+  
   if (scale.is_ready()) {
-    raw_weight = scale.read_average(3);
-    weight_kg = (float)raw_weight / CALIBRATION_FACTOR;
-    if (weight_kg < 0) weight_kg = 0; // clamp negative
-    hx_ok = true;
+    raw = scale.read_average(3);
+    w = (float)raw / CALIBRATION_FACTOR;
+    if (w < 0) w = 0;
+    if (w > 500) w = 500;
+    hxOk = true;
   }
 
-  // Build payload string
-  // Format: T=<temp>C H=<hum>% W=<weight_kg> R=<raw> X=<hx_ok> #<counter>
-  char payload[128];
+  // Build compact JSON payload
+  // Format: {"t":21.5,"h":55.3,"w":45.12,"n":42}
+  // Kept minimal to fit LoRa packet size limits
+  char payload[64];
   snprintf(payload, sizeof(payload),
-           "T=%.2fC H=%.1f%% W=%.3f R=%ld X=%d #%lu",
-           t, h, weight_kg, raw_weight, hx_ok ? 1 : 0, counter++);
+           "{\"t\":%.1f,\"h\":%.1f,\"w\":%.2f,\"n\":%lu}",
+           t, h, w, counter++);
 
   Serial.print("TX: ");
   Serial.println(payload);
@@ -109,6 +111,5 @@ void loop() {
   rf95.send((uint8_t*)payload, strlen(payload));
   rf95.waitPacketSent();
 
-  // Sleep 30 seconds
-  delay(30000);
+  delay(TX_INTERVAL_MS);
 }
