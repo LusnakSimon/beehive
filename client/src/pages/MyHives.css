@@ -352,14 +352,30 @@
   width: 100%;
 }
 .no-api-key {
-  padding: 0.75rem;
-  background: var(--warning-bg, rgba(251, 191, 36, 0.1));
-  border: 1px dashed var(--warning);
-  border-radius: 8px;
   margin-top: 0.5rem;
-  text-align: center;
+}
+.api-key-pending {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  border: 1px dashed var(--primary);
+  border-radius: 12px;
+  text-align: left;
+}
+.api-key-pending > span {
+  font-size: 1.5rem;
+}
+.api-key-pending strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+.api-key-pending small {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 .field-hint {
   display: block;

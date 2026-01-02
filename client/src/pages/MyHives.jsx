@@ -164,8 +164,13 @@ export default function MyHives() {
         }
       } else if (modalMode === 'edit') {
         const hiveId = form.id
-        updateHive(hiveId, { name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, visibility: form.visibility, device: form.device })
-        setShowModal(false)
+        const wasManual = !form.device.apiKey && form.device.type === 'api' // Switching to API
+        
+        // Don't close modal yet if we're switching to API - we want to show the key
+        if (!wasManual) {
+          updateHive(hiveId, { name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, visibility: form.visibility, device: form.device })
+          setShowModal(false)
+        }
 
         // PATCH: use FormData if imageFile present
         let res
@@ -199,15 +204,32 @@ export default function MyHives() {
         }
 
         if (res.ok) {
+          const data = await res.json().catch(() => ({}))
           await refreshUser()
+          
           // If backend didn't persist image, keep it locally so UI reflects the edit
           if (form.imageDataUrl) {
             updateHive(hiveId, { image: form.imageDataUrl })
           }
-          toast.success('Úľ upravený')
+          
+          // If API key was generated (switched to API type), update form and show it
+          if (data.hive?.device?.apiKey && wasManual) {
+            setForm(f => ({ ...f, device: { ...f.device, apiKey: data.hive.device.apiKey } }))
+            toast.success(`API kľúč vygenerovaný: ${data.hive.device.apiKey}`, { duration: 10000 })
+            toast.info('💡 Skopírujte si kľúč alebo ho nájdete v úprave úľa', { duration: 6000 })
+            // Keep modal open so user can copy the key
+          } else {
+            setShowModal(false)
+            toast.success('Úľ upravený')
+          }
+          
+          // Update local hive state with returned data
+          if (data.hive) {
+            updateHive(hiveId, data.hive)
+          }
         } else {
           const err = await res.json().catch(() => ({ message: 'Neznáma chyba' }))
-          toast.error(`Chyba: ${err.message}`)
+          toast.error(`Chyba: ${err.message || 'Neznáma chyba'}`)
         }
       }
     } catch (error) {
@@ -385,12 +407,13 @@ export default function MyHives() {
                           <button type="button" className="btn btn-sm" onClick={() => {
                             navigator.clipboard.writeText(form.device.apiKey)
                             toast.success('API kľúč skopírovaný!')
-                          }}>📋</button>
+                          }}>📋 Kopírovať</button>
                         </div>
                         <button 
                           type="button" 
                           className="btn btn-secondary btn-sm regenerate-btn"
                           onClick={async () => {
+                            if (!confirm('Naozaj chcete vygenerovať nový API kľúč? Starý kľúč prestane fungovať!')) return
                             try {
                               const res = await fetch(`/api/users/me/hives/${form.id}/generate-api-key`, {
                                 method: 'POST',
@@ -426,7 +449,13 @@ export default function MyHives() {
                       </>
                     ) : (
                       <div className="no-api-key">
-                        <span>API kľúč bude vygenerovaný po uložení.</span>
+                        <div className="api-key-pending">
+                          <span>🔑</span>
+                          <div>
+                            <strong>API kľúč bude automaticky vygenerovaný</strong>
+                            <small>Kliknite "Uložiť" pre vytvorenie kľúča</small>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
