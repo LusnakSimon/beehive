@@ -101,7 +101,7 @@ void postReading(const char* nodeJson, int rssi) {
     "\"weight\":%.2f,"
     "\"battery\":%d,"
     "\"metadata\":{"
-      "\"source\":\"LoRa\","
+      "\"source\":\"LoRaWAN\","
       "\"rssi\":%d,"
       "\"counter\":%ld,"
       "\"batteryVoltage\":%.2f"
