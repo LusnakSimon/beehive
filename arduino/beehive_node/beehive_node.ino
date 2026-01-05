@@ -1,6 +1,6 @@
 // ============================================================
 // BEEHIVE SENSOR NODE - ESP32-C3 SuperMini + AHT10 + HX711 + RFM95
-// Sends JSON via LoRa every 30 seconds
+// Sends JSON via LoRa with DEEP SLEEP for power conservation
 // ============================================================
 
 #include <Wire.h>
@@ -8,6 +8,8 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 #include "HX711.h"
+#include "esp_sleep.h"
+#include "driver/rtc_io.h"
 
 // ===== I2C (AHT10) =====
 #define SDA_PIN 8
@@ -23,8 +25,16 @@
 #define RFM95_INT  2   // DIO0
 #define RFM95_FREQ 868.0
 
+// ===== Battery Voltage (ADC) =====
+#define BATTERY_PIN 0  // GPIO0 for battery voltage measurement
+// Voltage divider: 480k (top) / 220k (bottom)
+// Ratio = (R1 + R2) / R2 = (480 + 220) / 220 = 3.18
+#define VOLTAGE_DIVIDER_RATIO 3.18  // For 480k/220k divider
+#define ADC_REFERENCE_VOLTAGE 3.3
+#define ADC_RESOLUTION 4095.0
+
 // ===== Config =====
-#define TX_INTERVAL_MS 30000  // 30 seconds between transmissions
+#define SLEEP_DURATION_US 30000000  // 30 seconds in microseconds (deep sleep)
 #define CALIBRATION_FACTOR 420000.0  // Adjust for your load cell
 
 // ===== Objects =====
@@ -32,18 +42,33 @@ Adafruit_AHTX0 aht;
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 HX711 scale;
 
-uint32_t counter = 0;
+// Store counter in RTC memory to persist across deep sleep
+RTC_DATA_ATTR uint32_t counter = 0;
 
 void setup() {
   Serial.begin(115200);
-  delay(2000);
-  Serial.println("\n=== BEEHIVE SENSOR NODE ===");
+  delay(1000);  // Shorter delay for faster wake-up
+  
+  // Check wake-up reason
+  esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
+  if (wakeup_reason == ESP_SLEEP_WAKEUP_TIMER) {
+    Serial.println("\n=== WAKE FROM DEEP SLEEP ===");
+  } else {
+    Serial.println("\n=== BEEHIVE SENSOR NODE (DEEP SLEEP) ===");
+  }
+
+  // --- Configure Battery ADC ---
+  analogReadResolution(12);  // 12-bit resolution (0-4095)
+  analogSetAttenuation(ADC_11db);  // Full range 0-3.3V
+  pinMode(BATTERY_PIN, INPUT);
 
   // --- I2C / AHT10 ---
   Wire.begin(SDA_PIN, SCL_PIN);
   if (!aht.begin()) {
     Serial.println("ERROR: AHT10 not found");
-    while (1) delay(1000);
+    // Don't hang - send error data and sleep
+    sendErrorAndSleep();
+    return;
   }
   Serial.println("AHT10 OK");
 
@@ -68,12 +93,95 @@ void setup() {
 
   if (!rf95.init()) {
     Serial.println("ERROR: RFM95 init failed");
-    while (1) delay(1000);
+    // Don't hang - try again after sleep
+    goToDeepSleep();
+    return;
   }
   rf95.setFrequency(RFM95_FREQ);
   rf95.setTxPower(14, false);
   Serial.println("RFM95 OK @ 868 MHz");
   Serial.println("===========================\n");
+}
+
+// Read battery voltage from ADC
+float readBatteryVoltage() {
+  // Take multiple readings and average for stability
+  uint32_t sum = 0;
+  const int samples = 10;
+  
+  for (int i = 0; i < samples; i++) {
+    sum += analogRead(BATTERY_PIN);
+    delay(5);
+  }
+  
+  float avgReading = (float)sum / samples;
+  
+  // Convert ADC reading to voltage
+  float voltage = (avgReading / ADC_RESOLUTION) * ADC_REFERENCE_VOLTAGE;
+  
+  // Apply voltage divider ratio to get actual battery voltage
+  voltage *= VOLTAGE_DIVIDER_RATIO;
+  
+  return voltage;
+}
+
+// Calculate battery percentage (for typical LiPo: 3.0V=0%, 4.2V=100%)
+int calculateBatteryPercent(float voltage) {
+  const float minVoltage = 3.0;  // Empty LiPo
+  const float maxVoltage = 4.2;  // Full LiPo
+  
+  if (voltage <= minVoltage) return 0;
+  if (voltage >= maxVoltage) return 100;
+  
+  return (int)(((voltage - minVoltage) / (maxVoltage - minVoltage)) * 100);
+}
+
+// Put RFM95 into sleep mode before deep sleep
+void rfm95Sleep() {
+  // Put radio into sleep mode (0x00 = sleep mode)
+  rf95.sleep();
+}
+
+// Enter deep sleep mode
+void goToDeepSleep() {
+  Serial.println("Entering deep sleep...");
+  Serial.flush();  // Ensure all serial data is sent
+  
+  // Put RFM95 into sleep mode
+  rfm95Sleep();
+  
+  // Power down HX711
+  scale.power_down();
+  
+  // Configure wake-up timer
+  esp_sleep_enable_timer_wakeup(SLEEP_DURATION_US);
+  
+  // Enter deep sleep
+  esp_deep_sleep_start();
+}
+
+// Send error payload and sleep (for sensor failures)
+void sendErrorAndSleep() {
+  float battVoltage = readBatteryVoltage();
+  int battPercent = calculateBatteryPercent(battVoltage);
+  
+  char payload[64];
+  snprintf(payload, sizeof(payload),
+           "{\"err\":1,\"bv\":%.2f,\"bp\":%d,\"n\":%lu}",
+           battVoltage, battPercent, counter++);
+  
+  Serial.print("TX (error): ");
+  Serial.println(payload);
+  
+  // Try to send if radio was initialized
+  if (rf95.init()) {
+    rf95.setFrequency(RFM95_FREQ);
+    rf95.setTxPower(14, false);
+    rf95.send((uint8_t*)payload, strlen(payload));
+    rf95.waitPacketSent();
+  }
+  
+  goToDeepSleep();
 }
 
 void loop() {
@@ -96,20 +204,28 @@ void loop() {
     hxOk = true;
   }
 
+  // Read Battery Voltage
+  float battVoltage = readBatteryVoltage();
+  int battPercent = calculateBatteryPercent(battVoltage);
+
   // Build compact JSON payload
-  // Format: {"t":21.5,"h":55.3,"w":45.12,"n":42}
-  // Kept minimal to fit LoRa packet size limits
-  char payload[64];
+  // Format: {"t":21.5,"h":55.3,"w":45.12,"bv":3.85,"bp":71,"n":42}
+  // t=temperature, h=humidity, w=weight, bv=battery voltage, bp=battery percent, n=counter
+  char payload[96];
   snprintf(payload, sizeof(payload),
-           "{\"t\":%.1f,\"h\":%.1f,\"w\":%.2f,\"n\":%lu}",
-           t, h, w, counter++);
+           "{\"t\":%.1f,\"h\":%.1f,\"w\":%.2f,\"bv\":%.2f,\"bp\":%d,\"n\":%lu}",
+           t, h, w, battVoltage, battPercent, counter++);
 
   Serial.print("TX: ");
   Serial.println(payload);
+  Serial.printf("Battery: %.2fV (%d%%)\n", battVoltage, battPercent);
 
   // Send via LoRa
   rf95.send((uint8_t*)payload, strlen(payload));
   rf95.waitPacketSent();
 
-  delay(TX_INTERVAL_MS);
+  // Enter deep sleep instead of delay
+  goToDeepSleep();
+  
+  // This line will never be reached - after deep sleep, ESP32 restarts from setup()
 }
