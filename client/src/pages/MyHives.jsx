@@ -122,7 +122,11 @@ export default function MyHives() {
           fd.append('location', form.location)
           fd.append('color', form.color)
           fd.append('visibility', form.visibility)
-          fd.append('device', JSON.stringify({ type: form.device.type, devEUI: form.device.devEUI, deviceId: form.device.deviceId }))
+          // Only include devEUI/deviceId if they have values
+          const deviceData = { type: form.device.type }
+          if (form.device.devEUI?.trim()) deviceData.devEUI = form.device.devEUI.trim().toUpperCase()
+          if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
+          fd.append('device', JSON.stringify(deviceData))
           if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
 
           res = await fetch('/api/users/me/hives', {
@@ -191,7 +195,11 @@ export default function MyHives() {
           fd.append('location', form.location)
           fd.append('color', form.color)
           fd.append('visibility', form.visibility)
-          fd.append('device', JSON.stringify({ type: form.device.type, devEUI: form.device.devEUI, deviceId: form.device.deviceId }))
+          // Only include devEUI/deviceId if they have values
+          const deviceData = { type: form.device.type }
+          if (form.device.devEUI?.trim()) deviceData.devEUI = form.device.devEUI.trim().toUpperCase()
+          if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
+          fd.append('device', JSON.stringify(deviceData))
           if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
 
           res = await fetch(`/api/users/me/hives/${hiveId}`, {

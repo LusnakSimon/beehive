@@ -66,28 +66,48 @@ void postReading(const char* nodeJson, int rssi) {
   }
 
   // Parse node JSON to extract values
-  // Expected: {"t":21.5,"h":55.3,"w":45.12,"n":42}
-  float t = 0, h = 0, w = 0;
+  // Expected: {"t":21.5,"h":55.3,"w":45.12,"bv":3.85,"bp":71,"n":42}
+  float t = 0, h = 0, w = 0, bv = 0;
+  int bp = 0;
   long n = 0;
   
-  sscanf(nodeJson, "{\"t\":%f,\"h\":%f,\"w\":%f,\"n\":%ld}", &t, &h, &w, &n);
+  // Parse temperature, humidity, weight
+  sscanf(nodeJson, "{\"t\":%f,\"h\":%f,\"w\":%f", &t, &h, &w);
+  
+  // Parse battery voltage (bv) and battery percent (bp)
+  char* bvPtr = strstr(nodeJson, "\"bv\":");
+  if (bvPtr) {
+    sscanf(bvPtr, "\"bv\":%f", &bv);
+  }
+  
+  char* bpPtr = strstr(nodeJson, "\"bp\":");
+  if (bpPtr) {
+    sscanf(bpPtr, "\"bp\":%d", &bp);
+  }
+  
+  // Parse counter (n)
+  char* nPtr = strstr(nodeJson, "\"n\":");
+  if (nPtr) {
+    sscanf(nPtr, "\"n\":%ld", &n);
+  }
 
   // Build full JSON for API
-  char json[256];
+  char json[320];
   snprintf(json, sizeof(json),
     "{"
     "\"hiveId\":\"%s\","
     "\"temperature\":%.2f,"
     "\"humidity\":%.1f,"
     "\"weight\":%.2f,"
-    "\"battery\":100,"
+    "\"battery\":%d,"
     "\"metadata\":{"
       "\"source\":\"LoRa\","
       "\"rssi\":%d,"
-      "\"counter\":%ld"
+      "\"counter\":%ld,"
+      "\"batteryVoltage\":%.2f"
     "}"
     "}",
-    HIVE_ID, t, h, w, rssi, n
+    HIVE_ID, t, h, w, bp, rssi, n, bv
   );
 
   Serial.print("POST: ");
