@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { handleInAppNotification } from '../utils/pushNotifications'
 import './Navigation.css'
@@ -219,26 +220,30 @@ export default function Navigation() {
                         <span>Viac</span>
                       </button>
 
-                      {/* Always render for debugging */}
-                      <div style={{
-                        position: 'fixed',
-                        bottom: '80px',
-                        right: '20px',
-                        background: 'white',
-                        border: '3px solid red',
-                        padding: '1rem',
-                        zIndex: 99999,
-                        minWidth: '200px',
-                        display: showDesktopMore ? 'block' : 'none'
-                      }}>
-                        <p style={{color: 'black', margin: 0}}>DROPDOWN TEST - showDesktopMore: {String(showDesktopMore)}</p>
-                        {overflow.map(it => (
-                          <NavLink key={it.key} to={it.to} style={{display: 'block', color: 'black', padding: '0.5rem'}} onClick={() => setShowDesktopMore(false)}>
-                            <span>{it.icon}</span>
-                            <span>{it.label}</span>
-                          </NavLink>
-                        ))}
-                      </div>
+                      {/* Use Portal to render directly into body */}
+                      {showDesktopMore && createPortal(
+                        <div style={{
+                          position: 'fixed',
+                          bottom: '80px',
+                          right: '20px',
+                          background: 'white',
+                          border: '3px solid red',
+                          padding: '1rem',
+                          zIndex: 99999,
+                          minWidth: '200px',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                        }}>
+                          <p style={{color: 'black', margin: '0 0 0.5rem 0', fontWeight: 'bold'}}>Ďalšie položky:</p>
+                          {overflow.map(it => (
+                            <NavLink key={it.key} to={it.to} style={{display: 'block', color: 'black', padding: '0.5rem', textDecoration: 'none'}} onClick={() => setShowDesktopMore(false)}>
+                              <span>{it.icon} </span>
+                              <span>{it.label}</span>
+                            </NavLink>
+                          ))}
+                        </div>,
+                        document.body
+                      )}
                     </div>
                   )}
                 </>
