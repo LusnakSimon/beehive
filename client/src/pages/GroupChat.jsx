@@ -151,9 +151,74 @@ function GroupChat() {
     }
   };
 
-  const handleFileSelect = (e) => {
+  // Compress image to reduce file size for mobile uploads
+  const compressImage = (file, maxSizeMB = 2) => {
+    return new Promise((resolve) => {
+      // If not an image or already small enough, return as-is
+      if (!file.type.startsWith('image/') || file.size <= maxSizeMB * 1024 * 1024) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          
+          // Scale down if image is very large
+          const maxDimension = 1920;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Start with quality 0.8 and reduce if needed
+          let quality = 0.8;
+          const tryCompress = () => {
+            canvas.toBlob((blob) => {
+              if (blob.size > maxSizeMB * 1024 * 1024 && quality > 0.3) {
+                quality -= 0.1;
+                tryCompress();
+              } else {
+                const compressedFile = new File([blob], file.name, { 
+                  type: 'image/jpeg',
+                  lastModified: file.lastModified 
+                });
+                console.log(`Compressed ${file.name}: ${(file.size/1024/1024).toFixed(2)}MB -> ${(compressedFile.size/1024/1024).toFixed(2)}MB`);
+                resolve(compressedFile);
+              }
+            }, 'image/jpeg', quality);
+          };
+          tryCompress();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
-    setSelectedFiles(prev => [...prev, ...files].slice(0, 5));
+    
+    // Compress images before adding
+    const processedFiles = await Promise.all(
+      files.map(file => compressImage(file, 2))
+    );
+    
+    setSelectedFiles(prev => [...prev, ...processedFiles].slice(0, 5));
   };
 
   const removeFile = (index) => {

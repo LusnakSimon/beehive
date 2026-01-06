@@ -190,22 +190,94 @@ const Chat = () => {
     }
   };
 
-  const handleFileSelect = (e) => {
+  // Compress image to reduce file size for mobile uploads
+  const compressImage = (file, maxSizeMB = 2) => {
+    return new Promise((resolve) => {
+      // If not an image or already small enough, return as-is
+      if (!file.type.startsWith('image/') || file.size <= maxSizeMB * 1024 * 1024) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          
+          // Scale down if image is very large
+          const maxDimension = 1920;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Start with quality 0.8 and reduce if needed
+          let quality = 0.8;
+          const tryCompress = () => {
+            canvas.toBlob((blob) => {
+              if (blob.size > maxSizeMB * 1024 * 1024 && quality > 0.3) {
+                quality -= 0.1;
+                tryCompress();
+              } else {
+                const compressedFile = new File([blob], file.name, { 
+                  type: 'image/jpeg',
+                  lastModified: file.lastModified 
+                });
+                console.log(`Compressed ${file.name}: ${(file.size/1024/1024).toFixed(2)}MB -> ${(compressedFile.size/1024/1024).toFixed(2)}MB`);
+                resolve(compressedFile);
+              }
+            }, 'image/jpeg', quality);
+          };
+          tryCompress();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 5) {
       setError('Môžete nahrať maximálne 5 súborov naraz');
       return;
     }
 
-    // Validate file size (10MB max per file)
-    const oversizedFiles = files.filter(f => f.size > 10 * 1024 * 1024);
-    if (oversizedFiles.length > 0) {
-      setError('Niektoré súbory presahujú limit 10MB');
-      return;
-    }
+    // Compress images before checking size (for mobile photos)
+    setUploading(true);
+    try {
+      const processedFiles = await Promise.all(
+        files.map(file => compressImage(file, 2))  // Compress to max 2MB
+      );
 
-    setSelectedFiles(files);
-    setError('');
+      // Validate file size after compression (4MB limit for Vercel)
+      const oversizedFiles = processedFiles.filter(f => f.size > 4 * 1024 * 1024);
+      if (oversizedFiles.length > 0) {
+        setError('Niektoré súbory sú príliš veľké aj po kompresii (max 4MB)');
+        setUploading(false);
+        return;
+      }
+
+      setSelectedFiles(processedFiles);
+      setError('');
+    } catch (err) {
+      console.error('Error processing files:', err);
+      setError('Nepodarilo sa spracovať súbory');
+    }
+    setUploading(false);
   };
 
   const removeFile = (index) => {

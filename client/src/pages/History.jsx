@@ -552,7 +552,7 @@ export default function History() {
               {/* Trends Grid */}
               <div className="trends-grid">
                 <div className="trend-card">
-                  <span className="trend-metric">🌡️ Teplota</span>
+                  <span className="trend-metric">🌡️ Vonk. teplota</span>
                   <span className={`trend-indicator trend-${analysis.tempTrend.direction}`}>
                     {analysis.tempTrend.direction === 'up' ? '↗️' : 
                      analysis.tempTrend.direction === 'down' ? '↘️' : '→'}
@@ -560,7 +560,7 @@ export default function History() {
                   </span>
                 </div>
                 <div className="trend-card">
-                  <span className="trend-metric">💧 Vlhkosť</span>
+                  <span className="trend-metric">💧 Vonk. vlhkosť</span>
                   <span className={`trend-indicator trend-${analysis.humidityTrend.direction}`}>
                     {analysis.humidityTrend.direction === 'up' ? '↗️' : 
                      analysis.humidityTrend.direction === 'down' ? '↘️' : '→'}
@@ -770,14 +770,14 @@ export default function History() {
       <div className="charts-container">
         {(selectedMetric === 'all' || selectedMetric === 'temperature') && (
           <div className="chart-card">
-            <h3>🌡️ Teplota v čase</h3>
+            <h3>🌡️ Vonkajšia teplota v čase</h3>
             {renderChart('temperature', 'Teplota', '#f59e0b', '°C')}
           </div>
         )}
 
         {(selectedMetric === 'all' || selectedMetric === 'humidity') && (
           <div className="chart-card">
-            <h3>💧 Vlhkosť v čase</h3>
+            <h3>💧 Vonkajšia vlhkosť v čase</h3>
             {renderChart('humidity', 'Vlhkosť', '#3b82f6', '%')}
           </div>
         )}

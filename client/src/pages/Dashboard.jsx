@@ -400,7 +400,7 @@ export default function Dashboard() {
         <div className="metric-card-modern">
           <div className="metric-header">
             <span className="metric-icon-modern">🌡️</span>
-            <span className="metric-label-modern">Teplota</span>
+            <span className="metric-label-modern">Vonkajšia teplota</span>
           </div>
           <div className="metric-main">
             <span className="metric-value-large">{data.temperature.toFixed(1)}</span>
@@ -437,7 +437,7 @@ export default function Dashboard() {
         <div className="metric-card-modern">
           <div className="metric-header">
             <span className="metric-icon-modern">💧</span>
-            <span className="metric-label-modern">Vlhkosť</span>
+            <span className="metric-label-modern">Vonkajšia vlhkosť</span>
           </div>
           <div className="metric-main">
             <span className="metric-value-large">{data.humidity.toFixed(1)}</span>

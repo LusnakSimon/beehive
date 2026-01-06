@@ -27,15 +27,16 @@
 
 // ===== Battery Voltage (ADC) =====
 #define BATTERY_PIN 0  // GPIO0 for battery voltage measurement
-// Voltage divider: 480k (top) / 220k (bottom)
-// Ratio = (R1 + R2) / R2 = (480 + 220) / 220 = 3.18
-#define VOLTAGE_DIVIDER_RATIO 3.18  // For 480k/220k divider
+// Voltage divider: calibrated from actual measurement
+// Measured: 4.13V actual, 4.19V reported → ratio adjusted
+#define VOLTAGE_DIVIDER_RATIO 2.92  // Calibrated (was 2.96)
 #define ADC_REFERENCE_VOLTAGE 3.3
 #define ADC_RESOLUTION 4095.0
 
 // ===== Config =====
-#define SLEEP_DURATION_US 30000000  // 30 seconds in microseconds (deep sleep)
-#define CALIBRATION_FACTOR 420000.0  // Adjust for your load cell
+#define SLEEP_DURATION_US 900000000  // 15 minutes in microseconds (deep sleep)
+#define CALIBRATION_FACTOR 20.4883  // Calibrated from calibration_v2
+#define DEFAULT_TARE_OFFSET 16805   // Empty rails (no tray)
 
 // ===== Objects =====
 Adafruit_AHTX0 aht;
@@ -44,6 +45,7 @@ HX711 scale;
 
 // Store counter in RTC memory to persist across deep sleep
 RTC_DATA_ATTR uint32_t counter = 0;
+RTC_DATA_ATTR long zeroOffset = DEFAULT_TARE_OFFSET;  // Use calibrated offset
 
 void setup() {
   Serial.begin(115200);
@@ -80,7 +82,13 @@ void setup() {
     Serial.print(".");
     delay(100);
   }
-  Serial.println(scale.is_ready() ? " OK" : " NOT READY");
+  if (scale.is_ready()) {
+    Serial.println(" OK");
+    Serial.print("Using tare offset: ");
+    Serial.println(zeroOffset);
+  } else {
+    Serial.println(" NOT READY");
+  }
 
   // --- RFM95 ---
   pinMode(RFM95_RST, OUTPUT);
@@ -197,11 +205,24 @@ void loop() {
   bool hxOk = false;
   
   if (scale.is_ready()) {
-    raw = scale.read_average(3);
-    w = (float)raw / CALIBRATION_FACTOR;
+    raw = scale.read_average(10);  // 10 samples for better accuracy (~1 second)
+    // Subtract zero offset, then divide by calibration factor to get grams
+    float grams = (float)(raw - zeroOffset) / CALIBRATION_FACTOR;
+    // Convert to kg for dashboard/API
+    w = grams / 1000.0;
     if (w < 0) w = 0;
-    if (w > 500) w = 500;
+    if (w > 200) w = 200;  // Max 200kg for a beehive
     hxOk = true;
+    
+    Serial.print("Raw: ");
+    Serial.print(raw);
+    Serial.print(" Offset: ");
+    Serial.print(zeroOffset);
+    Serial.print(" Weight: ");
+    Serial.print(grams, 1);
+    Serial.print("g (");
+    Serial.print(w, 3);
+    Serial.println("kg)");
   }
 
   // Read Battery Voltage
