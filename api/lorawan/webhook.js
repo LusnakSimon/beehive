@@ -38,11 +38,7 @@ module.exports = async (req, res) => {
       timestamp: uplink_message?.received_at || new Date().toISOString()
     };
     
-    console.log('[LoRaWAN Webhook] Received data:', {
-      devEUI,
-      payload,
-      metadata
-    });
+    // ...existing code...
     
     if (!devEUI) {
       console.warn('[LoRaWAN Webhook] Missing devEUI in request');
@@ -77,7 +73,7 @@ module.exports = async (req, res) => {
       });
     }
     
-    console.log('[LoRaWAN Webhook] Matched to hive:', hive.id, hive.name);
+    // ...existing code...
     
     // Create reading from payload
     const readingData = {
@@ -106,7 +102,7 @@ module.exports = async (req, res) => {
     
     // Save reading
     const reading = await Reading.create(readingData);
-    console.log('[LoRaWAN Webhook] Reading saved:', reading._id);
+    // ...existing code...
     
     // Update hive device status
     if (hive.device) {

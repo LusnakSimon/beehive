@@ -28,8 +28,6 @@ module.exports = async (req, res) => {
       const user = await UserModel.findById(decoded.id).lean();
       if (user) {
         ownedHives = user.ownedHives || [];
-        // Debug: log what we got from DB
-        console.log('📡 Session - ownedHives from DB:', JSON.stringify(ownedHives, null, 2));
       }
     } catch (dbErr) {
       console.error('Error fetching user hives:', dbErr);

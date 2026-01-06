@@ -337,6 +337,29 @@
 .desktop-dropdown-item:hover,
 .desktop-dropdown-item:focus { background: var(--bg); color: var(--primary); }
 
+/* Portal-based desktop dropdown (rendered into body) */
+.desktop-dropdown-portal {
+  position: fixed;
+  bottom: calc(var(--nav-height) + 0.5rem);
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.98);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 200px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10000;
+  animation: dropdownSlideUp 0.15s ease-out;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  .desktop-dropdown-portal {
+    background: rgba(31, 41, 55, 0.98);
+    border-color: rgba(75, 85, 99, 0.5);
+  }
+}
 
 @media (prefers-color-scheme: dark) {
   .mobile-dropdown {

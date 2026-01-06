@@ -173,7 +173,7 @@ module.exports = async function handler(req, res) {
 
         const tokenData = await tokenResponse.json();
         
-        console.log('GitHub token response status:', tokenResponse.status);
+        // ...existing code...
         if (!tokenData.access_token) {
           console.error('GitHub token error:', JSON.stringify(tokenData));
           throw new Error(tokenData.error_description || tokenData.error || 'GitHub: No access token received');

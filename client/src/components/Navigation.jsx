@@ -190,8 +190,6 @@ export default function Navigation() {
               // Determine visible / overflow based on visibleCount
               const visible = items.slice(0, visibleCount)
               const overflow = items.slice(visibleCount)
-              
-              console.log('Nav debug:', { itemsCount: items.length, visibleCount, overflowCount: overflow.length })
 
               return (
                 <>
@@ -209,7 +207,6 @@ export default function Navigation() {
                         className={`nav-link ${showDesktopMore ? 'active' : ''}`}
                         onClick={(e) => { 
                           e.stopPropagation(); 
-                          console.log('Desktop Viac clicked, current state:', showDesktopMore);
                           setShowDesktopMore(s => !s); 
                         }}
                         aria-expanded={showDesktopMore}
@@ -220,25 +217,14 @@ export default function Navigation() {
                         <span>Viac</span>
                       </button>
 
-                      {/* Use Portal to render directly into body */}
+                      {/* Portal renders dropdown outside nav container to avoid clipping */}
                       {showDesktopMore && createPortal(
-                        <div style={{
-                          position: 'fixed',
-                          bottom: '80px',
-                          right: '20px',
-                          background: 'white',
-                          border: '3px solid red',
-                          padding: '1rem',
-                          zIndex: 99999,
-                          minWidth: '200px',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-                        }}>
-                          <p style={{color: 'black', margin: '0 0 0.5rem 0', fontWeight: 'bold'}}>Ďalšie položky:</p>
+                        <div className="desktop-dropdown-portal">
                           {overflow.map(it => (
-                            <NavLink key={it.key} to={it.to} style={{display: 'block', color: 'black', padding: '0.5rem', textDecoration: 'none'}} onClick={() => setShowDesktopMore(false)}>
-                              <span>{it.icon} </span>
+                            <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
+                              <span className="icon">{it.icon}</span>
                               <span>{it.label}</span>
+                              {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
                             </NavLink>
                           ))}
                         </div>,
