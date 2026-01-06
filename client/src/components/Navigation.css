@@ -128,7 +128,7 @@
     align-items: center;
     flex-wrap: nowrap;
     min-width: 0; /* Allow shrinking */
-    overflow: hidden;
+    overflow: visible; /* Allow dropdown to show outside */
   }
 
   .nav-mobile {
@@ -294,7 +294,7 @@
 
 .desktop-dropdown {
   position: absolute;
-  top: calc(100% + 0.5rem);
+  bottom: calc(100% + 0.5rem); /* Open upward since nav is at bottom */
   left: 0;
   background: rgba(255, 255, 255, 0.98);
   -webkit-backdrop-filter: blur(6px);
@@ -302,9 +302,9 @@
   border: 1px solid var(--border);
   border-radius: 8px;
   min-width: 220px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.12);
   z-index: 1002;
-  animation: dropdownSlideDown 0.12s ease-out;
+  animation: dropdownSlideUp 0.12s ease-out;
   overflow: hidden;
 }
 
