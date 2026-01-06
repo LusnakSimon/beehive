@@ -135,6 +135,29 @@ export default function Navigation() {
       window.removeEventListener('resize', calculate)
     }
   }, [totalUnread, notificationUnread, user?.role])
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // Close desktop dropdown if clicking outside
+      if (showDesktopMore) {
+        const desktopDropdown = document.querySelector('.nav-more-desktop')
+        if (desktopDropdown && !desktopDropdown.contains(e.target)) {
+          setShowDesktopMore(false)
+        }
+      }
+      // Close mobile dropdown if clicking outside
+      if (showMobileMenu) {
+        const mobileDropdown = document.querySelector('.nav-more')
+        if (mobileDropdown && !mobileDropdown.contains(e.target)) {
+          setShowMobileMenu(false)
+        }
+      }
+    }
+
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [showDesktopMore, showMobileMenu])
   
   return (
     <nav className="navigation">
@@ -181,7 +204,7 @@ export default function Navigation() {
                     <div className="nav-more-desktop">
                       <button
                         className={`nav-link ${showDesktopMore ? 'active' : ''}`}
-                        onClick={() => setShowDesktopMore(s => !s)}
+                        onClick={(e) => { e.stopPropagation(); setShowDesktopMore(s => !s); }}
                         aria-expanded={showDesktopMore}
                         aria-haspopup="true"
                         aria-label="More navigation items"
@@ -229,7 +252,7 @@ export default function Navigation() {
             <div className="nav-more">
               <button 
                 className={`nav-link ${showMobileMenu ? 'active' : ''}`}
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                onClick={(e) => { e.stopPropagation(); setShowMobileMenu(!showMobileMenu); }}
                 aria-expanded={showMobileMenu}
                 aria-haspopup="true"
                 aria-label="Zobraziť viac možností"
