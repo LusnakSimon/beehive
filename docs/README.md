@@ -1,5 +1,11 @@
 # 📚 Documentation
 
+**Author:** Šimon Lusnák  
+**Project:** Bachelor's Thesis, 2026  
+**License:** MIT License ([LICENSE](../LICENSE))
+
+# 📚 Documentation
+
 Welcome to the eBeeHive documentation!
 
 ## Getting Started
