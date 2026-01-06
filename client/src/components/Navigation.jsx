@@ -189,6 +189,8 @@ export default function Navigation() {
               // Determine visible / overflow based on visibleCount
               const visible = items.slice(0, visibleCount)
               const overflow = items.slice(visibleCount)
+              
+              console.log('Nav debug:', { itemsCount: items.length, visibleCount, overflowCount: overflow.length })
 
               return (
                 <>
