@@ -1,3 +1,4 @@
+
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
@@ -15,6 +16,7 @@ export default function Navigation() {
   const navDesktopRef = useRef(null)
   const [visibleCount, setVisibleCount] = useState(10)
   const [showDesktopMore, setShowDesktopMore] = useState(false)
+  const desktopDropdownRef = useRef(null)
 
   const fetchUnreadCount = async () => {
     if (!isAuthenticated) return
@@ -140,10 +142,16 @@ export default function Navigation() {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Close desktop dropdown if clicking outside
+      // Close desktop dropdown if clicking outside both the button and the portal dropdown
       if (showDesktopMore) {
         const desktopDropdown = document.querySelector('.nav-more-desktop')
-        if (desktopDropdown && !desktopDropdown.contains(e.target)) {
+        const portalDropdown = desktopDropdownRef.current
+        if (
+          desktopDropdown &&
+          !desktopDropdown.contains(e.target) &&
+          portalDropdown &&
+          !portalDropdown.contains(e.target)
+        ) {
           setShowDesktopMore(false)
         }
       }
@@ -219,7 +227,7 @@ export default function Navigation() {
 
                       {/* Portal renders dropdown outside nav container to avoid clipping */}
                       {showDesktopMore && createPortal(
-                        <div className="desktop-dropdown-portal">
+                        <div className="desktop-dropdown-portal" ref={desktopDropdownRef}>
                           {overflow.map(it => (
                             <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
                               <span className="icon">{it.icon}</span>
