@@ -220,7 +220,17 @@ export default function Navigation() {
                       </button>
 
                       {showDesktopMore && (
-                        <div className="desktop-dropdown">
+                        <div className="desktop-dropdown" style={{
+                          position: 'fixed',
+                          bottom: '70px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: 'white',
+                          border: '2px solid red',
+                          padding: '1rem',
+                          zIndex: 9999,
+                          minWidth: '200px'
+                        }}>
                           {console.log('Rendering desktop dropdown!')}
                           {overflow.map(it => (
                             <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
