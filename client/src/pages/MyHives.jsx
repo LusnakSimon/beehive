@@ -44,22 +44,88 @@ export default function MyHives() {
     setShowModal(true)
   }
 
-  const handleFileChange = (e) => {
+  // Compress image to reduce file size for mobile uploads
+  const compressImage = (file, maxSizeMB = 2) => {
+    return new Promise((resolve) => {
+      // If not an image or already small enough, return as-is
+      if (!file.type.startsWith('image/') || file.size <= maxSizeMB * 1024 * 1024) {
+        resolve(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          
+          // Scale down if image is very large
+          const maxDimension = 1920;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Start with quality 0.8 and reduce if needed
+          let quality = 0.85;
+          const tryCompress = () => {
+            canvas.toBlob((blob) => {
+              if (blob.size > maxSizeMB * 1024 * 1024 && quality > 0.3) {
+                quality -= 0.1;
+                tryCompress();
+              } else {
+                const compressedFile = new File([blob], file.name, { 
+                  type: 'image/jpeg',
+                  lastModified: file.lastModified 
+                });
+                console.log(`Compressed ${file.name}: ${(file.size/1024/1024).toFixed(2)}MB -> ${(compressedFile.size/1024/1024).toFixed(2)}MB`);
+                resolve(compressedFile);
+              }
+            }, 'image/jpeg', quality);
+          };
+          tryCompress();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileChange = async (e) => {
     const file = e.target.files && e.target.files[0]
     if (!file) return
-    // Validate type and size (limit 5MB)
+    // Validate type
     if (!file.type.startsWith('image/')) {
       setErrors(prev => ({ ...prev, image: 'Prosím nahraj obrázok (jpg, png, ...).' }))
       return
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors(prev => ({ ...prev, image: 'Obrázok nesmie byť väčší než 5 MB.' }))
+    
+    setErrors(prev => ({ ...prev, image: null }))
+    
+    // Compress image before processing
+    const compressedFile = await compressImage(file, 2)
+    
+    // Check size after compression (4MB limit for Vercel)
+    if (compressedFile.size > 4 * 1024 * 1024) {
+      setErrors(prev => ({ ...prev, image: 'Obrázok je príliš veľký aj po kompresii (max 4 MB).' }))
       return
     }
-    setErrors(prev => ({ ...prev, image: null }))
+    
     const reader = new FileReader()
-    reader.onload = () => setForm(prev => ({ ...prev, imageDataUrl: reader.result, imageFile: file }))
-    reader.readAsDataURL(file)
+    reader.onload = () => setForm(prev => ({ ...prev, imageDataUrl: reader.result, imageFile: compressedFile }))
+    reader.readAsDataURL(compressedFile)
   }
 
   const validateForm = () => {
