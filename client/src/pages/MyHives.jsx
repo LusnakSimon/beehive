@@ -216,17 +216,16 @@ export default function MyHives() {
 
         if (res.ok) {
           const created = await res.json().catch(() => null)
+          
+          // refreshUser() will trigger HiveContext to sync from user.ownedHives
+          // which now includes the new hive with proper Cloudinary image URL
           await refreshUser()
           
-          // Update local state with the real hive data from backend
-          if (created?.hive) {
-            // Delete the temporary optimistic hive and add the real one
-            deleteHive(tempId)
-            addHive(created.hive)
+          // After refreshUser, hives are already synced from backend
+          // Just set the selected hive to the newly created one
+          if (created?.hive?.id) {
             setSelectedHive(created.hive.id)
           } else if (created?.id) {
-            // Fallback: just update the temp hive with the real ID
-            updateHive(tempId, { id: created.id })
             setSelectedHive(created.id)
           }
           
@@ -294,6 +293,9 @@ export default function MyHives() {
 
         if (res.ok) {
           const data = await res.json().catch(() => ({}))
+          
+          // refreshUser() will trigger HiveContext to sync from user.ownedHives
+          // which now includes the updated hive with proper Cloudinary image URL
           await refreshUser()
           
           // If API key was generated (switched to API type), update form and show it
@@ -306,11 +308,7 @@ export default function MyHives() {
             setShowModal(false)
             toast.success('Úľ upravený')
           }
-          
-          // Update local hive state with returned data from backend (authoritative)
-          if (data.hive) {
-            updateHive(hiveId, data.hive)
-          }
+          // After refreshUser, hives are already synced from backend - no need to updateHive
         } else {
           const err = await res.json().catch(() => ({ message: 'Neznáma chyba' }))
           toast.error(`Chyba: ${err.message || 'Neznáma chyba'}`)
