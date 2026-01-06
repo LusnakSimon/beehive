@@ -219,28 +219,26 @@ export default function Navigation() {
                         <span>Viac</span>
                       </button>
 
-                      {showDesktopMore && (
-                        <div className="desktop-dropdown" style={{
-                          position: 'fixed',
-                          bottom: '70px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: 'white',
-                          border: '2px solid red',
-                          padding: '1rem',
-                          zIndex: 9999,
-                          minWidth: '200px'
-                        }}>
-                          {console.log('Rendering desktop dropdown!')}
-                          {overflow.map(it => (
-                            <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
-                              <span className="icon">{it.icon}</span>
-                              <span>{it.label}</span>
-                              {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
-                            </NavLink>
-                          ))}
-                        </div>
-                      )}
+                      {/* Always render for debugging */}
+                      <div style={{
+                        position: 'fixed',
+                        bottom: '80px',
+                        right: '20px',
+                        background: 'white',
+                        border: '3px solid red',
+                        padding: '1rem',
+                        zIndex: 99999,
+                        minWidth: '200px',
+                        display: showDesktopMore ? 'block' : 'none'
+                      }}>
+                        <p style={{color: 'black', margin: 0}}>DROPDOWN TEST - showDesktopMore: {String(showDesktopMore)}</p>
+                        {overflow.map(it => (
+                          <NavLink key={it.key} to={it.to} style={{display: 'block', color: 'black', padding: '0.5rem'}} onClick={() => setShowDesktopMore(false)}>
+                            <span>{it.icon}</span>
+                            <span>{it.label}</span>
+                          </NavLink>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </>
