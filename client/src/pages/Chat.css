@@ -377,9 +377,35 @@
     background: var(--card-bg);
     z-index: 10;
     border-top: 2px solid var(--border);
-    height: var(--chat-input-height);
+    /* Remove fixed height - let content determine height */
+    min-height: var(--chat-input-height);
+    height: auto;
+    max-height: 200px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  /* Scrollable file preview on mobile */
+  .message-input-area .selected-files-preview {
+    max-height: 90px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-shrink: 0;
+    padding: 0.5rem;
+    margin: 0 -0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .message-input-area .selected-files-preview .preview-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .message-input-area .input-row {
+    flex-shrink: 0;
   }
 }
 

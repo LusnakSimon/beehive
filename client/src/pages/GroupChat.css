@@ -512,9 +512,27 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   max-height: 80px;
   overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .selected-files-preview {
+    max-height: 70px;
+    margin: 0 -0.75rem 0.5rem -0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .selected-files-preview .preview-image,
+  .selected-files-preview img {
+    width: 50px !important;
+    height: 50px !important;
+  }
 }
 
 .file-preview {
