@@ -206,7 +206,11 @@ export default function Navigation() {
                     <div className="nav-more-desktop">
                       <button
                         className={`nav-link ${showDesktopMore ? 'active' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); setShowDesktopMore(s => !s); }}
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          console.log('Desktop Viac clicked, current state:', showDesktopMore);
+                          setShowDesktopMore(s => !s); 
+                        }}
                         aria-expanded={showDesktopMore}
                         aria-haspopup="true"
                         aria-label="More navigation items"
@@ -217,6 +221,7 @@ export default function Navigation() {
 
                       {showDesktopMore && (
                         <div className="desktop-dropdown">
+                          {console.log('Rendering desktop dropdown!')}
                           {overflow.map(it => (
                             <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
                               <span className="icon">{it.icon}</span>
