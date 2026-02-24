@@ -170,6 +170,15 @@ export default function Dashboard() {
     }))
   }
 
+  const getRssiChartData = () => {
+    return history24h
+      .filter(item => item.metadata?.rssi != null)
+      .map(item => ({
+        value: item.metadata.rssi,
+        time: new Date(item.timestamp).getTime()
+      }))
+  }
+
   // Compute approximate deltas and %/rate for a metric based on nearest historical points
   const computeDeltas = (field) => {
     if (!history24h || history24h.length === 0) return { delta1h: null, delta24h: null, pct24h: null }
@@ -574,6 +583,23 @@ export default function Dashboard() {
               </div>
               )}
             </div>
+            {getRssiChartData().length > 1 && (
+              <div className="mini-chart">
+                <ResponsiveContainer width="100%" height={60}>
+                  <LineChart data={getRssiChartData()}>
+                    <Line type="monotone" dataKey="value" stroke={
+                      data.metadata.rssi > -90 ? 'var(--success)' :
+                      data.metadata.rssi > -110 ? 'var(--warning)' : 'var(--danger)'
+                    } strokeWidth={2} dot={false} />
+                    <Tooltip 
+                      contentStyle={{ background: '#1f2937', border: 'none', borderRadius: '8px' }}
+                      labelStyle={{ color: '#9ca3af' }}
+                      formatter={(value) => [`${value} dBm`, 'RSSI']}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
             {data.metadata?.source && (
               <div className="gateway-info">
                 <div className="gateway-label">Zdroj</div>

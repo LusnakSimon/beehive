@@ -245,7 +245,12 @@ export default function History() {
       const response = await fetch(`/api/sensor/history?range=${timeRange}&hiveId=${selectedHive}`)
       if (response.ok) {
         const result = await response.json()
-        setData(result)
+        // Flatten metadata.rssi into top-level for charting
+        const enriched = result.map(item => ({
+          ...item,
+          rssi: item.metadata?.rssi ?? null
+        }))
+        setData(enriched)
         try { await idbAddItem(DB_NAME, HISTORY_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: result }) } catch (e) {}
         return
       }
@@ -552,7 +557,7 @@ export default function History() {
               {/* Trends Grid */}
               <div className="trends-grid">
                 <div className="trend-card">
-                  <span className="trend-metric">🌡️ Vonk. teplota</span>
+                  <span className="trend-metric">🌡️ Vnút. teplota</span>
                   <span className={`trend-indicator trend-${analysis.tempTrend.direction}`}>
                     {analysis.tempTrend.direction === 'up' ? '↗️' : 
                      analysis.tempTrend.direction === 'down' ? '↘️' : '→'}
@@ -560,7 +565,7 @@ export default function History() {
                   </span>
                 </div>
                 <div className="trend-card">
-                  <span className="trend-metric">💧 Vonk. vlhkosť</span>
+                  <span className="trend-metric">💧 Vnút. vlhkosť</span>
                   <span className={`trend-indicator trend-${analysis.humidityTrend.direction}`}>
                     {analysis.humidityTrend.direction === 'up' ? '↗️' : 
                      analysis.humidityTrend.direction === 'down' ? '↘️' : '→'}
@@ -763,6 +768,12 @@ export default function History() {
             >
               🔋
             </button>
+            <button 
+              className={`control-btn ${selectedMetric === 'rssi' ? 'active' : ''}`}
+              onClick={() => setSelectedMetric('rssi')}
+            >
+              📡
+            </button>
           </div>
         </div>
       </div>
@@ -770,14 +781,14 @@ export default function History() {
       <div className="charts-container">
         {(selectedMetric === 'all' || selectedMetric === 'temperature') && (
           <div className="chart-card">
-            <h3>🌡️ Vonkajšia teplota v čase</h3>
+            <h3>🌡️ Vnútorná teplota v čase</h3>
             {renderChart('temperature', 'Teplota', '#f59e0b', '°C')}
           </div>
         )}
 
         {(selectedMetric === 'all' || selectedMetric === 'humidity') && (
           <div className="chart-card">
-            <h3>💧 Vonkajšia vlhkosť v čase</h3>
+            <h3>💧 Vnútorná vlhkosť v čase</h3>
             {renderChart('humidity', 'Vlhkosť', '#3b82f6', '%')}
           </div>
         )}
@@ -793,6 +804,13 @@ export default function History() {
           <div className="chart-card">
             <h3>🔋 Batéria v čase</h3>
             {renderChart('battery', 'Batéria', '#ef4444', '%')}
+          </div>
+        )}
+
+        {(selectedMetric === 'all' || selectedMetric === 'rssi') && data.some(d => d.rssi != null) && (
+          <div className="chart-card">
+            <h3>📡 Sila signálu (RSSI) v čase</h3>
+            {renderChart('rssi', 'RSSI', '#8b5cf6', 'dBm')}
           </div>
         )}
       </div>
