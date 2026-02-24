@@ -400,7 +400,7 @@ export default function Dashboard() {
         <div className="metric-card-modern">
           <div className="metric-header">
             <span className="metric-icon-modern">🌡️</span>
-            <span className="metric-label-modern">Vonkajšia teplota</span>
+            <span className="metric-label-modern">Vnútorná teplota</span>
           </div>
           <div className="metric-main">
             <span className="metric-value-large">{data.temperature.toFixed(1)}</span>
@@ -437,7 +437,7 @@ export default function Dashboard() {
         <div className="metric-card-modern">
           <div className="metric-header">
             <span className="metric-icon-modern">💧</span>
-            <span className="metric-label-modern">Vonkajšia vlhkosť</span>
+            <span className="metric-label-modern">Vnútorná vlhkosť</span>
           </div>
           <div className="metric-main">
             <span className="metric-value-large">{data.humidity.toFixed(1)}</span>
@@ -535,12 +535,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Signal Strength Card - Only for LoRaWAN */}
-        {data.metadata?.rssi && data.metadata?.snr && (
+        {/* Signal Strength Card - LoRa / LoRaWAN */}
+        {data.metadata?.rssi != null && (
           <div className="metric-card-modern">
             <div className="metric-header">
               <span className="metric-icon-modern">📡</span>
-              <span className="metric-label-modern">LoRaWAN Signál</span>
+              <span className="metric-label-modern">LoRa Signál</span>
             </div>
             <div className="signal-indicators">
               <div className="signal-item">
@@ -557,6 +557,7 @@ export default function Dashboard() {
                    data.metadata.rssi > -110 ? '🟡 Stredný' : '🔴 Slabý'}
                 </div>
               </div>
+              {data.metadata?.snr != null && (
               <div className="signal-item">
                 <div className="signal-label">SNR</div>
                 <div className="signal-value">
@@ -571,6 +572,7 @@ export default function Dashboard() {
                    data.metadata.snr > -10 ? '🟡 Dobrý' : '🔴 Slabý'}
                 </div>
               </div>
+              )}
             </div>
             {data.metadata?.source && (
               <div className="gateway-info">
