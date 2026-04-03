@@ -2,7 +2,6 @@
   min-height: 100vh;
   padding: 0;
   padding-bottom: calc(var(--nav-height) + 4rem);
-  background: var(--bg-primary);
 }
 
 @media (min-width: 768px) {
