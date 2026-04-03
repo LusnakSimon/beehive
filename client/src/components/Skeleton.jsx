@@ -71,23 +71,4 @@ export function DashboardSkeleton() {
   );
 }
 
-/**
- * List skeleton for tables and lists
- */
-export function ListSkeleton({ rows = 5 }) {
-  return (
-    <div className="list-skeleton">
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="skeleton-list-item">
-          <Skeleton variant="circle" width="40px" height="40px" />
-          <div className="skeleton-list-content">
-            <Skeleton width="70%" height="16px" />
-            <Skeleton width="40%" height="12px" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default Skeleton;

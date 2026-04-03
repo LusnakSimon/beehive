@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import './Login.css';
@@ -7,7 +6,6 @@ import './Login.css';
 const Login = () => {
   const { isAuthenticated, login, loading } = useAuth();
   const toast = useToast();
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (isAuthenticated) {

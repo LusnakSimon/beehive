@@ -5,14 +5,13 @@ import { NotificationProvider } from './contexts/NotificationContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './contexts/ToastContext'
 import ErrorBoundary from './components/ErrorBoundary'
-import { DashboardSkeleton, ListSkeleton } from './components/Skeleton'
+import { DashboardSkeleton } from './components/Skeleton'
 
 // Core pages - loaded eagerly for fast initial load
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Navigation from './components/Navigation'
 import ProtectedRoute from './components/ProtectedRoute'
-import VarroaReminder from './components/VarroaReminder'
 
 // Lazy loaded pages - loaded on demand to reduce initial bundle
 const History = lazy(() => import('./pages/History'))
@@ -77,8 +76,6 @@ function App() {
               </Routes>
             </Suspense>
           </main>
-
-          <VarroaReminder />
         </div>
       </HiveProvider>
       </NotificationProvider>

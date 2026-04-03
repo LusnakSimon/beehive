@@ -14,10 +14,6 @@ vi.mock('../contexts/AuthContext', () => ({
   AuthProvider: ({ children }) => children,
 }))
 
-// Mock pushNotifications
-vi.mock('../utils/pushNotifications', () => ({
-  getPushSettings: vi.fn(() => ({})),
-}))
 
 // Get the mock
 import { useAuth } from '../contexts/AuthContext'

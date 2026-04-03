@@ -18,38 +18,3 @@ export const formatTimeAgo = (date) => {
   if (diffDays === 1) return 'Včera'
   return `Pred ${diffDays} dňami`
 }
-
-/**
- * Format a date for display using Slovak locale.
- * 
- * @param {Date|string} date - The date to format
- * @param {Object} options - Intl.DateTimeFormat options
- * @returns {string} Formatted date string
- */
-export const formatDate = (date, options = {}) => {
-  const d = date instanceof Date ? date : new Date(date)
-  const defaultOptions = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    ...options
-  }
-  return d.toLocaleDateString('sk-SK', defaultOptions)
-}
-
-/**
- * Format a date with time for display using Slovak locale.
- * 
- * @param {Date|string} date - The date to format
- * @returns {string} Formatted datetime string
- */
-export const formatDateTime = (date) => {
-  const d = date instanceof Date ? date : new Date(date)
-  return d.toLocaleDateString('sk-SK', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}

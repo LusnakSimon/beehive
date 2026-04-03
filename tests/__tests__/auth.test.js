@@ -1,4 +1,4 @@
-const { verifyAuth, requireAuth, userOwnsHive } = require('../../lib/utils/auth');
+const { verifyAuth, userOwnsHive } = require('../../lib/utils/auth');
 const jwt = require('jsonwebtoken');
 
 describe('Auth Utils', () => {
@@ -89,34 +89,6 @@ describe('Auth Utils', () => {
       const result = verifyAuth(req);
       
       expect(result.user.id).toBe('cookie-user');
-    });
-  });
-
-  describe('requireAuth', () => {
-    it('should return user when authenticated', () => {
-      const userData = { id: 'auth-user', email: 'auth@test.com' };
-      const token = jwt.sign({ user: userData }, SECRET);
-      const req = createMockRequest(`auth-token=${token}`);
-      const res = createMockResponse();
-      
-      const result = requireAuth(req, res);
-      
-      expect(result).not.toBe(null);
-      expect(result.id).toBe('auth-user');
-      expect(res.status).not.toHaveBeenCalled();
-    });
-
-    it('should send 401 and return null when not authenticated', () => {
-      const req = createMockRequest();
-      const res = createMockResponse();
-      
-      const result = requireAuth(req, res);
-      
-      expect(result).toBe(null);
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        error: 'Unauthorized'
-      }));
     });
   });
 

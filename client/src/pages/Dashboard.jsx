@@ -3,7 +3,6 @@ import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts'
 import { useHive } from '../context/HiveContext'
 import { useNotifications } from '../contexts/NotificationContext'
 import HiveSelector from '../components/HiveSelector'
-import VarroaReminder from '../components/VarroaReminder'
 import { DashboardSkeleton } from '../components/Skeleton'
 import './Dashboard.css'
 import { putItem as idbPutItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
@@ -534,8 +533,6 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-      
-      <VarroaReminder />
 
     </div>
   )

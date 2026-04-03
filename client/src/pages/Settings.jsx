@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
 import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
 
 export default function Settings() {
-  const { user } = useAuth()
   const toast = useToast()
   const [settings, setSettings] = useState({
     notifications: true,
