@@ -49,9 +49,8 @@ export default function HiveSelector() {
       <button 
         className="hive-selector-btn"
         onClick={() => setIsOpen(!isOpen)}
-        style={{ borderColor: currentHive?.color }}
       >
-        <div className="hive-icon" style={{ backgroundColor: currentHive?.color }}>
+        <div className="hive-icon">
           🐝
         </div>
         <div className="hive-info">
@@ -73,7 +72,7 @@ export default function HiveSelector() {
                   className={`hive-dropdown-item ${hive.id === selectedHive ? 'active' : ''}`}
                   onClick={() => handleSelect(hive.id)}
                 >
-                  <div className="hive-icon" style={{ backgroundColor: hive.color }}>
+                  <div className="hive-icon">
                     🐝
                   </div>
                   <div className="hive-info">

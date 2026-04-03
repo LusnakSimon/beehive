@@ -79,7 +79,6 @@ export default function Navigation() {
                 { key: 'history', to: '/history', icon: '📊', label: 'História' },
                 { key: 'inspection', to: '/inspection', icon: '📋', label: 'Kontrola' },
                 { key: 'harvests', to: '/harvests', icon: '🍯', label: 'Zbery' },
-                { key: 'map', to: '/map', icon: '🗺️', label: 'Mapa' },
                 { key: 'settings', to: '/settings', icon: '⚙️', label: 'Nastavenia' }
               ]
 
@@ -142,10 +141,6 @@ export default function Navigation() {
             <NavLink to="/my-hives" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
               <span className="icon">🐝</span>
               <span>Moje úle</span>
-            </NavLink>
-            <NavLink to="/map" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <span className="icon">🗺️</span>
-              <span>Mapa</span>
             </NavLink>
             <div className="nav-more">
               <button 

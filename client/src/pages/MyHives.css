@@ -63,7 +63,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--hive-color, var(--primary));
+  background: var(--primary);
 }
 .hive-image { 
   width: 100%;
@@ -382,40 +382,6 @@
   color: var(--text-secondary);
   font-size: 0.8rem;
   margin-top: 0.35rem;
-}
-
-/* Color picker - improved */
-.color-picker {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  flex-wrap: wrap;
-}
-.color-option {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 3px solid transparent;
-  cursor: pointer;
-  transition: transform 0.15s, border-color 0.15s;
-}
-.color-option:hover {
-  transform: scale(1.1);
-}
-.color-option.active {
-  border-color: var(--text-primary);
-  transform: scale(1.1);
-}
-.color-picker input[type="color"] {
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  margin-top: 0;
 }
 
 /* Form section for GPS */

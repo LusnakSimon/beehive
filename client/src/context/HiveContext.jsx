@@ -34,8 +34,7 @@ export function HiveProvider({ children }) {
           return {
             id: hive,
             name: `Úľ ${number}`,
-            location: `Záhrada ${String.fromCharCode(65 + index)}`,
-            color: colors[index % colors.length]
+            location: `Záhrada ${String.fromCharCode(65 + index)}`
           };
         } else {
           // New format - use metadata from DB and preserve extra fields
@@ -43,7 +42,6 @@ export function HiveProvider({ children }) {
             id: hive.id,
             name: hive.name,
             location: hive.location || '',
-            color: hive.color || 'var(--warning)',
             image: hive.image || '',
             coordinates: hive.coordinates || { lat: '', lng: '' },
             device: hive.device || { type: 'api', deviceId: '' }

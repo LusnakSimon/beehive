@@ -13,9 +13,8 @@ export default function MyHives() {
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [modalMode, setModalMode] = useState('add') // 'add' | 'edit'
-  const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
 
-  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
+  const [form, setForm] = useState({ id: '', name: '', location: '', imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
@@ -24,7 +23,7 @@ export default function MyHives() {
 
   const openAddModal = () => {
     setModalMode('add')
-    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
+    setForm({ id: '', name: '', location: '', imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
     setShowModal(true)
   }
 
@@ -34,7 +33,6 @@ export default function MyHives() {
       id: hive.id,
       name: hive.name || '',
       location: hive.location || '',
-      color: hive.color || 'var(--warning)',
       imageDataUrl: hive.image || '',  // Store existing image URL
       imageFile: null,  // Track if user selected a new file
       originalImage: hive.image || '',  // Track original to detect changes
@@ -112,7 +110,7 @@ export default function MyHives() {
     try {
         if (modalMode === 'add') {
         const tempId = `HIVE-${Date.now()}`
-        const optimistic = { id: tempId, name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device }
+        const optimistic = { id: tempId, name: form.name, location: form.location, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device }
         addHive(optimistic)
         setShowModal(false)
         setSelectedHive(tempId)
@@ -125,7 +123,6 @@ export default function MyHives() {
           fd.append('image', form.imageFile)
           fd.append('name', form.name)
           fd.append('location', form.location)
-          fd.append('color', form.color)
           const deviceData = { type: form.device.type }
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
@@ -137,7 +134,7 @@ export default function MyHives() {
             body: fd
           })
         } else {
-          const hiveData = { name: form.name, location: form.location, color: form.color, device: { type: form.device.type } }
+          const hiveData = { name: form.name, location: form.location, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           if (form.imageDataUrl) hiveData.image = form.imageDataUrl
 
@@ -182,7 +179,7 @@ export default function MyHives() {
         
         // Don't close modal yet if we're switching to API - we want to show the key
         if (!wasManual) {
-          updateHive(hiveId, { name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device })
+          updateHive(hiveId, { name: form.name, location: form.location, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device })
           setShowModal(false)
         }
 
@@ -193,7 +190,6 @@ export default function MyHives() {
           fd.append('image', form.imageFile)
           fd.append('name', form.name)
           fd.append('location', form.location)
-          fd.append('color', form.color)
           const deviceData = { type: form.device.type }
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
@@ -205,7 +201,7 @@ export default function MyHives() {
             body: fd
           })
         } else {
-          const hiveData = { name: form.name, location: form.location, color: form.color, device: { type: form.device.type } }
+          const hiveData = { name: form.name, location: form.location, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           
           // Only send image if it actually changed (new base64 data URL, not the same URL)
@@ -290,7 +286,7 @@ export default function MyHives() {
 
     // Recreate on server
     try {
-      const hiveData = { name: hive.name, location: hive.location, color: hive.color }
+      const hiveData = { name: hive.name, location: hive.location }
       if (hive.image) hiveData.image = hive.image
       const res = await fetch('/api/users/me/hives', {
         method: 'POST',
@@ -327,8 +323,8 @@ export default function MyHives() {
 
       <div className="hives-grid">
         {hives && hives.length > 0 ? hives.map(h => (
-          <div className="hive-card" key={h.id} style={{ '--hive-color': h.color || 'var(--primary)' }}>
-            <div className="hive-image" style={{ backgroundColor: h.color || 'var(--card-bg)' }}>
+          <div className="hive-card" key={h.id}>
+            <div className="hive-image">
               {h.image ? (
                 <img src={h.image} alt={h.name || 'úl'} className="hive-image-el" />
               ) : (
@@ -373,14 +369,6 @@ export default function MyHives() {
 
               <label>Lokalita (voliteľné)</label>
               <input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} />
-
-                <label>Farba</label>
-                <div className="color-picker">
-                  {colors.map(c => (
-                    <button key={c} type="button" className={`color-option ${form.color === c ? 'active' : ''}`} style={{ backgroundColor: c }} onClick={() => setForm(f => ({ ...f, color: c }))} />
-                  ))}
-                  <input type="color" value={form.color} onChange={e => setForm(f => ({ ...f, color: e.target.value }))} />
-                </div>
 
                 <label>Fotka (voliteľné)</label>
                 <input type="file" accept="image/*" onChange={handleFileChange} />

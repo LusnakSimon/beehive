@@ -12,6 +12,7 @@ const INSPECTION_STORE = 'inspections'
 export default function Inspection() {
   const { selectedHive } = useHive()
   const toast = useToast()
+  const [activeTab, setActiveTab] = useState('form') // 'form' | 'history'
   const [checklist, setChecklist] = useState({
     pollen: false,
     capped: false,
@@ -88,6 +89,21 @@ export default function Inspection() {
     }))
   }
 
+  const resetForm = () => {
+    setChecklist({
+      pollen: false,
+      capped: false,
+      opened: false,
+      eggs: false,
+      queenSeen: false,
+      queenbeeCell: false,
+      queenbeeCellCapped: false,
+      inspectionNeeded: false
+    })
+    setNotes('')
+    setEditingId(null)
+  }
+
   const handleSave = async () => {
     setLoading(true)
     try {
@@ -108,18 +124,7 @@ export default function Inspection() {
       if (result.sent) {
         setShowSuccess(true)
         setTimeout(() => setShowSuccess(false), 3000)
-        // Reset form
-        setChecklist({
-          pollen: false,
-          capped: false,
-          opened: false,
-          eggs: false,
-          queenSeen: false,
-          queenbeeCell: false,
-          queenbeeCellCapped: false,
-          inspectionNeeded: false
-        })
-        setNotes('')
+        resetForm()
         // Refresh history from server
         fetchInspectionHistory()
       } else {
@@ -158,7 +163,7 @@ export default function Inspection() {
     setEditingId(inspection._id)
     setChecklist(inspection.checklist)
     setNotes(inspection.notes || '')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setActiveTab('form')
   }
 
   const handleUpdate = async () => {
@@ -178,21 +183,7 @@ export default function Inspection() {
       if (response.ok) {
         setShowSuccess(true)
         setTimeout(() => setShowSuccess(false), 3000)
-        
-        // Reset form and editing state
-        setEditingId(null)
-        setChecklist({
-          pollen: false,
-          capped: false,
-          opened: false,
-          eggs: false,
-          queenSeen: false,
-          queenbeeCell: false,
-          queenbeeCellCapped: false,
-          inspectionNeeded: false
-        })
-        setNotes('')
-        
+        resetForm()
         // Refresh history
         fetchInspectionHistory()
       }
@@ -204,19 +195,26 @@ export default function Inspection() {
     }
   }
 
-  const handleCancelEdit = () => {
-    setEditingId(null)
-    setChecklist({
-      pollen: false,
-      capped: false,
-      opened: false,
-      eggs: false,
-      queenSeen: false,
-      queenbeeCell: false,
-      queenbeeCellCapped: false,
-      inspectionNeeded: false
-    })
-    setNotes('')
+  const checklistItems = [
+    { key: 'pollen', title: 'Peľ', desc: 'Prítomný peľ v pláste', icon: '🌼' },
+    { key: 'capped', title: 'Zapečatený plod', desc: 'Bunky so zapečateným plodom', icon: '📦' },
+    { key: 'opened', title: 'Otvorený plod', desc: 'Bunky s otvoreným plodom', icon: '📂' },
+    { key: 'eggs', title: 'Vajíčka', desc: 'Viditeľné vajíčka v bunkách', icon: '🥚' },
+    { key: 'queenSeen', title: 'Kráľovná videná', desc: 'Kráľovná bola spozorovaná', icon: '👑' },
+    { key: 'queenbeeCell', title: 'Matečník otvorený', desc: 'Otvorený matečník v úli', icon: '🏠' },
+    { key: 'queenbeeCellCapped', title: 'Matečník zapečatený', desc: 'Zapečatený matečník v úli', icon: '🔒' },
+    { key: 'inspectionNeeded', title: 'Vyžaduje kontrolu', desc: 'Úľ vyžaduje ďalšiu kontrolu', icon: '⚠️', warning: true }
+  ]
+
+  const badgeLabels = {
+    pollen: '🌼 Peľ',
+    capped: '📦 Zapečatený',
+    opened: '📂 Otvorený',
+    eggs: '🥚 Vajíčka',
+    queenSeen: '👑 Kráľovná',
+    queenbeeCell: '🏠 Matečník',
+    queenbeeCellCapped: '🔒 Zapečatený matečník',
+    inspectionNeeded: '⚠️ Vyžaduje kontrolu'
   }
 
   return (
@@ -238,158 +236,90 @@ export default function Inspection() {
         </div>
       )}
 
-      <div className="inspection-container">
-        <div className="checklist-section">
-          <h2>Stav úľa</h2>
-          
-          <div className="checklist-grid">
-            <div 
-              className={`checklist-item ${checklist.pollen ? 'checked' : ''}`}
-              onClick={() => handleToggle('pollen')}
-            >
-              <div className="check-icon">
-                {checklist.pollen ? '✅' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Pollen</div>
-                <div className="check-desc">Prítomný peľ v pláste</div>
-              </div>
+      {/* Tab navigation */}
+      <div className="inspection-tabs">
+        <button 
+          className={`inspection-tab ${activeTab === 'form' ? 'active' : ''}`}
+          onClick={() => setActiveTab('form')}
+        >
+          {editingId ? '✏️ Úprava' : '➕ Nová kontrola'}
+        </button>
+        <button 
+          className={`inspection-tab ${activeTab === 'history' ? 'active' : ''}`}
+          onClick={() => setActiveTab('history')}
+        >
+          📜 História {history.length > 0 && <span className="tab-count">{history.length}</span>}
+        </button>
+      </div>
+
+      {/* Form tab */}
+      {activeTab === 'form' && (
+        <div className="inspection-form-panel">
+          <div className="checklist-section">
+            <h2>Stav úľa</h2>
+            
+            <div className="checklist-grid">
+              {checklistItems.map(item => (
+                <div 
+                  key={item.key}
+                  className={`checklist-item ${checklist[item.key] ? 'checked' : ''} ${item.warning && checklist[item.key] ? 'warning' : ''}`}
+                  onClick={() => handleToggle(item.key)}
+                >
+                  <div className="check-icon">
+                    {checklist[item.key] ? (item.warning ? '⚠️' : '✅') : '⬜'}
+                  </div>
+                  <div className="check-label">
+                    <div className="check-title">{item.title}</div>
+                    <div className="check-desc">{item.desc}</div>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div 
-              className={`checklist-item ${checklist.capped ? 'checked' : ''}`}
-              onClick={() => handleToggle('capped')}
-            >
-              <div className="check-icon">
-                {checklist.capped ? '✅' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Capped cells</div>
-                <div className="check-desc">Zapečatený plod</div>
-              </div>
+            <div className="notes-section">
+              <label htmlFor="notes">Poznámky</label>
+              <textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Pridaj poznámky k tejto kontrole..."
+                rows={4}
+              />
             </div>
 
-            <div 
-              className={`checklist-item ${checklist.opened ? 'checked' : ''}`}
-              onClick={() => handleToggle('opened')}
-            >
-              <div className="check-icon">
-                {checklist.opened ? '✅' : '⬜'}
+            {editingId ? (
+              <div className="form-actions-row">
+                <button 
+                  className="save-btn"
+                  onClick={handleUpdate}
+                  disabled={loading}
+                >
+                  {loading ? 'Aktualizujem...' : '✏️ Aktualizovať kontrolu'}
+                </button>
+                <button 
+                  className="cancel-btn"
+                  onClick={resetForm}
+                  disabled={loading}
+                >
+                  ✕ Zrušiť
+                </button>
               </div>
-              <div className="check-label">
-                <div className="check-title">Opened cells</div>
-                <div className="check-desc">Otvorený plod</div>
-              </div>
-            </div>
-
-            <div 
-              className={`checklist-item ${checklist.eggs ? 'checked' : ''}`}
-              onClick={() => handleToggle('eggs')}
-            >
-              <div className="check-icon">
-                {checklist.eggs ? '✅' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Eggs</div>
-                <div className="check-desc">Viditeľné vajíčka</div>
-              </div>
-            </div>
-
-            <div 
-              className={`checklist-item ${checklist.queenSeen ? 'checked' : ''}`}
-              onClick={() => handleToggle('queenSeen')}
-            >
-              <div className="check-icon">
-                {checklist.queenSeen ? '✅' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Queen seen</div>
-                <div className="check-desc">Kráľovná videná</div>
-              </div>
-            </div>
-
-            <div 
-              className={`checklist-item ${checklist.queenbeeCell ? 'checked' : ''}`}
-              onClick={() => handleToggle('queenbeeCell')}
-            >
-              <div className="check-icon">
-                {checklist.queenbeeCell ? '✅' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Queenbee cell opened</div>
-                <div className="check-desc">Matečník otvorený</div>
-              </div>
-            </div>
-
-            <div 
-              className={`checklist-item ${checklist.queenbeeCellCapped ? 'checked' : ''}`}
-              onClick={() => handleToggle('queenbeeCellCapped')}
-            >
-              <div className="check-icon">
-                {checklist.queenbeeCellCapped ? '✅' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Queenbee cell capped</div>
-                <div className="check-desc">Matečník zapečatený</div>
-              </div>
-            </div>
-
-            <div 
-              className={`checklist-item ${checklist.inspectionNeeded ? 'checked' : ''}`}
-              onClick={() => handleToggle('inspectionNeeded')}
-            >
-              <div className="check-icon">
-                {checklist.inspectionNeeded ? '⚠️' : '⬜'}
-              </div>
-              <div className="check-label">
-                <div className="check-title">Inspection needed</div>
-                <div className="check-desc">Vyžaduje kontrolu</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="notes-section">
-            <label htmlFor="notes">Poznámky</label>
-            <textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Pridaj poznámky k tejto kontrole..."
-              rows={4}
-            />
-          </div>
-
-          {editingId ? (
-            <div style={{ display: 'flex', gap: '12px' }}>
+            ) : (
               <button 
                 className="save-btn"
-                onClick={handleUpdate}
+                onClick={handleSave}
                 disabled={loading}
               >
-                {loading ? 'Aktualizujem...' : '✏️ Aktualizovať kontrolu'}
+                {loading ? 'Ukladám...' : '💾 Uložiť kontrolu'}
               </button>
-              <button 
-                className="cancel-btn"
-                onClick={handleCancelEdit}
-                disabled={loading}
-              >
-                ✕ Zrušiť
-              </button>
-            </div>
-          ) : (
-            <button 
-              className="save-btn"
-              onClick={handleSave}
-              disabled={loading}
-            >
-              {loading ? 'Ukladám...' : '💾 Uložiť kontrolu'}
-            </button>
-          )}
+            )}
+          </div>
         </div>
+      )}
 
-        <div className="history-section">
-          <h2>História kontrol</h2>
-          
+      {/* History tab */}
+      {activeTab === 'history' && (
+        <div className="inspection-history-panel">
           {history.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📋</div>
@@ -397,73 +327,75 @@ export default function Inspection() {
             </div>
           ) : (
             <>
-            <div className="history-list">
-              {history.map((item, index) => (
-                <div key={index} className="history-item">
-                  <div className="history-header">
-                    <div className="history-date">
-                      {new Date(item.timestamp).toLocaleDateString('sk-SK', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
+              <div className="history-list">
+                {history.map((item, index) => (
+                  <div key={item._id || index} className="history-item">
+                    <div className="history-header">
+                      <div className="history-date">
+                        {new Date(item.timestamp).toLocaleDateString('sk-SK', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </div>
+                      <div className="history-time">
+                        {new Date(item.timestamp).toLocaleTimeString('sk-SK', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
                     </div>
-                    <div className="history-time">
-                      {new Date(item.timestamp).toLocaleTimeString('sk-SK', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                    
+                    <div className="history-checklist">
+                      {Object.entries(item.checklist || {}).map(([key, val]) => 
+                        val && badgeLabels[key] ? (
+                          <span 
+                            key={key} 
+                            className={`check-badge ${key === 'inspectionNeeded' ? 'warning' : ''}`}
+                          >
+                            {badgeLabels[key]}
+                          </span>
+                        ) : null
+                      )}
+                    </div>
+                    
+                    {item.notes && (
+                      <div className="history-notes">
+                        📝 {item.notes}
+                      </div>
+                    )}
+                    
+                    <div className="history-actions">
+                      <button 
+                        className="edit-btn"
+                        onClick={() => handleEdit(item)}
+                        title="Upraviť kontrolu"
+                      >
+                        ✏️ Upraviť
+                      </button>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => handleDelete(item._id)}
+                        title="Vymazať kontrolu"
+                      >
+                        🗑️ Vymazať
+                      </button>
                     </div>
                   </div>
-                  
-                  <div className="history-checklist">
-                    {item.checklist.pollen && <span className="check-badge">🌼 Pollen</span>}
-                    {item.checklist.capped && <span className="check-badge">📦 Capped</span>}
-                    {item.checklist.opened && <span className="check-badge">📂 Opened</span>}
-                    {item.checklist.eggs && <span className="check-badge">🥚 Eggs</span>}
-                    {item.checklist.queenSeen && <span className="check-badge">👑 Queen</span>}
-                    {item.checklist.queenbeeCell && <span className="check-badge">🏠 Cell</span>}
-                    {item.checklist.inspectionNeeded && <span className="check-badge" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#dc2626' }}>⚠️ Inspection Needed</span>}
-                  </div>
-                  
-                  {item.notes && (
-                    <div className="history-notes">
-                      📝 {item.notes}
-                    </div>
-                  )}
-                  
-                  <div className="history-actions">
-                    <button 
-                      className="edit-btn"
-                      onClick={() => handleEdit(item)}
-                      title="Upraviť kontrolu"
-                    >
-                      ✏️ Upraviť
-                    </button>
-                    <button 
-                      className="delete-btn"
-                      onClick={() => handleDelete(item._id)}
-                      title="Vymazať kontrolu"
-                    >
-                      🗑️ Vymazať
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {hasMore && (
-              <button 
-                className="btn btn-secondary" 
-                onClick={() => setHistoryLimit(prev => prev + 10)}
-                style={{ marginTop: '1rem', width: '100%' }}
-              >
-                Načítať ďalšie
-              </button>
-            )}
+                ))}
+              </div>
+              {hasMore && (
+                <button 
+                  className="btn btn-secondary load-more-btn" 
+                  onClick={() => setHistoryLimit(prev => prev + 10)}
+                >
+                  Načítať ďalšie
+                </button>
+              )}
             </>
           )}
         </div>
-      </div>
+      )}
     </div>
   )
 }

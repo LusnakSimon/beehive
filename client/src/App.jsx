@@ -18,7 +18,6 @@ import VarroaReminder from './components/VarroaReminder'
 const History = lazy(() => import('./pages/History'))
 const Settings = lazy(() => import('./pages/Settings'))
 const Inspection = lazy(() => import('./pages/Inspection'))
-const HiveMap = lazy(() => import('./pages/HiveMap'))
 const MyHives = lazy(() => import('./pages/MyHives'))
 const Harvests = lazy(() => import('./pages/Harvests'))
 
@@ -72,7 +71,6 @@ function App() {
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/inspection" element={<ProtectedRoute><Inspection /></ProtectedRoute>} />
-              <Route path="/map" element={<ProtectedRoute><HiveMap /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
               <Route path="/my-hives" element={<ProtectedRoute><MyHives /></ProtectedRoute>} />
               <Route path="/harvests" element={<ProtectedRoute><Harvests /></ProtectedRoute>} />
