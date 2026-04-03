@@ -457,7 +457,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Signal Strength Card - LoRa / LoRaWAN */}
+        {/* Signal Strength Card - LoRa */}
         {data.metadata?.rssi != null && (
           <div className="metric-card-modern">
             <div className="metric-header">

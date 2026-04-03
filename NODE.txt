@@ -159,8 +159,8 @@ RST	GPI10
 DIO0	GPIO3
 
 ****************************************
-const char* WIFI_SSID = "T-A81MJA";
-const char* WIFI_PASS = "t2lmlakb8kbv";
+const char* WIFI_SSID = "";
+const char* WIFI_PASS = "";
 const char* SERVER_HOST = "ebeehive.vercel.app"; // no protocol, no trailing slash
 const char* HIVE_ID = "HIVE-017";                 // target hive id (HIVE-xxx)
 const char* ESP32_API_KEY = "";   

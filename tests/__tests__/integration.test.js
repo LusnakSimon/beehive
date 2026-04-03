@@ -19,8 +19,7 @@ const userSchema = new mongoose.Schema({
   ownedHives: [{ 
     id: String, 
     name: String, 
-    location: String,
-    coordinates: { lat: Number, lng: Number }
+    location: String
   }],
   role: { type: String, default: 'user' },
   createdAt: { type: Date, default: Date.now }

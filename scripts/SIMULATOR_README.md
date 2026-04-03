@@ -1,134 +1,52 @@
-# 🐝 ESP32 Device Simulator
+# ESP32 Device Simulator
 
-Simulátor ESP32 zariadenia pre testovanie bez fyzického hardvéru.
+Simulates the ESP32 gateway sending sensor data to the API, for testing without physical hardware.
 
-## 🚀 Použitie
+## Usage
 
-### Základné spustenie (WiFi režim)
 ```bash
+# Basic (sends to production)
 node scripts/simulate-esp32.js
-```
 
-### WiFi režim s vlastným úľom
-```bash
+# Custom hive ID
 HIVE_ID=HIVE-002 node scripts/simulate-esp32.js
-```
 
-### LoRaWAN režim
-```bash
-MODE=lorawan HIVE_ID=HIVE-001 node scripts/simulate-esp32.js
-```
-
-### Rýchlejší interval (každých 10 sekúnd)
-```bash
+# Faster interval (every 10 seconds)
 INTERVAL=10000 node scripts/simulate-esp32.js
+
+# Local backend
+BACKEND_URL=http://localhost:5173 node scripts/simulate-esp32.js
 ```
 
-### Lokálny backend
-```bash
-BACKEND_URL=http://localhost:5000 node scripts/simulate-esp32.js
-```
+## Configuration
 
-### Kombinácia parametrov
-```bash
-MODE=lorawan HIVE_ID=HIVE-003 INTERVAL=60000 node scripts/simulate-esp32.js
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BACKEND_URL` | `https://ebeehive.vercel.app` | Backend URL |
+| `HIVE_ID` | `HIVE-001` | Hive ID to send data for |
+| `INTERVAL` | `30000` | Send interval in ms (default 30s) |
 
-## ⚙️ Konfigurácia
+## Simulated Values
 
-| Premenná | Default | Popis |
-|----------|---------|-------|
-| `BACKEND_URL` | `https://ebeehive.vercel.app` | URL backendu |
-| `HIVE_ID` | `HIVE-001` | ID úľa |
-| `MODE` | `wifi` | Režim: `wifi` alebo `lorawan` |
-| `INTERVAL` | `30000` | Interval v ms (30s default) |
+- **Temperature**: 30–36 °C with a daily sine cycle
+- **Humidity**: 40–70 % (inverse cycle)
+- **Weight**: ~45 kg with small random variation
+- **Battery**: 70–90 % (random)
 
-## 📊 Simulované hodnoty
+## Multi-Hive Testing
 
-- **Teplota**: 30-36°C s denným cyklom
-- **Vlhkosť**: 40-70% s inverzným cyklom
-- **Hmotnosť**: ~45kg s malými variáciami
-- **Batéria**: 70-90% (náhodne)
+Open separate terminals:
 
-## 🎯 Scenáre testovania
-
-### 1. Test jedného úľa (WiFi)
-```bash
-node scripts/simulate-esp32.js
-```
-
-### 2. Test troch úľov súčasne
 ```bash
 # Terminal 1
 HIVE_ID=HIVE-001 node scripts/simulate-esp32.js
 
 # Terminal 2
 HIVE_ID=HIVE-002 node scripts/simulate-esp32.js
-
-# Terminal 3
-HIVE_ID=HIVE-003 node scripts/simulate-esp32.js
 ```
 
-### 3. Test LoRaWAN konektivity
-```bash
-MODE=lorawan node scripts/simulate-esp32.js
-```
+## Troubleshooting
 
-### 4. Rýchle testovanie (každých 5 sekúnd)
-```bash
-INTERVAL=5000 node scripts/simulate-esp32.js
-```
-
-## 🔍 Výstup
-
-### WiFi režim:
-```
-🐝 ESP32 Device Simulator Started
-   Backend: https://ebeehive.vercel.app
-   Hive ID: HIVE-001
-   Mode: WIFI
-   Interval: 30000ms (30s)
-
-✅ WiFi: Data sent successfully
-   📊 Temp: 33.2°C, Humidity: 55.4%, Weight: 45.12kg, Battery: 85%
-```
-
-### LoRaWAN režim:
-```
-🐝 ESP32 Device Simulator Started
-   Backend: https://ebeehive.vercel.app
-   Hive ID: HIVE-001
-   Mode: LORAWAN
-   Interval: 30000ms (30s)
-
-✅ LoRaWAN: Data sent successfully
-   📊 Temp: 33.2°C, Humidity: 55.4%, Weight: 45.12kg, Battery: 85%
-   📡 Payload: CQsDxwAAC+tV
-```
-
-## 🛑 Zastavenie
-
-Stlač `Ctrl+C` pre ukončenie simulátora.
-
-## 💡 Tipy
-
-1. **Multi-hive test**: Otvor 3 terminály a spusti simulátor s rôznymi `HIVE_ID`
-2. **LoRaWAN test**: Skontroluj Dashboard či sa zobrazuje signal strength karta
-3. **Real-time monitor**: Nechaj simulátor bežať a sleduj Dashboard v reálnom čase
-4. **History test**: Nechaj bežať 1+ hodinu a pozri grafy v História sekcii
-
-## 🔗 API Endpoints
-
-- **Sensor Data**: `POST /api/sensor`
-- **LoRaWAN Webhook**: `POST /api/lorawan/webhook`
-
-## 🐛 Troubleshooting
-
-**Problém**: `fetch is not defined`
-- **Riešenie**: Node.js 18+ je potrebný (má native fetch)
-
-**Problém**: Connection refused
-- **Riešenie**: Skontroluj `BACKEND_URL` a či backend beží
-
-**Problém**: Data sa nezobrazujú
-- **Riešenie**: Skontroluj `HIVE_ID` zhoduje s úľom v Settings
+- **`fetch is not defined`** — requires Node.js 18+ (native fetch)
+- **Connection refused** — check `BACKEND_URL` and that the backend is running
+- **Data not showing** — make sure `HIVE_ID` matches a hive registered in the app

@@ -1,103 +1,98 @@
 # Cloudinary Setup Guide
 
-File uploads v aplikácii používajú **Cloudinary** na serverless platformách (Vercel) a lokálny storage pri vývoji.
+Harvest photo uploads use **Cloudinary** on serverless platforms (Vercel) and local storage during development.
 
-## Prečo Cloudinary?
+## Why Cloudinary?
 
-- ✅ **Serverless kompatibilita** - Vercel funkcie nemôžu zapisovať do `/public`
-- ✅ **CDN hosting** - Rýchle doručovanie súborov
-- ✅ **Automatická optimalizácia** - Obrázky sa automaticky komprimujú
-- ✅ **Free tier** - 25GB storage a 25GB bandwidth mesačne zadarmo
+- **Serverless compatible** — Vercel functions cannot write to `/public`
+- **CDN hosting** — fast image delivery
+- **Automatic optimization** — images are compressed automatically
+- **Free tier** — 25 GB storage and 25 GB bandwidth per month
 
-## Nastavenie
+## Setup
 
-### 1. Vytvor Cloudinary účet
+### 1. Create a Cloudinary Account
 
-1. Choď na [cloudinary.com](https://cloudinary.com/)
-2. Zaregistruj sa (Free plan je dostačujúci)
-3. Po prihlásení nájdeš Dashboard s credentials
+1. Go to [cloudinary.com](https://cloudinary.com/)
+2. Sign up (the Free plan is sufficient)
+3. After logging in you will find your credentials on the Dashboard
 
-### 2. Získaj API credentials
+### 2. Get API Credentials
 
-Na Cloudinary Dashboard nájdeš:
-- **Cloud Name** (napr. `dxxxxxx`)
-- **API Key** (napr. `123456789012345`)
-- **API Secret** (klikni na "Reveal" pre zobrazenie)
+On the Cloudinary Dashboard you will find:
+- **Cloud Name** (e.g. `dxxxxxx`)
+- **API Key** (e.g. `123456789012345`)
+- **API Secret** (click "Reveal" to show it)
 
-### 3. Pridaj do .env
+### 3. Add to `.env`
 
-Lokálny `.env` súbor:
+Local `.env` file:
 ```env
-CLOUDINARY_CLOUD_NAME=tvoj-cloud-name
-CLOUDINARY_API_KEY=tvoj-api-key
-CLOUDINARY_API_SECRET=tvoj-api-secret
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
 ```
 
-### 4. Pridaj do Vercel Environment Variables
+### 4. Add to Vercel Environment Variables
 
-1. Choď do Vercel Dashboard → Project Settings → Environment Variables
-2. Pridaj tieto 3 premenné pre **Production**, **Preview** a **Development**:
+1. Go to Vercel Dashboard → Project Settings → Environment Variables
+2. Add these 3 variables for **Production**, **Preview**, and **Development**:
    - `CLOUDINARY_CLOUD_NAME`
    - `CLOUDINARY_API_KEY`
    - `CLOUDINARY_API_SECRET`
 
-### 5. Redeploy Vercel
+### 5. Redeploy
 
-Po pridaní environment variables je potrebné redeploy:
+After adding the environment variables, redeploy:
 ```bash
 git push origin main
 ```
-alebo v Vercel Dashboard klikni na "Redeploy"
+or click "Redeploy" in the Vercel Dashboard.
 
-## Ako to funguje?
+## How It Works
 
-### Lokálny vývoj (bez Cloudinary)
-- Súbory sa ukladajú do `public/uploads/`
-- Prístupné cez `/uploads/chat/` alebo `/uploads/groups/`
-- Žiadna dodatočná konfigurácia potrebná
+### Local Development (without Cloudinary)
+- Photos are saved to `public/uploads/`
+- No additional configuration needed
 
-### Production (Vercel s Cloudinary)
-- Automaticky detekuje serverless prostredie
-- Nahrané súbory idú priamo do Cloudinary
-- Vracia CDN URLs (napr. `https://res.cloudinary.com/...`)
-- Optimalizované a rýchle doručovanie
+### Production (Vercel with Cloudinary)
+- Automatically detects the serverless environment
+- Uploaded photos go directly to Cloudinary
+- Returns CDN URLs (e.g. `https://res.cloudinary.com/...`)
 
-### Production (Vercel BEZ Cloudinary)
-- File upload bude vypnutý
-- Skupiny a chat fungujú, ale nemôžeš nahrávať súbory
-- V konzole sa zobrazí warning
+### Production (Vercel without Cloudinary)
+- Photo uploads will be disabled
+- A warning will appear in the console
 
-## Testovanie
+## Testing
 
-### Otestuj lokálne
-1. Spusti aplikáciu: `npm run dev`
-2. Vytvor skupinu s obrázkom
-3. Pošli súbor v chate
-4. Skontroluj `public/uploads/`
+### Test Locally
+1. Start the app: `npm run dev`
+2. Go to Harvests and add a harvest with a photo
+3. Check `public/uploads/`
 
-### Otestuj na Vercel
-1. Uisti sa že máš Cloudinary credentials v Vercel
-2. Deploynuť aplikáciu
-3. Vytvor skupinu s obrázkom
-4. Pošli súbor v chate
-5. Skontroluj Network tab - URLs by mali byť z Cloudinary
+### Test on Vercel
+1. Make sure Cloudinary credentials are in Vercel
+2. Deploy the app
+3. Add a harvest with a photo
+4. Check the Network tab — URLs should come from Cloudinary
 
 ## Troubleshooting
 
-### "File upload not available" chyba na Vercel
-- ✅ Skontroluj či máš všetky 3 Cloudinary premenné v Vercel
-- ✅ Redeployni aplikáciu po pridaní premenných
-- ✅ Skontroluj či názvy premenných sú správne
+### "File upload not available" error on Vercel
+- Check that all 3 Cloudinary variables are in Vercel
+- Redeploy the app after adding the variables
+- Verify the variable names are correct
 
-### Súbory sa neukladajú
-- ✅ Skontroluj Cloudinary Dashboard → Media Library
-- ✅ Pozri Vercel Logs pre error messages
-- ✅ Overiť API credentials
+### Photos Not Saving
+- Check Cloudinary Dashboard → Media Library
+- Look at Vercel Logs for error messages
+- Verify API credentials
 
-### Obrázky sa nezobrazujú
-- ✅ Skontroluj URL v databáze (mali by byť Cloudinary URLs)
-- ✅ Skontroluj browser Network tab
-- ✅ Pozri CORS nastavenia v Cloudinary (defaultne by malo fungovať)
+### Photos Not Displaying
+- Check the URL in the database (should be a Cloudinary URL)
+- Check the browser Network tab
+- Check CORS settings in Cloudinary (defaults should work)
 
 ## Limity Free Tier
 

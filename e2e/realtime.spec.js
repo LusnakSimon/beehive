@@ -19,10 +19,9 @@ const mockSensorData = (overrides = {}) => ({
   battery: 85,
   lastUpdate: new Date().toISOString(),
   metadata: {
-    source: 'lorawan',
+    source: 'wifi',
     rssi: -95,
-    snr: 8,
-    gatewayId: 'test-gateway'
+    snr: 8
   },
   ...overrides
 });

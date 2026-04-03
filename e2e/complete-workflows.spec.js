@@ -17,14 +17,7 @@ const generateUniqueName = (prefix) => `${prefix}-${Date.now()}`;
 
 // Dismiss any overlays/popups that might block interactions
 const dismissOverlays = async (page) => {
-  // Dismiss Varroa reminder if present
-  const varroaClose = page.locator('.varroa-reminder .close-btn, .varroa-reminder button');
-  if (await varroaClose.count() > 0 && await varroaClose.first().isVisible()) {
-    await varroaClose.first().click({ force: true });
-    await page.waitForTimeout(300);
-  }
-  
-  // Dismiss any other modals/toasts
+  // Dismiss any modals/toasts
   const closeButtons = page.locator('.toast-close, .modal-close:visible');
   for (const btn of await closeButtons.all()) {
     if (await btn.isVisible()) {
@@ -175,15 +168,6 @@ test.describe('Hive Management Complete Flow', () => {
       await visibilityToggle.click({ force: true });
       await page.waitForTimeout(500);
     }
-    
-    // === VERIFY ON MAP ===
-    await page.goto('/map');
-    await waitForApp(page, 15000);
-    
-    // Check if markers exist
-    const markers = page.locator('.leaflet-marker-icon');
-    const markerCount = await markers.count();
-    console.log(`Found ${markerCount} markers on map`);
   });
 
   test('edit hive details and verify changes persist', async ({ page }) => {
@@ -217,176 +201,6 @@ test.describe('Hive Management Complete Flow', () => {
         const savedLocation = await locationInput.inputValue();
         expect(savedLocation).toContain('Location-');
       }
-    }
-  });
-});
-
-// ============================================================================
-// SOCIAL FEATURES FLOW - Friends, Groups, Chat
-// ============================================================================
-test.describe('Social Features Complete Flow', () => {
-  
-  test('friend management: search → send request → view friends', async ({ page }) => {
-    // Navigate to friends/social page
-    await page.goto('/friends');
-    await waitForApp(page);
-    
-    // Check if friends page loaded
-    const friendsPage = page.locator('.friends-page, [class*="friends"], main').first();
-    await expect(friendsPage).toBeVisible({ timeout: 10000 });
-    
-    // Search for users
-    const searchInput = page.locator('input[type="search"], input[placeholder*="hľadaj"], .search-input').first();
-    if (await searchInput.count() > 0) {
-      await searchInput.fill('test');
-      await page.waitForTimeout(1000);
-      
-      // Look for search results
-      const results = page.locator('.search-results, .user-list, [class*="result"]');
-      if (await results.count() > 0) {
-        // Click add friend on first result
-        const addFriendBtn = results.locator('button:has-text("Pridať"), button:has-text("Add")').first();
-        if (await addFriendBtn.count() > 0) {
-          await addFriendBtn.click();
-          await page.waitForTimeout(500);
-        }
-      }
-    }
-    
-    // View pending requests
-    const pendingTab = page.locator('button:has-text("Čakajúce"), [class*="pending"]').first();
-    if (await pendingTab.count() > 0) {
-      await pendingTab.click();
-      await waitForApp(page);
-    }
-  });
-
-  test('group management: create → invite members → edit → leave', async ({ page }) => {
-    await page.goto('/groups');
-    await waitForApp(page);
-    
-    // Create new group
-    const createBtn = page.locator('button:has-text("Vytvoriť"), button:has-text("Nová skupina"), .create-group-btn').first();
-    
-    if (await createBtn.count() > 0) {
-      await createBtn.click();
-      await page.waitForTimeout(500);
-      
-      // Fill group details
-      const groupName = generateUniqueName('TestGroup');
-      const nameInput = page.locator('input[name="name"], input[placeholder*="názov"]').first();
-      if (await nameInput.count() > 0) {
-        await nameInput.fill(groupName);
-        
-        // Optional description
-        const descInput = page.locator('textarea[name="description"], textarea').first();
-        if (await descInput.count() > 0) {
-          await descInput.fill('Test group description');
-        }
-        
-        // Submit
-        const submitBtn = page.locator('button[type="submit"]').first();
-        await submitBtn.click();
-        await waitForApp(page);
-      }
-    }
-    
-    // View group list
-    const groupList = page.locator('.group-list, .groups-container, [class*="group-card"]');
-    await page.waitForTimeout(500);
-  });
-
-  test('chat flow: open conversation → send message → verify delivery', async ({ page }) => {
-    // Navigate to messages/chat
-    await page.goto('/messages');
-    await waitForApp(page);
-    
-    // Check if messages page loaded
-    const messagesPage = page.locator('.messages-page, .chat-container, [class*="message"]').first();
-    await expect(messagesPage).toBeVisible({ timeout: 10000 });
-    
-    // Select a conversation (if any exist)
-    const conversation = page.locator('.conversation-item, .chat-list-item, [class*="conversation"]').first();
-    
-    if (await conversation.count() > 0) {
-      await conversation.click();
-      await waitForApp(page);
-      
-      // Type a message
-      const messageInput = page.locator('input[type="text"], textarea, .message-input').last();
-      if (await messageInput.count() > 0) {
-        const testMessage = `Test message ${Date.now()}`;
-        await messageInput.fill(testMessage);
-        
-        // Send
-        const sendBtn = page.locator('button[type="submit"], button:has-text("Odoslať"), .send-btn').first();
-        if (await sendBtn.count() > 0) {
-          await sendBtn.click();
-          await page.waitForTimeout(1000);
-          
-          // Verify message appears in chat
-          const sentMessage = page.locator(`.message:has-text("${testMessage}"), [class*="message"]:has-text("${testMessage}")`);
-          // Message should appear (or at least no error)
-        }
-      }
-    }
-  });
-});
-
-// ============================================================================
-// PROFILE MANAGEMENT FLOW
-// ============================================================================
-test.describe('Profile Management Flow', () => {
-  
-  test('complete profile update: change name → avatar → bio → save', async ({ page }) => {
-    await page.goto('/profile');
-    await waitForApp(page);
-    await dismissOverlays(page);
-    
-    // Check if on profile page
-    const profilePage = page.locator('.profile-page, .profile-container, [class*="profile"]').first();
-    await expect(profilePage).toBeVisible({ timeout: 10000 });
-    
-    // Click edit profile button if needed - use force to bypass overlays
-    const editBtn = page.locator('button:has-text("Upraviť"), .edit-profile-btn, .btn-edit-profile').first();
-    if (await editBtn.count() > 0) {
-      await editBtn.click({ force: true });
-      await page.waitForTimeout(500);
-    }
-    
-    // Update display name - find input in form
-    const nameInput = page.locator('input[placeholder*="meno"], input.profile-input, .profile-form input').first();
-    if (await nameInput.count() > 0) {
-      await nameInput.fill(`TestUser-${Date.now()}`);
-    }
-    
-    // Update bio
-    const bioInput = page.locator('textarea').first();
-    if (await bioInput.count() > 0) {
-      await bioInput.fill('This is a test bio from E2E testing');
-    }
-    
-    // Save changes
-    const saveBtn = page.locator('button[type="submit"], button:has-text("Uložiť")').first();
-    if (await saveBtn.count() > 0) {
-      await saveBtn.click({ force: true });
-      await waitForApp(page);
-    }
-  });
-
-  test('profile visibility: toggle public/private → verify on public profiles', async ({ page }) => {
-    await page.goto('/settings');
-    await waitForApp(page);
-    await dismissOverlays(page);
-    
-    // Find profile visibility toggle - might be a switch or checkbox
-    const visibilityToggle = page.locator('[class*="visibility"] input, .public-toggle input, input[type="checkbox"]').first();
-    
-    if (await visibilityToggle.count() > 0) {
-      // Just click it - don't verify state change as it might need API
-      await visibilityToggle.click({ force: true });
-      await page.waitForTimeout(500);
-      // Success if no crash
     }
   });
 });
@@ -578,74 +392,6 @@ test.describe('Settings Complete Workflow', () => {
 });
 
 // ============================================================================
-// MAP INTERACTION WORKFLOW
-// ============================================================================
-test.describe('Map Complete Workflow', () => {
-  
-  test('map exploration: view all → filter mine → click marker → view details', async ({ page }) => {
-    await page.goto('/map');
-    await waitForApp(page, 15000);
-    await dismissOverlays(page);
-    
-    // Wait for map to fully load
-    const map = page.locator('.leaflet-container').first();
-    await expect(map).toBeVisible({ timeout: 15000 });
-    
-    // Wait for markers to load
-    await page.waitForTimeout(2000);
-    
-    // Check for filter controls
-    const filterMine = page.locator('button:has-text("Moje"), .filter-mine, [class*="filter"] input').first();
-    if (await filterMine.count() > 0) {
-      await filterMine.click({ force: true });
-      await page.waitForTimeout(500);
-    }
-    
-    // Try to click on a marker - scroll it into view first
-    const marker = page.locator('.leaflet-marker-icon').first();
-    if (await marker.count() > 0) {
-      // Use scrollIntoViewIfNeeded and force click
-      await marker.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(300);
-      
-      try {
-        await marker.click({ force: true, timeout: 5000 });
-        await page.waitForTimeout(500);
-        
-        // Popup might appear
-        const popup = page.locator('.leaflet-popup');
-        if (await popup.count() > 0) {
-          await expect(popup.first()).toBeVisible();
-        }
-      } catch (e) {
-        // Marker might be obscured, that's okay
-        console.log('Could not click marker, might be outside visible area');
-      }
-    }
-    
-    // Just verify map is still working
-    await expect(map).toBeVisible();
-  });
-
-  test('map distance calculation: toggle distances → verify display', async ({ page }) => {
-    await page.goto('/map');
-    await waitForApp(page, 15000);
-    
-    // Toggle distance display
-    const distanceToggle = page.locator('button:has-text("vzdialenost"), .distance-toggle, [class*="distance"]').first();
-    if (await distanceToggle.count() > 0) {
-      await distanceToggle.click();
-      await page.waitForTimeout(500);
-      
-      // Distance lines or info should appear
-      const distanceInfo = page.locator('.distance-line, .distance-info, [class*="polyline"]');
-      // Just verify no crash
-      await expect(page.locator('body')).toBeVisible();
-    }
-  });
-});
-
-// ============================================================================
 // DATA HISTORY & ANALYTICS WORKFLOW
 // ============================================================================
 test.describe('History & Analytics Workflow', () => {
@@ -785,7 +531,7 @@ test.describe('Real-time Monitoring Workflow', () => {
 // ============================================================================
 test.describe('Cross-Feature Integration', () => {
   
-  test('complete user journey: dashboard → inspect → harvest → map', async ({ page }) => {
+  test('complete user journey: dashboard → inspect → harvest → settings', async ({ page }) => {
     // Start at dashboard
     await page.goto('/');
     await waitForApp(page);
@@ -801,38 +547,15 @@ test.describe('Cross-Feature Integration', () => {
     await waitForApp(page);
     await expect(page.locator('.harvests-page').first()).toBeVisible({ timeout: 10000 });
     
-    // Navigate to map
-    await page.goto('/map');
+    // Navigate to settings
+    await page.goto('/settings');
     await waitForApp(page);
-    await expect(page.locator('.leaflet-container').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('.settings').first()).toBeVisible({ timeout: 10000 });
     
     // Back to dashboard
     await page.goto('/');
     await waitForApp(page);
     await expect(page.locator('.dashboard').first()).toBeVisible({ timeout: 10000 });
-  });
-
-  test('social + hives integration: share hive → friend views on map', async ({ page }) => {
-    // Make a hive public
-    await page.goto('/my-hives');
-    await waitForApp(page);
-    
-    // Find visibility toggle on first hive
-    const visToggle = page.locator('[class*="visibility"], .public-toggle').first();
-    if (await visToggle.count() > 0) {
-      await visToggle.click();
-      await page.waitForTimeout(500);
-    }
-    
-    // Go to map and verify public hives section
-    await page.goto('/map');
-    await waitForApp(page, 15000);
-    
-    // Should show public hives count
-    const publicCount = page.locator('[class*="public"], :has-text("verejných")');
-    if (await publicCount.count() > 0) {
-      await expect(publicCount.first()).toBeVisible();
-    }
   });
 
   test('notifications integration: sensor alert → notification → acknowledge', async ({ page }) => {

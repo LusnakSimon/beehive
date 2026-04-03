@@ -168,35 +168,6 @@
   line-height: 1.6;
 }
 
-.login-privacy {
-  text-align: center;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-}
-
-.login-privacy p {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-.login-privacy a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.login-privacy a:hover {
-  text-decoration: underline;
-}
-
-.login-privacy a:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
 /* Focus states for accessibility */
 .oauth-button:focus {
   outline: 3px solid var(--primary);

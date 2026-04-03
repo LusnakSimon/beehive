@@ -110,13 +110,6 @@ const Login = () => {
             </ul>
           </div>
 
-          <div className="login-privacy">
-            <p>
-              Prihlásením súhlasíš s našimi{' '}
-              <a href="/privacy" target="_blank" rel="noopener noreferrer">zásadami ochrany osobných údajov</a>.
-              Nebudeme zdieľať tvoje údaje s treťou stranou.
-            </p>
-          </div>
         </div>
       </div>
     </div>

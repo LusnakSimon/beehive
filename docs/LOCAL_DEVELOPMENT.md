@@ -1,95 +1,51 @@
-# 🛠️ Local Development Setup
+# Local Development Setup
 
-Pre lokálne testovanie map funkcionality potrebuješ MongoDB pripojenie.
+## Option 1: MongoDB Atlas (Recommended)
 
-## Možnosť 1: MongoDB Atlas (Odporúčané)
-
-1. **Vytvor `.env` súbor** v root adresári:
+1. **Create a `.env` file** in the project root:
 ```bash
 cp .env.example .env
 ```
 
-2. **Pridaj MongoDB Atlas URI** do `.env`:
-```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/beehive?retryWrites=true&w=majority
-JWT_SECRET=your-secret-key-here
-NEXTAUTH_SECRET=your-secret-key-here
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-NEXTAUTH_URL=http://localhost:5173
-```
+2. **Add your MongoDB Atlas URI** and other credentials to `.env` (see [.env.example](../.env.example) for all required variables).
 
-3. **Spusti development server**:
+3. **Start the development server**:
 ```bash
 npm run dev
 ```
 
-## Možnosť 2: Lokálny MongoDB
+The app will be available at `http://localhost:5173`.
 
-1. **Nainštaluj MongoDB lokálne**:
+## Option 2: Local MongoDB
+
+1. **Install MongoDB** locally:
 ```bash
 # Ubuntu/Debian
 sudo apt install mongodb
 
-# MacOS
+# macOS
 brew install mongodb-community
 ```
 
-2. **Spusti MongoDB**:
+2. **Start MongoDB**:
 ```bash
 mongod --dbpath ~/data/db
 ```
 
-3. **Vytvor `.env`** s local URI:
+3. **Update `.env`** with the local URI:
 ```env
 MONGODB_URI=mongodb://localhost:27017/beehive
-JWT_SECRET=dev-secret-key
-NEXTAUTH_SECRET=dev-secret-key
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-NEXTAUTH_URL=http://localhost:5173
 ```
 
-## Možnosť 3: Testovanie s Production API
+## Verifying
 
-Ak nechceš nastavovať lokálnu databázu, môžeš testovať priamo na production:
+1. Open http://localhost:5173
+2. Log in with Google or GitHub
+3. Go to My Hives and add a hive
+4. Sensor data should appear on the Dashboard once the ESP32 (or simulator) starts sending
 
-**URL:** https://ebeehive.vercel.app
+## Notes
 
-Tam je už všetko nastavené a funkčné.
-
-## 🧪 Overenie fungovania
-
-Po nastavení:
-
-1. Otvor http://localhost:5173
-2. Prihlás sa cez Google/GitHub
-3. Prejdi do Settings → Pridaj úľ s GPS
-4. Prejdi na Mapu → Mali by sa zobraziť úle
-
-## 🔍 Debugging
-
-Ak mapa nezobrazuje úle, skontroluj browser console (F12):
-
-```javascript
-// Mali by si vidieť:
-📍 Map API response: { success: true, hives: [...] }
-📍 Hives received: X
-
-// Ak vidíš:
-❌ Map API error: 401 Unauthorized
-// → Nie si prihlásený
-
-❌ Map API error: 500 
-// → MongoDB nie je pripojená (skontroluj MONGODB_URI)
-
-⚠️ User's hive "..." has no valid coordinates: undefined
-// → Úľ nemá GPS súradnice (pridaj ich v Settings)
-```
-
-## 📝 Poznámky
-
-- Vercel production používa MongoDB Atlas (nastavené v Vercel env vars)
-- Local development potrebuje vlastné MongoDB pripojenie
-- `.env` súbor je v `.gitignore` - každý developer musí vytvoriť vlastný
-- OAuth vyžaduje nastavenie redirect URLs v Google/GitHub console
+- Production uses MongoDB Atlas (configured via Vercel environment variables)
+- `.env` is in `.gitignore` — each developer creates their own
+- OAuth requires redirect URLs configured in the Google/GitHub developer console (see [OAuth Setup](OAUTH_SETUP.md))

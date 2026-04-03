@@ -1,241 +1,133 @@
-# Deployment Guide - Vercel + MongoDB Atlas
+# Deployment Guide — Vercel + MongoDB Atlas
 
-## 📦 Príprava projektu
+## Prerequisites
 
-### 1. GitHub Repository
-```bash
-cd /workspaces/dongfeng/beehive-monitor
-git init
-git add .
-git commit -m "Initial commit: Beehive Monitor PWA"
-git branch -M main
-git remote add origin https://github.com/LusnakSimon/beehive.git
-git push -u origin main
-```
+- GitHub repository with the project pushed
+- MongoDB Atlas cluster with a database
+- Google and/or GitHub OAuth app credentials
+- Vercel account linked to GitHub
 
-## ☁️ MongoDB Atlas Setup
+## 1. Vercel Setup
 
-### Database už je pripravená ✅
-- **URI**: `mongodb+srv://Vercel-Admin-dongfeng:atqNFcRNHjHQn9fO@dongfeng.ij0ylfc.mongodb.net/beehive-monitor?retryWrites=true&w=majority`
-- **Database**: `beehive-monitor`
-- **Cluster**: `dongfeng`
+### Via Vercel Dashboard
 
-### Overenie connection:
-```bash
-cd server
-node -e "const mongoose = require('mongoose'); mongoose.connect(process.env.MONGODB_URI).then(() => console.log('✅ Connected')).catch(e => console.error('❌', e))"
-```
-
-## 🚀 Vercel Deployment
-
-### Option 1: Vercel CLI (Odporúčané)
-
-#### Inštalácia Vercel CLI:
-```bash
-npm install -g vercel
-```
-
-#### Login do Vercel:
-```bash
-vercel login
-```
-
-#### Deploy:
-```bash
-cd /workspaces/dongfeng/beehive-monitor
-vercel
-```
-
-Pri prvom deploye Vercel sa spýta:
-- **Set up and deploy?** → Yes
-- **Which scope?** → Vyberte váš account
-- **Link to existing project?** → No
-- **Project name?** → beehive-monitor
-- **Directory?** → `./` (root)
-- **Override settings?** → No
-
-#### Nastavenie Environment Variables:
-```bash
-vercel env add MONGODB_URI
-# Paste: mongodb+srv://Vercel-Admin-dongfeng:atqNFcRNHjHQn9fO@dongfeng.ij0ylfc.mongodb.net/beehive-monitor?retryWrites=true&w=majority
-
-vercel env add ESP32_API_KEY
-# Paste: beehive-secret-key-2024
-```
-
-#### Production Deploy:
-```bash
-vercel --prod
-```
-
-### Option 2: Vercel Dashboard (Web UI)
-
-1. **Choďte na**: https://vercel.com/new
-2. **Import Git Repository**: https://github.com/LusnakSimon/beehive
-3. **Configure Project**:
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import the GitHub repository
+3. Configure:
    - **Framework Preset**: Vite
-   - **Root Directory**: `./` (root)
+   - **Root Directory**: `./`
    - **Build Command**: `cd client && npm install && npm run build`
    - **Output Directory**: `client/dist`
-   - **Install Command**: `npm install`
 
-4. **Environment Variables** (Settings → Environment Variables):
-   ```
-   MONGODB_URI = mongodb+srv://Vercel-Admin-dongfeng:atqNFcRNHjHQn9fO@dongfeng.ij0ylfc.mongodb.net/beehive-monitor?retryWrites=true&w=majority
-   ESP32_API_KEY = beehive-secret-key-2024
-   ```
+### Via Vercel CLI
 
-5. **Deploy** → Wait for build to complete
-
-## 🔧 Vercel Configuration
-
-### vercel.json (už vytvorený)
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "server/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/$1"
-    }
-  ]
-}
+```bash
+npm install -g vercel
+vercel login
+vercel          # preview deploy
+vercel --prod   # production deploy
 ```
 
-## 📱 Aktualizácia ESP32 kódu
+## 2. Environment Variables
 
-Po deploye aktualizujte Arduino gateway kód:
+Add these in Vercel Dashboard → Project Settings → Environment Variables:
+
+```
+MONGODB_URI=<your-mongodb-atlas-connection-string>
+JWT_SECRET=<random-secret>
+NEXTAUTH_SECRET=<random-secret>
+NEXTAUTH_URL=https://your-app.vercel.app
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+GITHUB_ID=<your-github-client-id>
+GITHUB_SECRET=<your-github-client-secret>
+```
+
+Optional (for harvest photo uploads):
+```
+CLOUDINARY_CLOUD_NAME=<your-cloud-name>
+CLOUDINARY_API_KEY=<your-api-key>
+CLOUDINARY_API_SECRET=<your-api-secret>
+```
+
+## 3. ESP32 Gateway Configuration
+
+After deploying, update the gateway firmware with your production URL:
 
 ```cpp
-// V beehive_gateway/beehive_gateway.ino zmeňte:
-const char* SERVER_HOST = "ebeehive.vercel.app";
-const char* HIVE_ID = "HIVE-001";  // Your hive ID
-const char* API_KEY = "your-api-key-from-app"; // Get from hive settings
+const char* SERVER_HOST = "your-app.vercel.app";
+const char* API_KEY = "your-api-key-from-app";
 ```
 
-API kľúč získate v aplikácii: My Hives → Upraviť úľ → Typ zariadenia: API → Skopírovať kľúč
+Get the API key from the app: My Hives → Edit hive → Device type: API → Copy key.
 
-## 🧪 Testovanie po deploye
+## 4. Verifying the Deploy
 
-### Test API endpoint:
+**Test the API:**
 ```bash
-curl -X POST https://ebeehive.vercel.app/api/sensor \
+curl -X POST https://your-app.vercel.app/api/sensor \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your-api-key" \
-  -d '{
-    "temperature": 32.5,
-    "humidity": 55.2,
-    "weight": 48.75,
-    "battery": 85,
-    "hiveId": "HIVE-001"
-  }'
+  -d '{"temperature": 32.5, "humidity": 55.2, "weight": 48.75}'
 ```
 
-Očakávaná odpoveď:
-```json
-{
-  "success": true,
-  "message": "Dáta úspešne uložené",
-  "id": "..."
-}
-```
+**Test the frontend:**
+1. Open the app URL
+2. Log in with Google/GitHub
+3. Check the Dashboard for sensor data
+4. Test offline mode (DevTools → Network → Offline)
 
-### Test Frontend:
-1. Otvorte: `https://your-project.vercel.app`
-2. Skontrolujte Dashboard
-3. Testujte offline režim (DevTools → Network → Offline)
-4. Skúste "Add to Home Screen" na mobile
+## 5. Continuous Deployment
 
-### Test MongoDB:
-```bash
-# V MongoDB Atlas Compass alebo GUI
-# Collections → beehive-monitor → readings
-# Mali by ste vidieť testové dáta
-```
-
-## 🔄 Continuous Deployment
-
-Po nastavení je každý push do GitHub automaticky deploynutý:
+Every push to `main` is automatically deployed by Vercel:
 
 ```bash
-git add .
-git commit -m "Update feature"
 git push origin main
-# Vercel automaticky deployuje novu verziu
 ```
 
-## 📊 Monitorovanie
+## Security Notes
 
-### Vercel Dashboard:
-- **Deployments** - História deployov
-- **Analytics** - Návštevnosť PWA
-- **Logs** - Runtime logy (funkcie, chyby)
+- All secrets are stored in Vercel environment variables, never in code
+- MongoDB Atlas IP whitelist should include `0.0.0.0/0` for Vercel serverless
+- Rate limiting is active on the sensor endpoint (100 req/15 min)
 
-### MongoDB Atlas:
-- **Metrics** - Connection count, operations/sec
-- **Performance Advisor** - Index recommendations
-- **Alerts** - Nastavte upozornenia na limity
+## Troubleshooting
 
-## 🔒 Security Checklist
-
-✅ **Environment Variables** sú v Vercel Secrets, nie v kóde
-✅ **MongoDB URI** obsahuje whitelist IP (0.0.0.0/0 pre Vercel)
-✅ **API Key** pre ESP32 autentifikáciu
-✅ **CORS** enabled len pre potrebné origins
-✅ **Rate Limiting** aktívny (100 req/15min)
-
-## 🐛 Troubleshooting
-
-### Build Failed:
+### Build Failed
 ```bash
-# Lokálne testovanie buildu:
+# Test the build locally:
 cd client
 npm run build
-# Skontrolujte chyby
+# Check for errors
 ```
 
-### MongoDB Connection Failed:
-- Skontrolujte IP Whitelist v Atlas (0.0.0.0/0)
-- Overte connection string v Environment Variables
-- Skontrolujte database meno v URI
+### MongoDB Connection Failed
+- Check the IP Whitelist in Atlas (`0.0.0.0/0`)
+- Verify the connection string in Environment Variables
+- Check the database name in the URI
 
-### API Returns 500:
-- Pozrite Vercel Logs (Dashboard → Functions → View Logs)
-- Skontrolujte či MongoDB je connected
-- Overte API Key v headeri
+### API Returns 500
+- Check Vercel Logs (Dashboard → Functions → View Logs)
+- Verify MongoDB is connected
+- Verify the API Key in the header
 
-### PWA Offline Not Working:
-- Vyčistite cache (DevTools → Application → Clear storage)
-- Skontrolujte Service Worker registration
-- Overte manifest.json path
+### PWA Offline Not Working
+- Clear cache (DevTools → Application → Clear storage)
+- Check Service Worker registration
+- Verify the `manifest.json` path
 
-## 📞 Support
+## Support
 
 **Vercel Issues**: https://vercel.com/support
 **MongoDB Atlas**: https://www.mongodb.com/docs/atlas/
 
-## 🎯 Post-Deployment Tasks
+## Post-Deployment Checklist
 
-1. ✅ Deploy na Vercel
-2. ⏳ Test všetkých API endpoints
-3. ⏳ Nahrať kód do ESP32 s produkčnou URL
-4. ⏳ Test PWA na mobile (Add to Home Screen)
-5. ⏳ Nastaviť MongoDB alerts
+1. Deploy to Vercel
+2. Test all API endpoints
+3. Flash the ESP32 with the production URL
+4. Test PWA on mobile (Add to Home Screen)
+5. Set up MongoDB alerts
 6. ⏳ Nastaviť Vercel Analytics
 7. ⏳ Dokumentovať produkčnú URL
 

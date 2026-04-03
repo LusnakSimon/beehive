@@ -279,34 +279,6 @@ test.describe('Authenticated User Flows', () => {
     });
   });
 
-  test.describe('Map Page Flow', () => {
-    test('should display map page', async ({ page }) => {
-      await page.goto('/map');
-      await waitForApp(page);
-      
-      // Should have map container - leaflet-container is most specific
-      const mapContainer = page.locator('.leaflet-container').first();
-      await expect(mapContainer).toBeVisible({ timeout: 15000 });
-    });
-
-    test('should show hive markers on map', async ({ page }) => {
-      await page.goto('/map');
-      await waitForApp(page, 15000);
-      
-      // Wait for map to load markers
-      await page.waitForTimeout(2000);
-      
-      // Look for markers (Leaflet or custom)
-      const markers = page.locator('.leaflet-marker-icon, [class*="marker"], .hive-marker');
-      
-      // Either markers exist or there's a "no hives" message
-      const markerCount = await markers.count();
-      const noHivesMsg = await page.locator('text=žiadne úle, text=no hives').count();
-      
-      expect(markerCount > 0 || noHivesMsg > 0).toBeTruthy();
-    });
-  });
-
   test.describe('Settings Page Flow', () => {
     test('should display settings page', async ({ page }) => {
       await page.goto('/settings');
@@ -458,7 +430,7 @@ test.describe('Error Handling', () => {
     });
     
     // Navigate through main pages
-    const routes = ['/', '/history', '/inspection', '/map', '/settings'];
+    const routes = ['/', '/history', '/inspection', '/settings'];
     
     for (const route of routes) {
       await page.goto(route);

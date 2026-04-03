@@ -12,7 +12,7 @@ if ('serviceWorker' in navigator) {
         // ServiceWorker registered successfully
       },
       (err) => {
-        console.error('ServiceWorker registrácia zlyhala:', err)
+        console.error('ServiceWorker registration failed:', err)
       }
     )
   })

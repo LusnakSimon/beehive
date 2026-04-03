@@ -21,7 +21,6 @@ test.describe('Main Navigation Flow', () => {
       { path: '/', name: 'Dashboard' },
       { path: '/history', name: 'História' },
       { path: '/inspection', name: 'Kontrola' },
-      { path: '/map', name: 'Mapa' },
       { path: '/settings', name: 'Nastavenia' },
     ];
 
@@ -190,44 +189,6 @@ test.describe('Auth State Persistence', () => {
   });
 });
 
-test.describe('Social Features Navigation', () => {
-  test('should navigate to friends page', async ({ page }) => {
-    await page.goto('/friends');
-    await waitForStableState(page);
-    
-    // Page should load
-    const pageLoaded = await page.locator('body').textContent();
-    expect(pageLoaded.length).toBeGreaterThan(0);
-  });
-
-  test('should navigate to groups page', async ({ page }) => {
-    await page.goto('/groups');
-    await waitForStableState(page);
-    
-    // Page should load
-    const pageLoaded = await page.locator('body').textContent();
-    expect(pageLoaded.length).toBeGreaterThan(0);
-  });
-
-  test('should navigate to chat/messages page', async ({ page }) => {
-    await page.goto('/chat');
-    await waitForStableState(page);
-    
-    // Page should load
-    const pageLoaded = await page.locator('body').textContent();
-    expect(pageLoaded.length).toBeGreaterThan(0);
-  });
-
-  test('should navigate to notifications page', async ({ page }) => {
-    await page.goto('/notifications');
-    await waitForStableState(page);
-    
-    // Page should load
-    const pageLoaded = await page.locator('body').textContent();
-    expect(pageLoaded.length).toBeGreaterThan(0);
-  });
-});
-
 test.describe('Deep Linking', () => {
   test('should handle direct URL access to dashboard', async ({ page }) => {
     await page.goto('/');
@@ -243,15 +204,6 @@ test.describe('Deep Linking', () => {
     await waitForStableState(page);
     
     // Page should load
-    const pageLoaded = await page.locator('body').textContent();
-    expect(pageLoaded.length).toBeGreaterThan(0);
-  });
-
-  test('should handle direct URL access to map', async ({ page }) => {
-    await page.goto('/map');
-    await waitForStableState(page);
-    
-    // Should load map or redirect
     const pageLoaded = await page.locator('body').textContent();
     expect(pageLoaded.length).toBeGreaterThan(0);
   });

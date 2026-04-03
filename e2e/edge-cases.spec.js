@@ -63,63 +63,6 @@ test.describe('Form Validation', () => {
     await expect(page.locator('.modal-content')).toBeVisible();
   });
 
-  test('should validate DevEUI format (16 hex chars)', async ({ page }) => {
-    await page.goto('/my-hives');
-    await waitForApp(page);
-    await ensureAuth(page);
-    
-    await page.click('button:has-text("Pridať úľ")');
-    await page.waitForTimeout(300);
-    
-    // Fill name first
-    await page.fill('.modal-content input:first-of-type', 'DevEUI Test');
-    
-    // Select API type
-    await page.selectOption('.modal-content select:first-of-type', 'api');
-    await page.waitForTimeout(300);
-    
-    // Look for DevEUI input
-    const devEuiInput = page.locator('input[placeholder*="DevEUI"], input[placeholder*="LoRaWAN"]');
-    if (await devEuiInput.count() > 0) {
-      // Enter invalid DevEUI (too short)
-      await devEuiInput.fill('ABC123');
-      await page.click('button:has-text("Uložiť")');
-      await page.waitForTimeout(300);
-      
-      // Should show error or reject
-      const hasError = await page.locator('.error-text:has-text("DevEUI"), .error-text:has-text("16")').count() > 0;
-      const modalOpen = await page.locator('.modal-content').isVisible();
-      
-      expect(hasError || modalOpen).toBeTruthy();
-    }
-  });
-
-  test('should validate GPS coordinates format', async ({ page }) => {
-    await page.goto('/my-hives');
-    await waitForApp(page);
-    await ensureAuth(page);
-    
-    await page.click('button:has-text("Pridať úľ")');
-    await page.waitForTimeout(300);
-    
-    await page.fill('.modal-content input:first-of-type', 'GPS Test');
-    
-    // Find GPS inputs
-    const latInput = page.locator('input[placeholder*="lat"]');
-    const lngInput = page.locator('input[placeholder*="lng"]');
-    
-    if (await latInput.count() > 0) {
-      // Enter invalid coordinates
-      await latInput.fill('not-a-number');
-      await lngInput.fill('also-invalid');
-      
-      await page.click('button:has-text("Uložiť")');
-      await page.waitForTimeout(300);
-      
-      // Should handle gracefully
-      await expect(page.locator('body')).toBeVisible();
-    }
-  });
 });
 
 // ============================================================================

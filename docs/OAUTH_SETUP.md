@@ -1,25 +1,25 @@
 # OAuth Authentication Setup Guide
 
-## 🔐 Konfigurácia Google OAuth
+## Google OAuth
 
-### 1. Vytvor Google Cloud Project
-1. Choď na [Google Cloud Console](https://console.cloud.google.com/)
-2. Vytvor nový projekt alebo vyber existujúci
-3. Klikni na "APIs & Services" > "Credentials"
+### 1. Create a Google Cloud Project
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Click "APIs & Services" > "Credentials"
 
-### 2. Nastav OAuth Consent Screen
-1. Klikni na "OAuth consent screen" v bočnom menu
-2. Vyber **External** user type
-3. Vyplň základné informácie:
+### 2. Configure the OAuth Consent Screen
+1. Click "OAuth consent screen" in the sidebar
+2. Select **External** user type
+3. Fill in basic info:
    - **App name**: eBeeHive
-   - **User support email**: tvoj email
-   - **Developer contact**: tvoj email
-4. Scopes: Nepotrebuješ pridávať špeciálne scopes (userinfo.email a userinfo.profile sú default)
-5. Test users: Pridaj svoj email pre testovanie
-6. Ulož a pokračuj
+   - **User support email**: your email
+   - **Developer contact**: your email
+4. Scopes: no special scopes needed (`userinfo.email` and `userinfo.profile` are included by default)
+5. Test users: add your own email for testing
+6. Save and continue
 
-### 3. Vytvor OAuth 2.0 Client ID
-1. Choď na "Credentials" > "Create Credentials" > "OAuth client ID"
+### 3. Create an OAuth 2.0 Client ID
+1. Go to "Credentials" > "Create Credentials" > "OAuth client ID"
 2. Application type: **Web application**
 3. Name: `eBeeHive Production`
 4. Authorized JavaScript origins:
@@ -32,84 +32,83 @@
    https://ebeehive.vercel.app/api/auth/callback/google
    http://localhost:3000/api/auth/callback/google
    ```
-6. Klikni "Create"
-7. **Skopíruj Client ID a Client Secret** - budeme ich potrebovať
+6. Click "Create"
+7. **Copy the Client ID and Client Secret** — you will need them later
 
 ---
 
-## 🐙 Konfigurácia GitHub OAuth
+## GitHub OAuth
 
-### 1. Vytvor GitHub OAuth App
-1. Choď na [GitHub Settings](https://github.com/settings/developers)
-2. Klikni na "OAuth Apps" > "New OAuth App"
+### 1. Create a GitHub OAuth App
+1. Go to [GitHub Settings](https://github.com/settings/developers)
+2. Click "OAuth Apps" > "New OAuth App"
 
-### 2. Vyplň detaily aplikácie
+### 2. Fill in App Details
 - **Application name**: eBeeHive
 - **Homepage URL**: `https://ebeehive.vercel.app`
-- **Application description**: Inteligentný systém monitorovania úľov
+- **Application description**: Smart beehive monitoring system
 - **Authorization callback URL**: 
   ```
   https://ebeehive.vercel.app/api/auth/callback/github
   ```
 
-### 3. Registruj aplikáciu
-1. Klikni "Register application"
-2. **Skopíruj Client ID**
-3. Klikni "Generate a new client secret"
-4. **Skopíruj Client Secret** (zobrazí sa len raz!)
+### 3. Register the App
+1. Click "Register application"
+2. **Copy the Client ID**
+3. Click "Generate a new client secret"
+4. **Copy the Client Secret** (it is shown only once!)
 
-### 4. Pre lokálne testovanie
-Vytvor druhú OAuth app pre development:
+### 4. For Local Testing
+Create a second OAuth app for development:
 - **Authorization callback URL**: `http://localhost:3000/api/auth/callback/github`
 
 ---
 
-## ⚙️ Konfigurácia Environment Variables
+## Environment Variables
 
-### 1. Vygeneruj NEXTAUTH_SECRET
+### 1. Generate NEXTAUTH_SECRET
 ```bash
-# V terminále spusti:
 openssl rand -base64 32
 ```
 
-### 2. Pridaj do Vercel
-1. Choď na [Vercel Dashboard](https://vercel.com/dashboard)
-2. Vyber projekt `beehive-monitor`
-3. Choď do **Settings** > **Environment Variables**
-4. Pridaj tieto premenné:
+### 2. Add to Vercel
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Select the project
+3. Go to **Settings** > **Environment Variables**
+4. Add these variables:
 
 ```env
 NEXTAUTH_URL=https://ebeehive.vercel.app
-NEXTAUTH_SECRET=<vygenerovaný-secret-z-openssl>
-GOOGLE_CLIENT_ID=<tvoj-google-client-id>
-GOOGLE_CLIENT_SECRET=<tvoj-google-client-secret>
-GITHUB_ID=<tvoj-github-client-id>
-GITHUB_SECRET=<tvoj-github-client-secret>
+NEXTAUTH_SECRET=<generated-secret>
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+GITHUB_ID=<your-github-client-id>
+GITHUB_SECRET=<your-github-client-secret>
 ```
 
-### 3. Pre lokálny development
-Vytvor súbor `.env.local` v root adresári:
+### 3. For Local Development
+Create a `.env.local` file in the project root:
 ```env
 MONGODB_URI=mongodb+srv://...
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=<tvoj-secret>
-GOOGLE_CLIENT_ID=<tvoj-google-client-id>
-GOOGLE_CLIENT_SECRET=<tvoj-google-client-secret>
-GITHUB_ID=<tvoj-github-client-id>
-GITHUB_SECRET=<tvoj-github-client-secret>
+NEXTAUTH_SECRET=<your-secret>
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+GITHUB_ID=<your-github-client-id>
+GITHUB_SECRET=<your-github-client-secret>
 ```
 
-**⚠️ DÔLEŽITÉ**: `.env.local` je v `.gitignore` - nikdy ho necommituj!
+**⚠️ Important**: `.env.local` is in `.gitignore` — never commit it!
 
 ---
 
-## 🚀 Redeploy na Vercel
+## Redeploy
 
-Po pridaní environment variables:
-1. Choď do Vercel Dashboard
+After adding environment variables:
+1. Go to the Vercel Dashboard
 2. Deployments > Latest deployment
-3. Klikni na "..." > "Redeploy"
-4. Alebo jednoducho pushni do git:
+3. Click "..." > "Redeploy"
+4. Or simply push to git:
 ```bash
 git add .
 git commit -m "Add OAuth authentication"
