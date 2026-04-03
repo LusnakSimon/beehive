@@ -429,16 +429,6 @@
   color: var(--danger-light);
 }
 
-.nav-profile-link {
-  text-decoration: none;
-  transition: opacity 0.2s;
-  cursor: pointer;
-}
-
-.nav-profile-link:hover {
-  opacity: 0.8;
-}
-
 /* Focus states for accessibility */
 .nav-link:focus,
 .nav-logout-btn:focus,
@@ -460,35 +450,11 @@
   outline-offset: 2px;
 }
 
-/* Unread message badge */
-.nav-badge {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  background: var(--danger);
-  color: white;
-  font-size: 0.625rem;
-  font-weight: 700;
-  padding: 0.125rem 0.375rem;
-  border-radius: 10px;
-  min-width: 18px;
-  text-align: center;
-  line-height: 1;
-}
-
-@media (min-width: 768px) {
-  .nav-badge {
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-}
-
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .nav-link,
   .nav-logout-btn,
-  .mobile-dropdown-item,
-  .nav-profile-link {
+  .mobile-dropdown-item {
     transition: none;
   }
   

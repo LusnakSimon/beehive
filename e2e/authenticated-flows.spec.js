@@ -818,27 +818,6 @@ test.describe('Navigation', () => {
 });
 
 // ============================================================================
-// ADMIN FLOWS (if user is admin)
-// ============================================================================
-
-test.describe('Admin Features', () => {
-  test('should access admin page if admin', async ({ page }) => {
-    await page.goto('/admin');
-    await waitForApp(page);
-    
-    // Either shows admin content or redirects/shows unauthorized
-    const adminContent = page.locator('.admin-page, h1:has-text("Admin")');
-    const unauthorized = page.locator('text=Unauthorized, text=Prístup zamietnutý, text=Admin access');
-    
-    const isAdmin = await adminContent.count() > 0;
-    const isRestricted = await unauthorized.count() > 0 || page.url().includes('/login');
-    
-    // Either admin or properly restricted
-    expect(isAdmin || isRestricted || true).toBeTruthy();
-  });
-});
-
-// ============================================================================
 // ERROR HANDLING
 // ============================================================================
 

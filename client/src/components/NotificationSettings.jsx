@@ -6,16 +6,8 @@ export default function NotificationSettings() {
     permission,
     settings,
     requestPermission,
-    updateSettings,
-    sendNotification
+    updateSettings
   } = useNotifications();
-
-  const handleTestNotification = async () => {
-    await sendNotification('Test notifikácia', {
-      body: 'Toto je testovacia notifikácia 🐝',
-      tag: 'test'
-    });
-  };
 
   return (
     <div className="notification-settings">
@@ -105,14 +97,6 @@ export default function NotificationSettings() {
               <label htmlFor="notifOffline">📡 Zariadenie offline</label>
             </div>
           </div>
-
-          <button 
-            className="btn btn-secondary" 
-            onClick={handleTestNotification}
-            style={{ marginTop: '1rem' }}
-          >
-            🔔 Otestovať notifikáciu
-          </button>
         </>
       )}
     </div>

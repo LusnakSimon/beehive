@@ -41,9 +41,7 @@ module.exports = async (req, res) => {
         name: decoded.name,
         image: decoded.image,
         provider: decoded.provider,
-        role: decoded.role,
         ownedHives: ownedHives,
-        profile: decoded.profile || {},
       },
     });
   } catch (err) {

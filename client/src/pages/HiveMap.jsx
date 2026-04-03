@@ -199,7 +199,6 @@ export default function HiveMap() {
   }
 
   const myHives = hives.filter(h => h.isOwner)
-  const publicHives = hives.filter(h => !h.isOwner)
 
   if (loading) {
     return (
@@ -245,9 +244,6 @@ export default function HiveMap() {
         <div className="map-stats">
           <span className="stat">
             <strong>{myHives.length}</strong> mojich úľov
-          </span>
-          <span className="stat">
-            <strong>{publicHives.length}</strong> verejných úľov
           </span>
           <button 
             className="btn-refresh-map"
@@ -305,10 +301,7 @@ export default function HiveMap() {
                     <p className="hive-id">{hive.id}</p>
                     {hive.location && <p>📍 {hive.location}</p>}
                     <p className="hive-owner">
-                      {hive.isOwner ? '✅ Tvoj úľ' : `👤 ${hive.owner.name}`}
-                    </p>
-                    <p className="hive-visibility">
-                      {hive.visibility === 'public' ? '🌍 Verejný' : '🔒 Súkromný'}
+                      {hive.isOwner ? '✅ Tvoj úľ' : `👤 ${hive.owner?.name || 'Neznámy'}`}
                     </p>
                   </div>
                 </Popup>
@@ -368,10 +361,6 @@ export default function HiveMap() {
         <div className="legend-item">
           <div className="legend-marker" style={{ border: '3px solid #fff' }}>🐝</div>
           <span>Tvoje úle</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-marker" style={{ border: '3px solid #666' }}>🐝</div>
-          <span>Verejné úle iných používateľov</span>
         </div>
       </div>
     </div>

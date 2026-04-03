@@ -36,7 +36,7 @@ describe('Navigation', () => {
     // Reset fetch mock
     global.fetch = vi.fn(() => Promise.resolve({
       ok: true,
-      json: () => Promise.resolve({ conversations: [], unreadCount: 0 }),
+      json: () => Promise.resolve({}),
     }))
   })
 

@@ -37,7 +37,7 @@ export default function Navigation() {
       ro.disconnect()
       window.removeEventListener('resize', calculate)
     }
-  }, [user?.role])
+  }, [])
 
   // Close dropdowns when clicking outside
   useEffect(() => {

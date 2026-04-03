@@ -54,23 +54,6 @@ export const EmptyStates = {
     />
   ),
   
-  NoFriends: () => (
-    <EmptyState
-      icon="👥"
-      title="Žiadni priatelia"
-      description="Zatiaľ nemáte žiadnych priateľov. Vyhľadajte a pridajte si priateľov včelárov."
-      actionText="Nájsť priateľov"
-    />
-  ),
-  
-  NoMessages: () => (
-    <EmptyState
-      icon="💬"
-      title="Žiadne správy"
-      description="Zatiaľ nemáte žiadne správy. Začnite konverzáciu s priateľom."
-    />
-  ),
-  
   NoNotifications: () => (
     <EmptyState
       icon="🔔"

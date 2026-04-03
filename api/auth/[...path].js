@@ -290,7 +290,6 @@ module.exports = async function handler(req, res) {
           email: user.email,
           name: user.name,
           image: user.avatar,
-          role: user.role || 'user',
           hiveIds: hiveIds // Only IDs, not full objects
         },
         jwtSecret,

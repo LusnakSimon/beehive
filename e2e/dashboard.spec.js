@@ -39,16 +39,12 @@ test.describe('Navigation Structure', () => {
     const hasNav = await nav.count() > 0;
     
     if (hasNav) {
-      // Based on screenshot: Dashboard, História, Kontrola, Mapa, Hľadať, Priatelia, Správy, Skupiny, Upozornenia, Nastavenia
+      // Based on app navigation
       const expectedNavItems = [
         'Dashboard',
         'História', 
         'Kontrola',
         'Mapa',
-        'Hľadať',
-        'Priatelia',
-        'Správy',
-        'Skupiny',
         'Upozornenia',
         'Nastavenia'
       ];

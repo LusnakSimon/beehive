@@ -15,7 +15,7 @@ export default function MyHives() {
   const [modalMode, setModalMode] = useState('add') // 'add' | 'edit'
   const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
 
-  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'api', deviceId: '' } })
+  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
@@ -24,7 +24,7 @@ export default function MyHives() {
 
   const openAddModal = () => {
     setModalMode('add')
-    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'api', deviceId: '' } })
+    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
     setShowModal(true)
   }
 
@@ -39,7 +39,6 @@ export default function MyHives() {
       imageFile: null,  // Track if user selected a new file
       originalImage: hive.image || '',  // Track original to detect changes
       coordinates: hive.coordinates || { lat: '', lng: '' },
-      visibility: hive.visibility || 'private',
       device: hive.device || { type: 'api', deviceId: '' }
     })
     setShowModal(true)
@@ -113,7 +112,7 @@ export default function MyHives() {
     try {
         if (modalMode === 'add') {
         const tempId = `HIVE-${Date.now()}`
-        const optimistic = { id: tempId, name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, visibility: form.visibility, device: form.device }
+        const optimistic = { id: tempId, name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device }
         addHive(optimistic)
         setShowModal(false)
         setSelectedHive(tempId)
@@ -127,7 +126,6 @@ export default function MyHives() {
           fd.append('name', form.name)
           fd.append('location', form.location)
           fd.append('color', form.color)
-          fd.append('visibility', form.visibility)
           const deviceData = { type: form.device.type }
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
@@ -139,7 +137,7 @@ export default function MyHives() {
             body: fd
           })
         } else {
-          const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
+          const hiveData = { name: form.name, location: form.location, color: form.color, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           if (form.imageDataUrl) hiveData.image = form.imageDataUrl
 
@@ -184,7 +182,7 @@ export default function MyHives() {
         
         // Don't close modal yet if we're switching to API - we want to show the key
         if (!wasManual) {
-          updateHive(hiveId, { name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, visibility: form.visibility, device: form.device })
+          updateHive(hiveId, { name: form.name, location: form.location, color: form.color, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device })
           setShowModal(false)
         }
 
@@ -196,7 +194,6 @@ export default function MyHives() {
           fd.append('name', form.name)
           fd.append('location', form.location)
           fd.append('color', form.color)
-          fd.append('visibility', form.visibility)
           const deviceData = { type: form.device.type }
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
@@ -208,7 +205,7 @@ export default function MyHives() {
             body: fd
           })
         } else {
-          const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
+          const hiveData = { name: form.name, location: form.location, color: form.color, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           
           // Only send image if it actually changed (new base64 data URL, not the same URL)
@@ -459,12 +456,6 @@ export default function MyHives() {
                       </div>
                     )}
                 </div>
-
-                <label>Viditeľnosť</label>
-                <select value={form.visibility} onChange={e => setForm(f => ({ ...f, visibility: e.target.value }))}>
-                  <option value="private">🔒 Súkromný</option>
-                  <option value="public">🌍 Verejný</option>
-                </select>
 
               <div className="form-actions">
                 <button className="btn btn-secondary" type="button" onClick={() => setShowModal(false)}>Zrušiť</button>

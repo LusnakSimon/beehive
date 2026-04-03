@@ -46,8 +46,7 @@ export function HiveProvider({ children }) {
             color: hive.color || 'var(--warning)',
             image: hive.image || '',
             coordinates: hive.coordinates || { lat: '', lng: '' },
-            visibility: hive.visibility || 'private',
-            device: hive.device || { type: 'manual', devEUI: '', deviceId: '' }
+            device: hive.device || { type: 'api', deviceId: '' }
           };
         }
       });

@@ -1,4 +1,4 @@
-const { verifyAuth, requireAuth, requireAdmin, userOwnsHive } = require('../../lib/utils/auth');
+const { verifyAuth, requireAuth, userOwnsHive } = require('../../lib/utils/auth');
 const jwt = require('jsonwebtoken');
 
 describe('Auth Utils', () => {
@@ -120,45 +120,6 @@ describe('Auth Utils', () => {
     });
   });
 
-  describe('requireAdmin', () => {
-    it('should return user when admin', () => {
-      const userData = { id: 'admin-user', email: 'admin@test.com', role: 'admin' };
-      const token = jwt.sign({ user: userData }, SECRET);
-      const req = createMockRequest(`auth-token=${token}`);
-      const res = createMockResponse();
-      
-      const result = requireAdmin(req, res);
-      
-      expect(result).not.toBe(null);
-      expect(result.role).toBe('admin');
-    });
-
-    it('should send 403 when user is not admin', () => {
-      const userData = { id: 'normal-user', email: 'user@test.com', role: 'user' };
-      const token = jwt.sign({ user: userData }, SECRET);
-      const req = createMockRequest(`auth-token=${token}`);
-      const res = createMockResponse();
-      
-      const result = requireAdmin(req, res);
-      
-      expect(result).toBe(null);
-      expect(res.status).toHaveBeenCalledWith(403);
-      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
-        error: 'Forbidden'
-      }));
-    });
-
-    it('should send 401 when not authenticated', () => {
-      const req = createMockRequest();
-      const res = createMockResponse();
-      
-      const result = requireAdmin(req, res);
-      
-      expect(result).toBe(null);
-      expect(res.status).toHaveBeenCalledWith(401);
-    });
-  });
-
   describe('userOwnsHive', () => {
     it('should return true when user owns hive (string format)', () => {
       const user = {
@@ -186,16 +147,6 @@ describe('Auth Utils', () => {
       };
       
       expect(userOwnsHive(user, 'HIVE-999')).toBe(false);
-    });
-
-    it('should return true for admin regardless of ownership', () => {
-      const adminUser = {
-        id: 'admin123',
-        role: 'admin',
-        ownedHives: []
-      };
-      
-      expect(userOwnsHive(adminUser, 'HIVE-ANY')).toBe(true);
     });
 
     it('should return false for null user or hiveId', () => {

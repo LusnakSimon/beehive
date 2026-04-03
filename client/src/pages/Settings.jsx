@@ -44,16 +44,16 @@ export default function Settings() {
         <h2>Základné nastavenia</h2>
 
         <div className="form-group">
-          <label htmlFor="updateInterval">Interval aktualizácie (sekundy)</label>
+          <label htmlFor="updateInterval">Interval aktualizácie (minúty)</label>
           <input
             id="updateInterval"
             type="number"
             value={settings.updateInterval}
             onChange={(e) => handleChange('updateInterval', parseInt(e.target.value))}
-            min="10"
-            max="300"
+            min="5"
+            max="60"
           />
-          <small className="settings-hint">Ako často sa majú aktualizovať dáta z API (10-300s). Kratší interval = viac žiadostí na server.</small>
+          <small className="settings-hint">Ako často sa majú aktualizovať dáta (5-60 min). Zariadenie odosiela dáta každých 30 minút.</small>
         </div>
       </div>
 
@@ -107,29 +107,6 @@ export default function Settings() {
       <div className="settings-section">
         <h2>🔔 Sensor Notifikácie</h2>
         <NotificationSettings />
-      </div>
-
-      <div className="settings-section">
-        <h2>O aplikácii</h2>
-        <div className="info-box">
-          <p><strong>Verzia:</strong> 1.0.0</p>
-          <p><strong>Zariadenie:</strong> ESP32-C3</p>
-          <p><strong>Režim:</strong> {navigator.onLine ? '🟢 Online' : '🔴 Offline'}</p>
-          <p style={{ marginTop: '16px', fontSize: '13px', opacity: 0.7 }}>
-            Páči sa vám táto aplikácia?{' '}
-            <a 
-              href="https://ko-fi.com/dongfeng400" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style={{ 
-                color: '#007bff',
-                textDecoration: 'underline'
-              }}
-            >
-              Podporiť na Ko-fi ☕
-            </a>
-          </p>
-        </div>
       </div>
 
       <button className="btn btn-primary" onClick={saveSettings}>

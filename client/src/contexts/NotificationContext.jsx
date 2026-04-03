@@ -133,8 +133,9 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
-  const checkConditions = async (hiveId) => {
+  const checkConditions = async (hiveId, hiveName) => {
     if (!settings.enabled || permission !== 'granted') return;
+    const label = hiveName || hiveId;
     
     try {
       // Read threshold settings from beehive-settings (written by Settings page)
@@ -155,13 +156,13 @@ export const NotificationProvider = ({ children }) => {
       if (settings.temperature && data.temperature < tempMin) {
         alerts.push({
           title: '🌡️ Nízka teplota!',
-          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (min: ${tempMin}°C)`,
+          body: `Teplota v úli ${label}: ${data.temperature.toFixed(1)}°C (min: ${tempMin}°C)`,
           tag: `temp-low-${hiveId}`
         });
       } else if (settings.temperature && data.temperature > tempMax) {
         alerts.push({
           title: '🌡️ Vysoká teplota!',
-          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (max: ${tempMax}°C)`,
+          body: `Teplota v úli ${label}: ${data.temperature.toFixed(1)}°C (max: ${tempMax}°C)`,
           tag: `temp-high-${hiveId}`
         });
       }
@@ -170,13 +171,13 @@ export const NotificationProvider = ({ children }) => {
       if (settings.humidity && data.humidity < humidityMin) {
         alerts.push({
           title: '💧 Nízka vlhkosť!',
-          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (min: ${humidityMin}%)`,
+          body: `Vlhkosť v úli ${label}: ${data.humidity.toFixed(1)}% (min: ${humidityMin}%)`,
           tag: `humidity-low-${hiveId}`
         });
       } else if (settings.humidity && data.humidity > humidityMax) {
         alerts.push({
           title: '💧 Vysoká vlhkosť!',
-          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (max: ${humidityMax}%)`,
+          body: `Vlhkosť v úli ${label}: ${data.humidity.toFixed(1)}% (max: ${humidityMax}%)`,
           tag: `humidity-high-${hiveId}`
         });
       }
@@ -185,7 +186,7 @@ export const NotificationProvider = ({ children }) => {
       if (settings.battery && data.battery !== undefined && data.battery !== null && data.battery < 20) {
         alerts.push({
           title: '🔋 Nízka batéria!',
-          body: `Batéria úľa ${hiveId}: ${data.battery}%`,
+          body: `Batéria úľa ${label}: ${data.battery}%`,
           tag: `battery-low-${hiveId}`
         });
       }
@@ -204,7 +205,7 @@ export const NotificationProvider = ({ children }) => {
             const direction = data.weight > prev.weight ? 'nárast' : 'pokles';
             alerts.push({
               title: '⚖️ Výrazná zmena hmotnosti!',
-              body: `Úľ ${hiveId}: ${direction} o ${weightChange.toFixed(1)} kg`,
+              body: `Úľ ${label}: ${direction} o ${weightChange.toFixed(1)} kg`,
               tag: `weight-change-${hiveId}`
             });
           }
@@ -217,7 +218,7 @@ export const NotificationProvider = ({ children }) => {
         if (hoursSince > 1) {
           alerts.push({
             title: '📡 Zariadenie neodpovedá!',
-            body: `Úľ ${hiveId}: posledné dáta pred ${Math.floor(hoursSince)}h`,
+            body: `Úľ ${label}: posledné dáta pred ${Math.floor(hoursSince)}h`,
             tag: `offline-${hiveId}`
           });
         }

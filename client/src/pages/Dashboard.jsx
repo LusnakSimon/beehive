@@ -40,10 +40,12 @@ export default function Dashboard() {
     setLoading(true) // Start loading when hive is available
     fetchLatestData()
     fetch24hHistory()
+    const saved = localStorage.getItem('beehive-settings')
+    const intervalMinutes = saved ? (JSON.parse(saved).updateInterval || 30) : 30
     const interval = setInterval(() => {
       fetchLatestData()
       fetch24hHistory()
-    }, 30000) // Refresh every 30s
+    }, intervalMinutes * 60 * 1000) // Refresh based on settings (minutes)
     return () => clearInterval(interval)
   }, [selectedHive]) // Re-fetch when hive changes
 
@@ -59,7 +61,8 @@ export default function Dashboard() {
         setData(result)
         try { await idbAddItem(DB_NAME, LATEST_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), item: result }) } catch (e) {}
         // Check notification conditions after fetching new data
-        await checkConditions(selectedHive)
+        const hive = getCurrentHive()
+        await checkConditions(selectedHive, hive?.name)
         return
       }
     } catch (error) {
@@ -256,7 +259,7 @@ export default function Dashboard() {
         <header className="dashboard-header">
           <div className="header-content">
             <h1>🐝 Beehive Monitor</h1>
-            <p className="subtitle">Real-time monitorovanie</p>
+            <p className="subtitle">Monitorovanie úľov</p>
           </div>
         </header>
         <DashboardSkeleton />
@@ -271,7 +274,7 @@ export default function Dashboard() {
       <header className="dashboard-header">
         <div className="header-content">
           <h1>🐝 Beehive Monitor</h1>
-          <p className="subtitle">Real-time monitorovanie</p>
+          <p className="subtitle">Monitorovanie úľov</p>
         </div>
         <button 
           className={`refresh-btn ${isRefreshing ? 'refreshing' : ''}`}

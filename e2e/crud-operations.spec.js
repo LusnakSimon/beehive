@@ -34,7 +34,7 @@ const uniqueId = () => Date.now().toString(36);
 test.describe('Hive CRUD Operations', () => {
   let createdHiveId = null;
 
-  test('CREATE: should create a new manual hive', async ({ page }) => {
+  test('CREATE: should create a new hive', async ({ page }) => {
     await page.goto('/my-hives');
     await waitForApp(page);
     await ensureAuth(page);
@@ -54,12 +54,6 @@ test.describe('Hive CRUD Operations', () => {
     
     // Select first color
     await page.click('.color-option:first-child');
-    
-    // Select manual device type
-    await page.selectOption('.modal-content select:first-of-type', 'manual');
-    
-    // Select private visibility
-    await page.selectOption('.modal-content select:last-of-type', 'private');
     
     // Submit
     await page.click('button:has-text("Uložiť")');
@@ -225,9 +219,8 @@ test.describe('Hive CRUD Operations', () => {
     const hasKey = await apiKeyDisplay.count() > 0 || await toastWithKey.count() > 0;
     expect(hasKey).toBeTruthy();
     
-    // Revert to manual (cleanup)
+    // Close modal if still open
     if (await page.locator('.modal-content').isVisible()) {
-      await page.selectOption('.modal-content select:first-of-type', 'manual');
       await page.click('button:has-text("Uložiť")');
       await waitForApp(page);
     }

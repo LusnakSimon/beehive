@@ -28,12 +28,14 @@ export default function Inspection() {
   const [loading, setLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
   const [editingId, setEditingId] = useState(null)
+  const [historyLimit, setHistoryLimit] = useState(10)
+  const [hasMore, setHasMore] = useState(false)
 
   useEffect(() => {
     if (selectedHive) {
       fetchInspectionHistory()
     }
-  }, [selectedHive]) // Re-fetch when hive changes
+  }, [selectedHive, historyLimit]) // Re-fetch when hive or limit changes
 
   // Setup offline queue with a send function that posts to the server
   const sendInspection = async (payload) => {
@@ -52,10 +54,11 @@ export default function Inspection() {
     if (!selectedHive) return
     
     try {
-      const response = await fetch(`/api/inspection/history?limit=10&hiveId=${selectedHive}`)
+      const response = await fetch(`/api/inspection/history?limit=${historyLimit}&hiveId=${selectedHive}`)
       if (response.ok) {
         const data = await response.json()
         setHistory(data)
+        setHasMore(data.length === historyLimit)
         try {
           // cache the fetched history locally for offline fallback
           await idbAddItem(DB_NAME, INSPECTION_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: data })
@@ -393,6 +396,7 @@ export default function Inspection() {
               <p>Zatiaľ žiadne záznamy</p>
             </div>
           ) : (
+            <>
             <div className="history-list">
               {history.map((item, index) => (
                 <div key={index} className="history-item">
@@ -447,6 +451,16 @@ export default function Inspection() {
                 </div>
               ))}
             </div>
+            {hasMore && (
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setHistoryLimit(prev => prev + 10)}
+                style={{ marginTop: '1rem', width: '100%' }}
+              >
+                Načítať ďalšie
+              </button>
+            )}
+            </>
           )}
         </div>
       </div>

@@ -128,13 +128,6 @@
   color: #d97706;
 }
 
-.hive-visibility {
-  margin: 8px 0;
-  font-size: 13px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
 .distance-panel {
   background: var(--card-bg);
   color: var(--text);
@@ -394,25 +387,6 @@
 
 .error-hint a:hover {
   text-decoration: underline;
-}
-
-.btn-view-profile {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background: var(--btn-primary-gradient);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
-}
-
-.btn-view-profile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Leaflet popup theming to respect app color variables (fix dark-mode contrast) */

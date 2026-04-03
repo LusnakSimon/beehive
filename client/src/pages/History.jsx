@@ -597,19 +597,19 @@ export default function History() {
               className={`control-btn ${chartType === 'line' ? 'active' : ''}`}
               onClick={() => setChartType('line')}
             >
-              📈 Čiarový
+              Čiarový
             </button>
             <button 
               className={`control-btn ${chartType === 'area' ? 'active' : ''}`}
               onClick={() => setChartType('area')}
             >
-              📊 Plošný
+              Plošný
             </button>
             <button 
               className={`control-btn ${chartType === 'bar' ? 'active' : ''}`}
               onClick={() => setChartType('bar')}
             >
-              📊 Stĺpcový
+              Stĺpcový
             </button>
           </div>
         </div>
