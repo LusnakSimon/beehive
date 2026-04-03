@@ -1,12 +1,22 @@
 // Lightweight IndexedDB promise wrapper for simple key-value object stores
-const openDB = (dbName, storeName, version = 1) => {
+// All known stores per database — ensures they're created together during upgrade
+const DB_SCHEMAS = {
+  'beehive-cache-v1': ['sensor-latest', 'sensor-history', 'sensor-stats', 'inspections'],
+  'beehive-offline-v1': ['outbox']
+};
+const DB_VERSION = 2;
+
+const openDB = (dbName, storeName) => {
   return new Promise((resolve, reject) => {
-    const request = window.indexedDB.open(dbName, version);
+    const stores = DB_SCHEMAS[dbName] || [storeName];
+    const request = window.indexedDB.open(dbName, DB_VERSION);
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains(storeName)) {
-        db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
-      }
+      stores.forEach(name => {
+        if (!db.objectStoreNames.contains(name)) {
+          db.createObjectStore(name, { keyPath: 'id', autoIncrement: true });
+        }
+      });
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);

@@ -34,10 +34,21 @@ export const AuthProvider = ({ children }) => {
         if (session && session.user) {
           setUser(session.user);
           setIsAuthenticated(true);
+          try { localStorage.setItem('cachedUser', JSON.stringify(session.user)); } catch (e) {}
         }
       }
     } catch (error) {
       console.error('Session check failed:', error);
+      // Offline fallback: use cached user data
+      if (!navigator.onLine) {
+        try {
+          const cached = JSON.parse(localStorage.getItem('cachedUser'));
+          if (cached) {
+            setUser(cached);
+            setIsAuthenticated(true);
+          }
+        } catch (e) {}
+      }
     } finally {
       setLoading(false);
     }
@@ -81,6 +92,7 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(null);
       setIsAuthenticated(false);
+      localStorage.removeItem('cachedUser');
       window.location.href = '/login';
     } catch (error) {
       console.error('Logout error:', error);

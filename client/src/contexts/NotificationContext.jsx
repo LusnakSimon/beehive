@@ -136,6 +136,7 @@ export const NotificationProvider = ({ children }) => {
   const checkConditions = async (hiveId, hiveName) => {
     if (!settings.enabled || permission !== 'granted') return;
     const label = hiveName || hiveId;
+    const COOLDOWN_MS = 60 * 60 * 1000; // 1 hour cooldown per alert type
     
     try {
       // Read threshold settings from beehive-settings (written by Settings page)
@@ -151,6 +152,7 @@ export const NotificationProvider = ({ children }) => {
       
       const data = await response.json();
       const alerts = [];
+      const resolvedTags = []; // Tags for conditions that are now normal
 
       // Check temperature
       if (settings.temperature && data.temperature < tempMin) {
@@ -165,6 +167,9 @@ export const NotificationProvider = ({ children }) => {
           body: `Teplota v úli ${label}: ${data.temperature.toFixed(1)}°C (max: ${tempMax}°C)`,
           tag: `temp-high-${hiveId}`
         });
+      } else if (settings.temperature) {
+        // Temperature is normal — clear both temp cooldowns so next spike triggers immediately
+        resolvedTags.push(`temp-low-${hiveId}`, `temp-high-${hiveId}`);
       }
 
       // Check humidity
@@ -180,6 +185,8 @@ export const NotificationProvider = ({ children }) => {
           body: `Vlhkosť v úli ${label}: ${data.humidity.toFixed(1)}% (max: ${humidityMax}%)`,
           tag: `humidity-high-${hiveId}`
         });
+      } else if (settings.humidity) {
+        resolvedTags.push(`humidity-low-${hiveId}`, `humidity-high-${hiveId}`);
       }
 
       // Battery alert
@@ -189,6 +196,8 @@ export const NotificationProvider = ({ children }) => {
           body: `Batéria úľa ${label}: ${data.battery}%`,
           tag: `battery-low-${hiveId}`
         });
+      } else if (settings.battery) {
+        resolvedTags.push(`battery-low-${hiveId}`);
       }
 
       // Weight change alert — compare with stored previous reading
@@ -208,6 +217,8 @@ export const NotificationProvider = ({ children }) => {
               body: `Úľ ${label}: ${direction} o ${weightChange.toFixed(1)} kg`,
               tag: `weight-change-${hiveId}`
             });
+          } else {
+            resolvedTags.push(`weight-change-${hiveId}`);
           }
         }
       }
@@ -221,6 +232,8 @@ export const NotificationProvider = ({ children }) => {
             body: `Úľ ${label}: posledné dáta pred ${Math.floor(hoursSince)}h`,
             tag: `offline-${hiveId}`
           });
+        } else {
+          resolvedTags.push(`offline-${hiveId}`);
         }
       }
 
@@ -230,14 +243,29 @@ export const NotificationProvider = ({ children }) => {
         lastUpdate: data.lastUpdate
       }));
 
-      // Send notifications
+      // Load cooldowns, clear resolved tags, filter active alerts
+      const cooldowns = JSON.parse(localStorage.getItem('notif-cooldowns') || '{}');
+      const now = Date.now();
+
+      // Clear cooldowns for conditions that resolved (back to normal)
+      for (const tag of resolvedTags) {
+        delete cooldowns[tag];
+      }
+
+      // Send only alerts that aren't in cooldown
       for (const alert of alerts) {
+        const lastFired = cooldowns[alert.tag];
+        if (lastFired && (now - lastFired) < COOLDOWN_MS) continue; // Skip — still in cooldown
+
         await sendNotification(alert.title, {
           body: alert.body,
           tag: alert.tag,
           data: { url: '/', hiveId }
         });
+        cooldowns[alert.tag] = now;
       }
+
+      localStorage.setItem('notif-cooldowns', JSON.stringify(cooldowns));
     } catch (error) {
       console.error('Error checking conditions:', error);
     }

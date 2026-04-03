@@ -4,7 +4,7 @@ import { useToast } from '../contexts/ToastContext'
 import HiveSelector from '../components/HiveSelector'
 import './Inspection.css'
 import useOfflineQueue from '../hooks/useOfflineQueue'
-import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+import { putItem as idbPutItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
 
 const DB_NAME = 'beehive-cache-v1'
 const INSPECTION_STORE = 'inspections'
@@ -62,7 +62,7 @@ export default function Inspection() {
         setHasMore(data.length === historyLimit)
         try {
           // cache the fetched history locally for offline fallback
-          await idbAddItem(DB_NAME, INSPECTION_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: data })
+          await idbPutItem(DB_NAME, INSPECTION_STORE, { id: `insp-${selectedHive}`, hiveId: selectedHive, fetchedAt: Date.now(), items: data })
         } catch (err) {
           // ignore cache errors
         }
@@ -119,7 +119,7 @@ export default function Inspection() {
       // If offline (queued), optimistically add to local history and cache
       const optimisticItem = { _id: `offline-${Date.now()}`, checklist, notes, timestamp: payload.timestamp }
       setHistory(prev => [optimisticItem, ...prev])
-      try { await idbAddItem(DB_NAME, INSPECTION_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: [optimisticItem] }) } catch (e) {}
+      try { await idbPutItem(DB_NAME, INSPECTION_STORE, { id: `insp-${selectedHive}`, hiveId: selectedHive, fetchedAt: Date.now(), items: [optimisticItem] }) } catch (e) {}
 
       if (result.sent) {
         setShowSuccess(true)

@@ -6,7 +6,7 @@ import HiveSelector from '../components/HiveSelector'
 import VarroaReminder from '../components/VarroaReminder'
 import { DashboardSkeleton } from '../components/Skeleton'
 import './Dashboard.css'
-import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+import { putItem as idbPutItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
 import { formatTimeAgo } from '../utils/dateUtils'
 
 const DB_NAME = 'beehive-cache-v1'
@@ -59,7 +59,7 @@ export default function Dashboard() {
         const result = await response.json()
         setPreviousData(data)
         setData(result)
-        try { await idbAddItem(DB_NAME, LATEST_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), item: result }) } catch (e) {}
+        try { await idbPutItem(DB_NAME, LATEST_STORE, { id: `latest-${selectedHive}`, hiveId: selectedHive, fetchedAt: Date.now(), item: result }) } catch (e) {}
         // Check notification conditions after fetching new data
         const hive = getCurrentHive()
         await checkConditions(selectedHive, hive?.name)
@@ -93,7 +93,7 @@ export default function Dashboard() {
         const result = await response.json()
         const slice = result.slice(-24)
         setHistory24h(slice) // Last 24 data points
-        try { await idbAddItem(DB_NAME, HISTORY_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: result }) } catch (e) {}
+        try { await idbPutItem(DB_NAME, HISTORY_STORE, { id: `history-${selectedHive}`, hiveId: selectedHive, fetchedAt: Date.now(), items: result }) } catch (e) {}
         return
       }
     } catch (error) {

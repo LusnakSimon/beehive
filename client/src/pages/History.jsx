@@ -7,7 +7,7 @@ import {
 import { useHive } from '../context/HiveContext'
 import HiveSelector from '../components/HiveSelector'
 import './History.css'
-import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+import { putItem as idbPutItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
 import useOfflineStatus from '../hooks/useOfflineStatus'
 
 const DB_NAME = 'beehive-cache-v1'
@@ -100,7 +100,7 @@ export default function History() {
           rssi: item.metadata?.rssi ?? null
         }))
         setData(enriched)
-        try { await idbAddItem(DB_NAME, HISTORY_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), items: result }) } catch (e) {}
+        try { await idbPutItem(DB_NAME, HISTORY_STORE, { id: `history-${selectedHive}-${timeRange}`, hiveId: selectedHive, fetchedAt: Date.now(), items: result }) } catch (e) {}
         return
       }
     } catch (error) {
@@ -126,7 +126,7 @@ export default function History() {
       if (response.ok) {
         const result = await response.json()
         setStats(result)
-        try { await idbAddItem(DB_NAME, STATS_STORE, { hiveId: selectedHive, fetchedAt: Date.now(), item: result }) } catch (e) {}
+        try { await idbPutItem(DB_NAME, STATS_STORE, { id: `stats-${selectedHive}-${timeRange}`, hiveId: selectedHive, fetchedAt: Date.now(), item: result }) } catch (e) {}
         return
       }
     } catch (error) {
