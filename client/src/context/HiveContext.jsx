@@ -28,7 +28,6 @@ export function HiveProvider({ children }) {
         // Handle both old format (string) and new format (object)
         if (typeof hive === 'string') {
           // Old format - generate default metadata
-          const colors = ['var(--warning)', 'var(--primary)', 'var(--success)', 'var(--danger)', 'var(--secondary)'];
           const number = hive.replace('HIVE-', '');
           const index = user.ownedHives.indexOf(hive);
           return {
@@ -43,7 +42,6 @@ export function HiveProvider({ children }) {
             name: hive.name,
             location: hive.location || '',
             image: hive.image || '',
-            coordinates: hive.coordinates || { lat: '', lng: '' },
             device: hive.device || { type: 'api', deviceId: '' }
           };
         }

@@ -248,7 +248,7 @@ export default function Inspection() {
           className={`inspection-tab ${activeTab === 'history' ? 'active' : ''}`}
           onClick={() => setActiveTab('history')}
         >
-          📜 História {history.length > 0 && <span className="tab-count">{history.length}</span>}
+          📜 História
         </button>
       </div>
 

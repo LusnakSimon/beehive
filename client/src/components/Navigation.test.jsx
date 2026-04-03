@@ -62,7 +62,7 @@ describe('Navigation', () => {
     
     renderNavigation()
     
-    // Desktop nav shows at least Dashboard; mobile nav shows Domov, História, Moje úle, Mapa
+    // Desktop nav shows at least Dashboard; mobile nav shows Domov, História, Moje úle
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Domov')).toBeInTheDocument()
     expect(screen.getByText('História')).toBeInTheDocument()

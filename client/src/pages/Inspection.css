@@ -107,16 +107,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.tab-count {
-  background: var(--primary);
-  color: white;
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 10px;
-  min-width: 1.5rem;
-  text-align: center;
-}
-
 /* Form & History Panels */
 .inspection-form-panel,
 .inspection-history-panel {

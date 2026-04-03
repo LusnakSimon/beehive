@@ -5,8 +5,7 @@ const {
   isValidHiveId,
   validateSensorReading,
   validateInspectionChecklist,
-  sanitizeString,
-  isValidCoordinates
+  sanitizeString
 } = require('../../lib/utils/validation');
 
 describe('Validation Utils', () => {
@@ -162,20 +161,4 @@ describe('Validation Utils', () => {
     });
   });
 
-  describe('isValidCoordinates', () => {
-    it('should validate correct coordinates', () => {
-      expect(isValidCoordinates({ lat: 48.716, lng: 21.261 })).toBe(true);
-      expect(isValidCoordinates({ lat: 0, lng: 0 })).toBe(true);
-      expect(isValidCoordinates({ lat: -90, lng: -180 })).toBe(true);
-      expect(isValidCoordinates({ lat: 90, lng: 180 })).toBe(true);
-    });
-
-    it('should reject invalid coordinates', () => {
-      expect(isValidCoordinates(null)).toBe(false);
-      expect(isValidCoordinates({})).toBe(false);
-      expect(isValidCoordinates({ lat: 91, lng: 0 })).toBe(false);
-      expect(isValidCoordinates({ lat: 0, lng: 181 })).toBe(false);
-      expect(isValidCoordinates({ lat: 'string', lng: 0 })).toBe(false);
-    });
-  });
 });

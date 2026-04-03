@@ -384,22 +384,6 @@
   margin-top: 0.35rem;
 }
 
-/* Form section for GPS */
-.gps-inputs {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin-top: 0.5rem;
-}
-.gps-inputs input {
-  flex: 1;
-  margin-top: 0 !important;
-}
-.gps-inputs .btn {
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 /* Responsive */
 @media (max-width: 720px) {
   .my-hives-page {
@@ -447,12 +431,6 @@
   .btn-sm {
     padding: .55rem .85rem;
     font-size: .85rem;
-  }
-  .gps-inputs {
-    flex-wrap: wrap;
-  }
-  .gps-inputs .btn {
-    width: 100%;
   }
 }
 

@@ -14,7 +14,7 @@ export default function MyHives() {
   const [showModal, setShowModal] = useState(false)
   const [modalMode, setModalMode] = useState('add') // 'add' | 'edit'
 
-  const [form, setForm] = useState({ id: '', name: '', location: '', imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
+  const [form, setForm] = useState({ id: '', name: '', location: '', imageDataUrl: '', imageFile: null, originalImage: '', device: { type: 'api', deviceId: '' } })
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
@@ -23,7 +23,7 @@ export default function MyHives() {
 
   const openAddModal = () => {
     setModalMode('add')
-    setForm({ id: '', name: '', location: '', imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, device: { type: 'api', deviceId: '' } })
+    setForm({ id: '', name: '', location: '', imageDataUrl: '', imageFile: null, originalImage: '', device: { type: 'api', deviceId: '' } })
     setShowModal(true)
   }
 
@@ -36,7 +36,6 @@ export default function MyHives() {
       imageDataUrl: hive.image || '',  // Store existing image URL
       imageFile: null,  // Track if user selected a new file
       originalImage: hive.image || '',  // Track original to detect changes
-      coordinates: hive.coordinates || { lat: '', lng: '' },
       device: hive.device || { type: 'api', deviceId: '' }
     })
     setShowModal(true)
@@ -70,27 +69,8 @@ export default function MyHives() {
   const validateForm = () => {
     const e = {}
     if (!form.name || form.name.trim().length === 0) e.name = 'Názov je povinný.'
-    if (form.coordinates?.lat && isNaN(parseFloat(form.coordinates.lat))) e.coordinates = 'Lat musí byť číslo.'
-    if (form.coordinates?.lng && isNaN(parseFloat(form.coordinates.lng))) e.coordinates = 'Lng musí byť číslo.'
     setErrors(e)
     return Object.keys(e).length === 0
-  }
-
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast.warning('Tvoj prehliadač nepodporuje geolokáciu')
-      return
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setForm(prev => ({ ...prev, coordinates: { lat: pos.coords.latitude.toFixed(6), lng: pos.coords.longitude.toFixed(6) } }))
-        toast.success('GPS súradnice získané!')
-      },
-      (err) => {
-        console.error('Geolocation error', err)
-        toast.error('Nepodarilo sa získať polohu')
-      }
-    )
   }
 
   const handleSave = async (e) => {
@@ -100,7 +80,6 @@ export default function MyHives() {
     if (!validateForm()) {
       // Show specific validation errors
       if (errors.name) toast.warning(errors.name)
-      else if (errors.coordinates) toast.warning(errors.coordinates)
       else toast.warning('Skontroluj vyplnené údaje')
       return
     }
@@ -110,7 +89,7 @@ export default function MyHives() {
     try {
         if (modalMode === 'add') {
         const tempId = `HIVE-${Date.now()}`
-        const optimistic = { id: tempId, name: form.name, location: form.location, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device }
+        const optimistic = { id: tempId, name: form.name, location: form.location, image: form.imageDataUrl, device: form.device }
         addHive(optimistic)
         setShowModal(false)
         setSelectedHive(tempId)
@@ -126,7 +105,6 @@ export default function MyHives() {
           const deviceData = { type: form.device.type }
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
-          if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
 
           res = await fetch('/api/users/me/hives', {
             method: 'POST',
@@ -135,7 +113,6 @@ export default function MyHives() {
           })
         } else {
           const hiveData = { name: form.name, location: form.location, device: { type: form.device.type } }
-          if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           if (form.imageDataUrl) hiveData.image = form.imageDataUrl
 
           res = await fetch('/api/users/me/hives', {
@@ -179,7 +156,7 @@ export default function MyHives() {
         
         // Don't close modal yet if we're switching to API - we want to show the key
         if (!wasManual) {
-          updateHive(hiveId, { name: form.name, location: form.location, image: form.imageDataUrl, coordinates: form.coordinates, device: form.device })
+          updateHive(hiveId, { name: form.name, location: form.location, image: form.imageDataUrl, device: form.device })
           setShowModal(false)
         }
 
@@ -193,7 +170,6 @@ export default function MyHives() {
           const deviceData = { type: form.device.type }
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
-          if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
 
           res = await fetch(`/api/users/me/hives/${hiveId}`, {
             method: 'PATCH',
@@ -202,7 +178,6 @@ export default function MyHives() {
           })
         } else {
           const hiveData = { name: form.name, location: form.location, device: { type: form.device.type } }
-          if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
           
           // Only send image if it actually changed (new base64 data URL, not the same URL)
           const imageChanged = form.imageDataUrl && form.imageDataUrl !== form.originalImage
@@ -374,24 +349,6 @@ export default function MyHives() {
                 <input type="file" accept="image/*" onChange={handleFileChange} />
                 {errors.image && <div className="error-text">{errors.image}</div>}
                 {form.imageDataUrl && <img src={form.imageDataUrl} alt="preview" className="image-preview" />}
-
-                <label>GPS súradnice (voliteľné)</label>
-                <div className="gps-inputs">
-                  <input 
-                    placeholder="lat" 
-                    value={form.coordinates.lat} 
-                    onChange={e => { setForm(f => ({ ...f, coordinates: { ...f.coordinates, lat: e.target.value } })); setErrors(err => ({ ...err, coordinates: null })) }} 
-                    className={errors.coordinates ? 'input-error' : ''}
-                  />
-                  <input 
-                    placeholder="lng" 
-                    value={form.coordinates.lng} 
-                    onChange={e => { setForm(f => ({ ...f, coordinates: { ...f.coordinates, lng: e.target.value } })); setErrors(err => ({ ...err, coordinates: null })) }}
-                    className={errors.coordinates ? 'input-error' : ''}
-                  />
-                  <button type="button" className="btn" onClick={getCurrentLocation}>📍 GPS</button>
-                </div>
-                {errors.coordinates && <div className="error-text">{errors.coordinates}</div>}
 
                 <label>Zariadenie</label>
                 <div className="api-key-section">
