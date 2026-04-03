@@ -32,56 +32,6 @@ const calculateTrend = (values) => {
   }
 }
 
-const detectAnomalies = (data, key) => {
-  if (data.length < 10) return []
-  const values = data.map(d => d[key]).filter(v => v !== undefined)
-  const mean = values.reduce((a, b) => a + b, 0) / values.length
-  const stdDev = Math.sqrt(values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length)
-  const threshold = 2.5 // Standard deviations for anomaly detection
-  
-  return data.filter(d => {
-    const v = d[key]
-    return v !== undefined && Math.abs(v - mean) > threshold * stdDev
-  }).map(d => {
-    const deviation = (d[key] - mean) / stdDev
-    const isHigh = deviation > 0
-    
-    // Generate human-readable description based on metric and severity
-    let description = ''
-    let severity = Math.abs(deviation) > 3.5 ? 'high' : 'medium'
-    
-    if (key === 'temperature') {
-      if (isHigh) {
-        description = d[key] > 40 ? 'Kriticky vysoká teplota' : 'Nezvyčajne vysoká teplota'
-      } else {
-        description = d[key] < 20 ? 'Kriticky nízka teplota' : 'Nezvyčajne nízka teplota'
-      }
-    } else if (key === 'humidity') {
-      if (isHigh) {
-        description = d[key] > 85 ? 'Veľmi vysoká vlhkosť' : 'Zvýšená vlhkosť'
-      } else {
-        description = d[key] < 30 ? 'Veľmi nízka vlhkosť' : 'Znížená vlhkosť'
-      }
-    } else if (key === 'weight') {
-      if (isHigh) {
-        description = 'Náhly nárast hmotnosti'
-      } else {
-        description = 'Náhly pokles hmotnosti'
-      }
-    }
-    
-    return {
-      timestamp: d.timestamp,
-      value: d[key],
-      deviation: deviation.toFixed(1),
-      isHigh,
-      description,
-      severity,
-      key
-    }
-  })
-}
-
 export default function History() {
   const { selectedHive } = useHive()
   const [data, setData] = useState([])
@@ -91,35 +41,20 @@ export default function History() {
   const [selectedMetric, setSelectedMetric] = useState('all')
   const [loading, setLoading] = useState(true)
   const [queuedInspections, setQueuedInspections] = useState([])
-  const [showAnalysis, setShowAnalysis] = useState(true)
-  const [showAllAnomalies, setShowAllAnomalies] = useState(false)
   const { queuedCount, isOnline, isReplaying, retry, refreshCount } = useOfflineStatus(selectedHive)
 
-  // Calculate analysis insights
-  const analysis = useMemo(() => {
-    if (!stats) return null
-    
+  // Calculate trend indicators
+  const trends = useMemo(() => {
     const temps = (data || []).map(d => d.temperature).filter(Boolean)
     const humidities = (data || []).map(d => d.humidity).filter(Boolean)
     const weights = (data || []).map(d => d.weight).filter(Boolean)
     
-    const tempTrend = temps.length >= 2 ? calculateTrend(temps) : { direction: 'stable', change: 0 }
-    const humidityTrend = humidities.length >= 2 ? calculateTrend(humidities) : { direction: 'stable', change: 0 }
-    const weightTrend = weights.length >= 2 ? calculateTrend(weights) : { direction: 'stable', change: 0 }
-    
-    const tempAnomalies = data && data.length >= 10 ? detectAnomalies(data, 'temperature') : []
-    const humidityAnomalies = data && data.length >= 10 ? detectAnomalies(data, 'humidity') : []
-    const weightAnomalies = data && data.length >= 10 ? detectAnomalies(data, 'weight') : []
-    
     return {
-      tempTrend,
-      humidityTrend,
-      weightTrend,
-      tempAnomalies,
-      humidityAnomalies,
-      weightAnomalies
+      temperature: temps.length >= 2 ? calculateTrend(temps) : { direction: 'stable', change: 0 },
+      humidity: humidities.length >= 2 ? calculateTrend(humidities) : { direction: 'stable', change: 0 },
+      weight: weights.length >= 2 ? calculateTrend(weights) : { direction: 'stable', change: 0 }
     }
-  }, [data, stats])
+  }, [data])
 
   useEffect(() => {
     if (!selectedHive) {
@@ -393,7 +328,7 @@ export default function History() {
       )}
       <header className="history-header">
         <div>
-          <h1>📊 História & Analýza</h1>
+          <h1>📊 História</h1>
           <p className="subtitle-history">Detailné zobrazenie historických dát</p>
         </div>
         <button className="export-btn" onClick={exportToCSV}>
@@ -411,7 +346,13 @@ export default function History() {
             <div className="stat-icon">🌡️</div>
             <div className="stat-content">
               <div className="stat-label">Priemerná teplota</div>
-              <div className="stat-value">{stats.temperature?.avg?.toFixed(1) || '0'} °C</div>
+              <div className="stat-value">
+                {stats.temperature?.avg?.toFixed(1) || '0'} °C
+                <span className={`stat-trend trend-${trends.temperature.direction}`}>
+                  {trends.temperature.direction === 'up' ? '↗' : trends.temperature.direction === 'down' ? '↘' : '→'}
+                  {trends.temperature.change > 0 && ` ${trends.temperature.change}%`}
+                </span>
+              </div>
               <div className="stat-range">
                 Min: {stats.temperature?.min?.toFixed(1) || '0'} | 
                 Max: {stats.temperature?.max?.toFixed(1) || '0'}
@@ -423,7 +364,13 @@ export default function History() {
             <div className="stat-icon">💧</div>
             <div className="stat-content">
               <div className="stat-label">Priemerná vlhkosť</div>
-              <div className="stat-value">{stats.humidity?.avg?.toFixed(1) || '0'} %</div>
+              <div className="stat-value">
+                {stats.humidity?.avg?.toFixed(1) || '0'} %
+                <span className={`stat-trend trend-${trends.humidity.direction}`}>
+                  {trends.humidity.direction === 'up' ? '↗' : trends.humidity.direction === 'down' ? '↘' : '→'}
+                  {trends.humidity.change > 0 && ` ${trends.humidity.change}%`}
+                </span>
+              </div>
               <div className="stat-range">
                 Min: {stats.humidity?.min?.toFixed(1) || '0'} | 
                 Max: {stats.humidity?.max?.toFixed(1) || '0'}
@@ -435,109 +382,19 @@ export default function History() {
             <div className="stat-icon">⚖️</div>
             <div className="stat-content">
               <div className="stat-label">Priemerná hmotnosť</div>
-              <div className="stat-value">{stats.weight?.avg?.toFixed(2) || '0'} kg</div>
+              <div className="stat-value">
+                {stats.weight?.avg?.toFixed(2) || '0'} kg
+                <span className={`stat-trend trend-${trends.weight.direction}`}>
+                  {trends.weight.direction === 'up' ? '↗' : trends.weight.direction === 'down' ? '↘' : '→'}
+                  {trends.weight.change > 0 && ` ${trends.weight.change}%`}
+                </span>
+              </div>
               <div className="stat-range">
                 Min: {stats.weight?.min?.toFixed(2) || '0'} | 
                 Max: {stats.weight?.max?.toFixed(2) || '0'}
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Analysis Section */}
-      {analysis && (
-        <div className="analysis-section">
-          <div className="analysis-header" onClick={() => setShowAnalysis(!showAnalysis)}>
-            <h2>📊 Analýza</h2>
-            <button className="toggle-btn">{showAnalysis ? '▼' : '▶'}</button>
-          </div>
-          
-          {showAnalysis && (
-            <div className="analysis-content">
-              {/* Trends Grid */}
-              <div className="trends-grid">
-                <div className="trend-card">
-                  <span className="trend-metric">🌡️ Vnút. teplota</span>
-                  <span className={`trend-indicator trend-${analysis.tempTrend.direction}`}>
-                    {analysis.tempTrend.direction === 'up' ? '↗️' : 
-                     analysis.tempTrend.direction === 'down' ? '↘️' : '→'}
-                    {analysis.tempTrend.change > 0 && ` ${analysis.tempTrend.change}%`}
-                  </span>
-                </div>
-                <div className="trend-card">
-                  <span className="trend-metric">💧 Vnút. vlhkosť</span>
-                  <span className={`trend-indicator trend-${analysis.humidityTrend.direction}`}>
-                    {analysis.humidityTrend.direction === 'up' ? '↗️' : 
-                     analysis.humidityTrend.direction === 'down' ? '↘️' : '→'}
-                    {analysis.humidityTrend.change > 0 && ` ${analysis.humidityTrend.change}%`}
-                  </span>
-                </div>
-                <div className="trend-card">
-                  <span className="trend-metric">⚖️ Hmotnosť</span>
-                  <span className={`trend-indicator trend-${analysis.weightTrend.direction}`}>
-                    {analysis.weightTrend.direction === 'up' ? '↗️' : 
-                     analysis.weightTrend.direction === 'down' ? '↘️' : '→'}
-                    {analysis.weightTrend.change > 0 && ` ${analysis.weightTrend.change}%`}
-                  </span>
-                </div>
-              </div>
-
-              {/* Anomalies */}
-              {(analysis.tempAnomalies.length > 0 || analysis.weightAnomalies.length > 0 || analysis.humidityAnomalies.length > 0) && (
-                <div className="anomalies-section">
-                  <div className="anomalies-header">
-                    <h3>⚠️ Nezvyčajné hodnoty</h3>
-                    <span className="anomalies-hint">Automaticky zistené výkyvy mimo bežný rozsah</span>
-                  </div>
-                  <div className="anomalies-list">
-                    {(() => {
-                      const allAnomalies = [...analysis.tempAnomalies, ...analysis.humidityAnomalies, ...analysis.weightAnomalies]
-                        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                      const displayAnomalies = showAllAnomalies ? allAnomalies : allAnomalies.slice(0, 5)
-                      const remainingCount = allAnomalies.length - 5
-                      
-                      return (
-                        <>
-                          {displayAnomalies.map((a, idx) => (
-                            <div key={idx} className={`anomaly-card anomaly-${a.severity}`}>
-                              <div className="anomaly-icon">
-                                {a.key === 'temperature' ? '🌡️' : a.key === 'humidity' ? '💧' : '⚖️'}
-                              </div>
-                              <div className="anomaly-content">
-                                <div className="anomaly-description">{a.description}</div>
-                                <div className="anomaly-details">
-                                  <span className="anomaly-value-display">
-                                    {a.key === 'weight' ? `${a.value.toFixed(2)} kg` : `${a.value.toFixed(1)}${a.key === 'temperature' ? '°C' : '%'}`}
-                                  </span>
-                                  <span className="anomaly-time">
-                                    {new Date(a.timestamp).toLocaleDateString('sk-SK', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className={`anomaly-badge ${a.isHigh ? 'high' : 'low'}`}>
-                                {a.isHigh ? '↑ Vysoké' : '↓ Nízke'}
-                              </div>
-                            </div>
-                          ))}
-                          {remainingCount > 0 && (
-                            <button 
-                              className="anomalies-toggle-btn"
-                              onClick={() => setShowAllAnomalies(!showAllAnomalies)}
-                            >
-                              {showAllAnomalies 
-                                ? '▲ Zobraziť menej' 
-                                : `▼ Zobraziť všetkých ${allAnomalies.length} anomálií`}
-                            </button>
-                          )}
-                        </>
-                      )
-                    })()}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
 
