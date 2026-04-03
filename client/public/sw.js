@@ -156,36 +156,4 @@ self.addEventListener('fetch', (event) => {
   })());
 });
 
-// Periodic background sync for checking conditions
-self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'check-beehive-conditions') {
-    event.waitUntil(checkConditions());
-  }
-});
 
-async function checkConditions() {
-  try {
-    const response = await fetch('/api/notifications/check', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    const result = await response.json();
-    
-    if (result.alerts && result.alerts.length > 0) {
-      for (const alert of result.alerts) {
-        await self.registration.showNotification(alert.title, {
-          body: alert.body,
-          icon: '/icon.svg',
-          badge: '/icon.svg',
-          tag: alert.tag,
-          data: { url: '/' }
-        });
-      }
-    }
-  } catch (error) {
-    console.error('Error checking conditions:', error);
-  }
-}

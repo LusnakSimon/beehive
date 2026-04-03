@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import { useAuth } from '../contexts/AuthContext'
 import 'leaflet/dist/leaflet.css'
@@ -30,7 +29,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 export default function HiveMap() {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [hives, setHives] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedHive, setSelectedHive] = useState(null)
@@ -311,14 +309,6 @@ export default function HiveMap() {
                     </p>
                     <p className="hive-visibility">
                       {hive.visibility === 'public' ? '🌍 Verejný' : '🔒 Súkromný'}
-                    {!hive.isOwner && (
-                      <button
-                        className="btn-view-profile"
-                        onClick={() => navigate(`/profile/${hive.owner.id}`)}
-                      >
-                        👤 View Profile
-                      </button>
-                    )}
                     </p>
                   </div>
                 </Popup>

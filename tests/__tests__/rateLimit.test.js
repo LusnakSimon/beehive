@@ -81,14 +81,12 @@ describe('Rate Limit Utils', () => {
       expect(LIMITS.auth).toBeDefined();
       expect(LIMITS.api).toBeDefined();
       expect(LIMITS.sensor).toBeDefined();
-      expect(LIMITS.friendRequest).toBeDefined();
-      expect(LIMITS.message).toBeDefined();
       expect(LIMITS.search).toBeDefined();
     });
 
     it('should have reasonable limits', () => {
       expect(LIMITS.auth.max).toBeLessThan(LIMITS.api.max);
-      expect(LIMITS.friendRequest.max).toBeLessThan(LIMITS.message.max);
+      expect(LIMITS.sensor.max).toBeLessThanOrEqual(LIMITS.api.max);
     });
   });
 });

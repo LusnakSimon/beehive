@@ -1,117 +1,17 @@
 
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { handleInAppNotification } from '../utils/pushNotifications'
 import './Navigation.css'
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth()
-  const navigate = useNavigate()
-  const [totalUnread, setTotalUnread] = useState(0)
-  const [notificationUnread, setNotificationUnread] = useState(0)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const lastNotificationCheck = useRef(new Set())
   const navDesktopRef = useRef(null)
   const [visibleCount, setVisibleCount] = useState(10)
   const [showDesktopMore, setShowDesktopMore] = useState(false)
   const desktopDropdownRef = useRef(null)
-
-  const fetchUnreadCount = async () => {
-    if (!isAuthenticated) return
-    
-    try {
-      const response = await fetch('/api/conversations', {
-        credentials: 'include'
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        const total = data.conversations.reduce((sum, conv) => sum + conv.unreadCount, 0)
-        setTotalUnread(total)
-      }
-    } catch (err) {
-      console.error('Error fetching unread count:', err)
-    }
-  }
-
-  const fetchNotificationCount = async () => {
-    if (!isAuthenticated) return
-    
-    try {
-      // Fetch unread count
-      const countResponse = await fetch('/api/social-notifications/unread-count', {
-        credentials: 'include'
-      })
-      
-      if (countResponse.ok) {
-        const countData = await countResponse.json()
-        setNotificationUnread(countData.unreadCount || 0)
-      }
-
-      // Fetch recent unread notifications for push
-      const notifResponse = await fetch('/api/social-notifications?limit=10&unreadOnly=true', {
-        credentials: 'include'
-      })
-      
-      if (notifResponse.ok) {
-        const notifData = await notifResponse.json()
-        
-        // Show push notifications for new notifications
-        notifData.notifications?.forEach(notification => {
-          const notifId = notification._id || notification.id
-          
-          // Only show push if we haven't seen this notification yet
-          if (!lastNotificationCheck.current.has(notifId)) {
-            lastNotificationCheck.current.add(notifId)
-            
-            // Show push notification
-            handleInAppNotification(notification, navigate)
-          }
-        })
-
-        // Keep only recent 50 notification IDs in memory
-        if (lastNotificationCheck.current.size > 50) {
-          const arr = Array.from(lastNotificationCheck.current)
-          lastNotificationCheck.current = new Set(arr.slice(-50))
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching notifications:', err)
-    }
-  }
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchUnreadCount()
-      fetchNotificationCount()
-      
-      // Poll for new messages every 30 seconds
-      const interval = setInterval(() => {
-        fetchUnreadCount()
-        fetchNotificationCount()
-      }, 30000)
-      
-      // Listen for custom event when messages are read
-      const handleMessagesRead = () => {
-        fetchUnreadCount()
-        // Also update notification count since message notifications should be marked as read
-        fetchNotificationCount()
-      }
-      const handleNotificationsRead = () => {
-        fetchNotificationCount()
-      }
-      window.addEventListener('messagesRead', handleMessagesRead)
-      window.addEventListener('notificationsRead', handleNotificationsRead)
-      
-      return () => {
-        clearInterval(interval)
-        window.removeEventListener('messagesRead', handleMessagesRead)
-        window.removeEventListener('notificationsRead', handleNotificationsRead)
-      }
-    }
-  }, [isAuthenticated])
 
   // Adjust how many desktop nav items fit and move remainder into the 'More' dropdown
   useEffect(() => {
@@ -137,12 +37,11 @@ export default function Navigation() {
       ro.disconnect()
       window.removeEventListener('resize', calculate)
     }
-  }, [totalUnread, notificationUnread, user?.role])
+  }, [user?.role])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Close desktop dropdown if clicking outside both the button and the portal dropdown
       if (showDesktopMore) {
         const desktopDropdown = document.querySelector('.nav-more-desktop')
         const portalDropdown = desktopDropdownRef.current
@@ -155,7 +54,6 @@ export default function Navigation() {
           setShowDesktopMore(false)
         }
       }
-      // Close mobile dropdown if clicking outside
       if (showMobileMenu) {
         const mobileDropdown = document.querySelector('.nav-more')
         if (mobileDropdown && !mobileDropdown.contains(e.target)) {
@@ -175,27 +73,16 @@ export default function Navigation() {
           {/* Desktop Navigation - responsive with overflow 'More' menu */}
           <div className="nav-desktop" ref={navDesktopRef}>
             {(() => {
-              // Define nav items in priority order
               const items = [
                 { key: 'dashboard', to: '/', icon: '🏠', label: 'Dashboard' },
-                  { key: 'my-hives', to: '/my-hives', icon: '🐝', label: 'Moje úle' },
+                { key: 'my-hives', to: '/my-hives', icon: '🐝', label: 'Moje úle' },
                 { key: 'history', to: '/history', icon: '📊', label: 'História' },
                 { key: 'inspection', to: '/inspection', icon: '📋', label: 'Kontrola' },
                 { key: 'harvests', to: '/harvests', icon: '🍯', label: 'Zbery' },
                 { key: 'map', to: '/map', icon: '🗺️', label: 'Mapa' },
-                { key: 'search', to: '/search', icon: '🔍', label: 'Hľadať' },
-                { key: 'friends', to: '/friends', icon: '👫', label: 'Priatelia' },
-                { key: 'messages', to: '/messages', icon: '💬', label: 'Správy', badge: totalUnread },
-                { key: 'groups', to: '/groups', icon: '👥', label: 'Skupiny' },
-                { key: 'notifications', to: '/notifications', icon: '🔔', label: 'Upozornenia', badge: notificationUnread },
                 { key: 'settings', to: '/settings', icon: '⚙️', label: 'Nastavenia' }
               ]
 
-              if (user?.role === 'admin') {
-                items.push({ key: 'admin', to: '/admin', icon: '🔧', label: 'Admin' })
-              }
-
-              // Determine visible / overflow based on visibleCount
               const visible = items.slice(0, visibleCount)
               const overflow = items.slice(visibleCount)
 
@@ -205,7 +92,6 @@ export default function Navigation() {
                     <NavLink key={it.key} to={it.to} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                       <span className="icon">{it.icon}</span>
                       <span>{it.label}</span>
-                      {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
                     </NavLink>
                   ))}
 
@@ -225,14 +111,12 @@ export default function Navigation() {
                         <span>Viac</span>
                       </button>
 
-                      {/* Portal renders dropdown outside nav container to avoid clipping */}
                       {showDesktopMore && createPortal(
                         <div className="desktop-dropdown-portal" ref={desktopDropdownRef}>
                           {overflow.map(it => (
                             <NavLink key={it.key} to={it.to} className="desktop-dropdown-item" onClick={() => setShowDesktopMore(false)}>
                               <span className="icon">{it.icon}</span>
                               <span>{it.label}</span>
-                              {it.badge > 0 && <span className="nav-badge">{it.badge}</span>}
                             </NavLink>
                           ))}
                         </div>,
@@ -276,16 +160,6 @@ export default function Navigation() {
               </button>
               {showMobileMenu && (
                 <div className="mobile-dropdown">
-                  <NavLink to="/messages" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">💬</span>
-                    <span>Správy</span>
-                    {totalUnread > 0 && <span className="nav-badge">{totalUnread}</span>}
-                  </NavLink>
-                  <NavLink to="/notifications" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">🔔</span>
-                    <span>Notifikácie</span>
-                    {notificationUnread > 0 && <span className="nav-badge">{notificationUnread}</span>}
-                  </NavLink>
                   <NavLink to="/inspection" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">📋</span>
                     <span>Kontrola</span>
@@ -294,36 +168,10 @@ export default function Navigation() {
                     <span className="icon">🍯</span>
                     <span>Zbery</span>
                   </NavLink>
-                  <NavLink to="/groups" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">👥</span>
-                    <span>Skupiny</span>
-                  </NavLink>
-                  <NavLink to="/search" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">🔍</span>
-                    <span>Hľadať</span>
-                  </NavLink>
-                  <NavLink to="/friends" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">👫</span>
-                    <span>Priatelia</span>
-                  </NavLink>
                   <NavLink to="/settings" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
                     <span className="icon">⚙️</span>
                     <span>Nastavenia</span>
                   </NavLink>
-                  <NavLink to="/profile" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">👤</span>
-                    <span>Profil</span>
-                  </NavLink>
-                  <NavLink to="/my-hives" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                    <span className="icon">🐝</span>
-                    <span>Moje úle</span>
-                  </NavLink>
-                  {user?.role === 'admin' && (
-                    <NavLink to="/admin" className="mobile-dropdown-item" onClick={() => setShowMobileMenu(false)}>
-                      <span className="icon">🔧</span>
-                      <span>Admin</span>
-                    </NavLink>
-                  )}
                   <button className="mobile-dropdown-item logout-item" onClick={() => { logout(); setShowMobileMenu(false); }}>
                     <span className="icon">🚪</span>
                     <span>Odhlásiť sa</span>
@@ -335,10 +183,10 @@ export default function Navigation() {
 
           {/* Desktop user section */}
           <div className="nav-user-section">
-            <NavLink to="/profile" className="nav-user-info nav-profile-link" aria-label="Zobraziť profil">
+            <div className="nav-user-info">
               {user?.image && <img src={user.image} alt="" className="nav-avatar" aria-hidden="true" />}
               <span className="nav-username">{user?.name}</span>
-            </NavLink>
+            </div>
             <button onClick={logout} className="nav-logout-btn" aria-label="Odhlásiť sa">
               <span className="icon" aria-hidden="true">🚪</span>
             </button>

@@ -9,16 +9,24 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 
+
 // ===== CONFIG - EDIT THESE =====
-const char* WIFI_SSID     = "YOUR_WIFI_SSID";
-const char* WIFI_PASS     = "YOUR_WIFI_PASSWORD";
+const char* WIFI_SSID     = "T-A81MJA";
+const char* WIFI_PASS     = "t2lmlakb8kbv";
 const char* SERVER_HOST   = "ebeehive.vercel.app";
-const char* HIVE_ID       = "HIVE-001";
-const char* API_KEY       = "";  // Get from hive settings in app
+const char* HIVE_ID       = "HIVE-099";
+const char* API_KEY       = "09493c5e9d61082e98a902a89bd32a8f";  // Get from hive settings in app
+
+// Encryption disabled (node uses WDT for sleep, conflicts with Crypto library)
 
 // ===== RFM95 (LoRa) Pins =====
-#define RFM95_CS   7
-#define RFM95_RST  10
+// Updated for new wiring: MISO-5, MOSI-6, NSS-10, SCK-20, RESET-21
+// DIO0/INT unchanged at 3 (update if needed)
+#define RFM95_SCK  20  // New: Custom SCK
+#define RFM95_MISO 5   // New: Custom MISO
+#define RFM95_MOSI 6   // New: Custom MOSI
+#define RFM95_CS   10  // New: NSS/CS (was 7)
+#define RFM95_RST  21  // New: RESET (was 10)
 #define RFM95_INT  3   // DIO0 - GPIO3 for gateway
 #define RFM95_FREQ 868.0
 
@@ -101,7 +109,7 @@ void postReading(const char* nodeJson, int rssi) {
     "\"weight\":%.2f,"
     "\"battery\":%d,"
     "\"metadata\":{"
-      "\"source\":\"LoRaWAN\","
+      "\"source\":\"LoRa\","
       "\"rssi\":%d,"
       "\"counter\":%ld,"
       "\"batteryVoltage\":%.2f"
@@ -138,12 +146,16 @@ void setup() {
   digitalWrite(RFM95_RST, HIGH);
   delay(10);
 
+  // New: Initialize SPI with custom pins before rf95.init()
+  SPI.begin(RFM95_SCK, RFM95_MISO, RFM95_MOSI, RFM95_CS);
+
   if (!rf95.init()) {
     Serial.println("ERROR: RFM95 init failed");
     while (1) delay(1000);
   }
   rf95.setFrequency(RFM95_FREQ);
   rf95.setTxPower(14, false);
+
   Serial.println("RFM95 OK @ 868 MHz");
 
   // --- WiFi ---

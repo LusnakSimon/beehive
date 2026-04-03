@@ -1,32 +1,20 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { useHive } from '../context/HiveContext'
 import { useToast } from '../contexts/ToastContext'
 import './Settings.css'
 import NotificationSettings from '../components/NotificationSettings'
-import SocialNotificationSettings from '../components/SocialNotificationSettings'
-import LoRaWANSetupGuide from '../components/LoRaWANSetupGuide'
 
 export default function Settings() {
-  const { user, refreshUser } = useAuth()
-  const { hives } = useHive()
+  const { user } = useAuth()
   const toast = useToast()
   const [settings, setSettings] = useState({
     notifications: true,
     tempMin: 30,
     tempMax: 36,
-    humidityMin: 50,
-    humidityMax: 60,
+    humidityMin: 40,
+    humidityMax: 70,
     updateInterval: 30
   })
-
-  const [lorawanConfig, setLorawanConfig] = useState({
-    devEUI: '',
-    appEUI: '',
-    appKey: ''
-  })
-  const [showLoRaWANGuide, setShowLoRaWANGuide] = useState(false)
 
   useEffect(() => {
     loadSettings()
@@ -37,60 +25,15 @@ export default function Settings() {
     if (saved) {
       setSettings(JSON.parse(saved))
     }
-    
-    const lorawanSaved = localStorage.getItem('lorawan-config')
-    if (lorawanSaved) {
-      setLorawanConfig(JSON.parse(lorawanSaved))
-    }
   }
 
   const saveSettings = () => {
     localStorage.setItem('beehive-settings', JSON.stringify(settings))
-    localStorage.setItem('lorawan-config', JSON.stringify(lorawanConfig))
     toast.success('Nastavenia uložené!')
   }
 
   const handleChange = (field, value) => {
     setSettings(prev => ({ ...prev, [field]: value }))
-  }
-
-  const handleLorawanChange = (field, value) => {
-    // Validate hex format (only allow 0-9, A-F, a-f)
-    if (value && !/^[0-9A-Fa-f]*$/.test(value)) {
-      return // Invalid character, don't update
-    }
-    
-    // Length limits
-    const maxLengths = {
-      devEUI: 16,
-      appEUI: 16,
-      appKey: 32
-    }
-    
-    if (value.length > maxLengths[field]) {
-      return // Too long, don't update
-    }
-    
-    setLorawanConfig(prev => ({ ...prev, [field]: value.toUpperCase() }))
-  }
-
-  const copyLorawanConfig = () => {
-    const config = `// LoRaWAN Configuration
-const char* devEUI = "${lorawanConfig.devEUI}";
-const char* appEUI = "${lorawanConfig.appEUI}";
-const char* appKey = "${lorawanConfig.appKey}";`;
-    
-    navigator.clipboard.writeText(config).then(() => {
-      toast.success('Konfigurácia skopírovaná do schránky!')
-    }).catch(() => {
-      toast.error('Nepodarilo sa skopírovať. Skús manuálne.')
-    })
-  }
-
-  const isLorawanConfigComplete = () => {
-    return lorawanConfig.devEUI.length === 16 && 
-           lorawanConfig.appEUI.length === 16 && 
-           lorawanConfig.appKey.length === 32
   }
 
   return (
@@ -167,13 +110,6 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       </div>
 
       <div className="settings-section">
-        <h2>👥 Sociálne Notifikácie</h2>
-        <SocialNotificationSettings />
-      </div>
-
-      {/* LoRaWAN configuration moved to per-hive device setup in MyHives */}
-
-      <div className="settings-section">
         <h2>O aplikácii</h2>
         <div className="info-box">
           <p><strong>Verzia:</strong> 1.0.0</p>
@@ -199,13 +135,6 @@ const char* appKey = "${lorawanConfig.appKey}";`;
       <button className="btn btn-primary" onClick={saveSettings}>
         💾 Uložiť nastavenia
       </button>
-
-      {showLoRaWANGuide && (
-        <LoRaWANSetupGuide 
-          devEUI={lorawanConfig.devEUI}
-          onClose={() => setShowLoRaWANGuide(false)}
-        />
-      )}
     </div>
   )
 }

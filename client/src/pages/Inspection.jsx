@@ -216,15 +216,6 @@ export default function Inspection() {
     setNotes('')
   }
 
-  const getStatusColor = (item) => {
-    const positiveCount = Object.values(item.checklist)
-      .filter(v => v === true).length
-    
-    if (positiveCount >= 5) return 'status-good'
-    if (positiveCount >= 3) return 'status-warning'
-    return 'status-danger'
-  }
-
   return (
     <div className="inspection">
       <header className="inspection-header">
@@ -404,7 +395,7 @@ export default function Inspection() {
           ) : (
             <div className="history-list">
               {history.map((item, index) => (
-                <div key={index} className={`history-item ${getStatusColor(item)}`}>
+                <div key={index} className="history-item">
                   <div className="history-header">
                     <div className="history-date">
                       {new Date(item.timestamp).toLocaleDateString('sk-SK', {

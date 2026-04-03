@@ -16,7 +16,7 @@ vi.mock('../contexts/AuthContext', () => ({
 
 // Mock pushNotifications
 vi.mock('../utils/pushNotifications', () => ({
-  handleInAppNotification: vi.fn(),
+  getPushSettings: vi.fn(() => ({})),
 }))
 
 // Get the mock
@@ -62,10 +62,10 @@ describe('Navigation', () => {
     
     renderNavigation()
     
-    // Based on actual component output - Slovak labels
+    // Desktop nav shows at least Dashboard; mobile nav shows Domov, História, Moje úle, Mapa
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Kontrola')).toBeInTheDocument() // "Inšpekcia" is actually "Kontrola"
-    expect(screen.getByText('Skupiny')).toBeInTheDocument()
+    expect(screen.getByText('Domov')).toBeInTheDocument()
+    expect(screen.getByText('História')).toBeInTheDocument()
   })
 
   it('should show user name when authenticated', () => {
@@ -90,7 +90,8 @@ describe('Navigation', () => {
     renderNavigation()
     
     // Mobile nav has "Viac" button for menu expansion
-    expect(screen.getByText('Viac')).toBeInTheDocument()
+    const viacButtons = screen.getAllByText('Viac')
+    expect(viacButtons.length).toBeGreaterThanOrEqual(1)
   })
 
   it('should have logout button when authenticated', () => {

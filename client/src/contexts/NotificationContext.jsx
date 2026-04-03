@@ -31,11 +31,8 @@ export const NotificationProvider = ({ children }) => {
     const supported = 'Notification' in window && 'serviceWorker' in navigator;
     setIsSupported(supported);
     
-    console.log('Notifications supported:', supported);
-    
     if ('Notification' in window) {
       setPermission(Notification.permission);
-      console.log('Notification permission:', Notification.permission);
     }
   }, []);
 
@@ -48,21 +45,14 @@ export const NotificationProvider = ({ children }) => {
 
   const registerServiceWorker = async () => {
     try {
-      console.log('Attempting to register Service Worker...');
-      console.log('Location:', window.location.href);
-      console.log('Is HTTPS or localhost?', window.location.protocol === 'https:' || window.location.hostname === 'localhost');
-      
       const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-      console.log('Service Worker registered:', reg);
       setRegistration(reg);
       
       // Wait for service worker to be ready
       const ready = await navigator.serviceWorker.ready;
-      console.log('Service Worker ready:', ready);
       setRegistration(ready);
     } catch (error) {
       console.error('Service Worker registration failed:', error);
-      console.error('Error details:', error.message, error.stack);
     }
   };
 
@@ -75,7 +65,6 @@ export const NotificationProvider = ({ children }) => {
     try {
       const perm = await Notification.requestPermission();
       setPermission(perm);
-      console.log('Permission result:', perm);
       
       if (perm === 'granted') {
         // Show test notification using simple Notification API
@@ -112,58 +101,35 @@ export const NotificationProvider = ({ children }) => {
   const updateSettings = (newSettings) => {
     setSettings(newSettings);
     localStorage.setItem('notificationSettings', JSON.stringify(newSettings));
-    console.log('Settings updated:', newSettings);
   };
 
   const sendNotification = async (title, options = {}) => {
-    console.log('sendNotification called:', { title, options, permission, isSupported, enabled: settings.enabled });
-    
-    if (!isSupported) {
-      console.error('Notifications not supported');
-      alert('Notifikácie nie sú podporované v tomto prehliadači');
-      return;
-    }
-
-    if (permission !== 'granted') {
-      console.error('Permission not granted:', permission);
-      alert('Povoľ notifikácie v prehliadači');
-      return;
-    }
-
-    if (!settings.enabled) {
-      console.error('Notifications not enabled in settings');
+    if (!isSupported || permission !== 'granted' || !settings.enabled) {
       return;
     }
 
     try {
       // Try simple notification first
       try {
-        const notif = new Notification(title, {
+        new Notification(title, {
           icon: '/icon.svg',
           badge: '/icon.svg',
           ...options
         });
-        console.log('Simple notification shown:', notif);
         return;
       } catch (simpleError) {
-        console.log('Simple notification failed, trying service worker:', simpleError);
+        // Fallback to service worker notification
       }
 
-      // Fallback to service worker notification
       if (registration) {
         await registration.showNotification(title, {
           icon: '/icon.svg',
           badge: '/icon.svg',
           ...options
         });
-        console.log('Service worker notification shown');
-      } else {
-        console.error('No service worker registration available');
-        alert('Service Worker nie je dostupný. Skús refreshnuť stránku.');
       }
     } catch (error) {
       console.error('Error showing notification:', error);
-      alert('Chyba pri zobrazení notifikácie: ' + error.message);
     }
   };
 
@@ -171,6 +137,13 @@ export const NotificationProvider = ({ children }) => {
     if (!settings.enabled || permission !== 'granted') return;
     
     try {
+      // Read threshold settings from beehive-settings (written by Settings page)
+      const beehiveSettings = JSON.parse(localStorage.getItem('beehive-settings') || '{}');
+      const tempMin = beehiveSettings.tempMin ?? 30;
+      const tempMax = beehiveSettings.tempMax ?? 36;
+      const humidityMin = beehiveSettings.humidityMin ?? 40;
+      const humidityMax = beehiveSettings.humidityMax ?? 70;
+
       // Fetch latest sensor data
       const response = await fetch(`/api/sensor/latest?hiveId=${hiveId}`);
       if (!response.ok) return;
@@ -179,34 +152,82 @@ export const NotificationProvider = ({ children }) => {
       const alerts = [];
 
       // Check temperature
-      if (data.temperature < settings.tempMin) {
+      if (settings.temperature && data.temperature < tempMin) {
         alerts.push({
           title: '🌡️ Nízka teplota!',
-          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (min: ${settings.tempMin}°C)`,
+          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (min: ${tempMin}°C)`,
           tag: `temp-low-${hiveId}`
         });
-      } else if (data.temperature > settings.tempMax) {
+      } else if (settings.temperature && data.temperature > tempMax) {
         alerts.push({
           title: '🌡️ Vysoká teplota!',
-          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (max: ${settings.tempMax}°C)`,
+          body: `Teplota v úli ${hiveId}: ${data.temperature.toFixed(1)}°C (max: ${tempMax}°C)`,
           tag: `temp-high-${hiveId}`
         });
       }
 
       // Check humidity
-      if (data.humidity < settings.humidityMin) {
+      if (settings.humidity && data.humidity < humidityMin) {
         alerts.push({
           title: '💧 Nízka vlhkosť!',
-          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (min: ${settings.humidityMin}%)`,
+          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (min: ${humidityMin}%)`,
           tag: `humidity-low-${hiveId}`
         });
-      } else if (data.humidity > settings.humidityMax) {
+      } else if (settings.humidity && data.humidity > humidityMax) {
         alerts.push({
           title: '💧 Vysoká vlhkosť!',
-          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (max: ${settings.humidityMax}%)`,
+          body: `Vlhkosť v úli ${hiveId}: ${data.humidity.toFixed(1)}% (max: ${humidityMax}%)`,
           tag: `humidity-high-${hiveId}`
         });
       }
+
+      // Battery alert
+      if (settings.battery && data.battery !== undefined && data.battery !== null && data.battery < 20) {
+        alerts.push({
+          title: '🔋 Nízka batéria!',
+          body: `Batéria úľa ${hiveId}: ${data.battery}%`,
+          tag: `battery-low-${hiveId}`
+        });
+      }
+
+      // Weight change alert — compare with stored previous reading
+      const prevKey = `prev-reading-${hiveId}`;
+      const prevStr = localStorage.getItem(prevKey);
+      const prev = prevStr ? JSON.parse(prevStr) : null;
+
+      if (settings.weight && prev && data.weight != null && prev.weight != null && data.lastUpdate && prev.lastUpdate) {
+        const timeDiffHours = (new Date(data.lastUpdate) - new Date(prev.lastUpdate)) / (1000 * 60 * 60);
+        if (timeDiffHours > 0 && timeDiffHours <= 4) {
+          const weightChange = Math.abs(data.weight - prev.weight);
+          const weightChangePerHour = weightChange / timeDiffHours;
+          if (weightChangePerHour > 2) {
+            const direction = data.weight > prev.weight ? 'nárast' : 'pokles';
+            alerts.push({
+              title: '⚖️ Výrazná zmena hmotnosti!',
+              body: `Úľ ${hiveId}: ${direction} o ${weightChange.toFixed(1)} kg`,
+              tag: `weight-change-${hiveId}`
+            });
+          }
+        }
+      }
+
+      // Device offline alert
+      if (settings.offline && data.lastUpdate) {
+        const hoursSince = (Date.now() - new Date(data.lastUpdate).getTime()) / (1000 * 60 * 60);
+        if (hoursSince > 1) {
+          alerts.push({
+            title: '📡 Zariadenie neodpovedá!',
+            body: `Úľ ${hiveId}: posledné dáta pred ${Math.floor(hoursSince)}h`,
+            tag: `offline-${hiveId}`
+          });
+        }
+      }
+
+      // Always store current reading for next comparison
+      localStorage.setItem(prevKey, JSON.stringify({
+        weight: data.weight,
+        lastUpdate: data.lastUpdate
+      }));
 
       // Send notifications
       for (const alert of alerts) {

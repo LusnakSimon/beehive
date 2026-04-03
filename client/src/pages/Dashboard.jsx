@@ -7,6 +7,7 @@ import VarroaReminder from '../components/VarroaReminder'
 import { DashboardSkeleton } from '../components/Skeleton'
 import './Dashboard.css'
 import { addItem as idbAddItem, getAllItems as idbGetAllItems } from '../lib/indexeddb'
+import { formatTimeAgo } from '../utils/dateUtils'
 
 const DB_NAME = 'beehive-cache-v1'
 const LATEST_STORE = 'sensor-latest'
@@ -30,31 +31,6 @@ export default function Dashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const { queuedCount, isOnline, isReplaying, retry } = useOfflineStatus(selectedHive)
   
-  // Manual entry state
-  const [showManualEntry, setShowManualEntry] = useState(false)
-  const [manualForm, setManualForm] = useState({
-    temperature: '',
-    humidity: '',
-    weight: '',
-    battery: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Helper function to format time ago
-  const formatTimeAgo = (date) => {
-    const now = new Date()
-    const diffMs = now - date
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return 'Práve teraz'
-    if (diffMins < 60) return `Pred ${diffMins} min`
-    if (diffHours < 24) return `Pred ${diffHours} hod`
-    if (diffDays === 1) return 'Včera'
-    return `Pred ${diffDays} dňami`
-  }
-
   useEffect(() => {
     if (!selectedHive) {
       setLoading(false) // No hive - stop loading immediately
@@ -260,49 +236,6 @@ export default function Dashboard() {
     )
   }
 
-  // Handle manual sensor reading submission
-  const handleManualSubmit = async (e) => {
-    e.preventDefault()
-    if (isSubmitting) return
-    
-    setIsSubmitting(true)
-    try {
-      const reading = {
-        hiveId: selectedHive,
-        temperature: manualForm.temperature ? parseFloat(manualForm.temperature) : undefined,
-        humidity: manualForm.humidity ? parseFloat(manualForm.humidity) : undefined,
-        weight: manualForm.weight ? parseFloat(manualForm.weight) : undefined,
-        battery: manualForm.battery ? parseFloat(manualForm.battery) : undefined
-      }
-      
-      // Remove undefined values
-      Object.keys(reading).forEach(key => reading[key] === undefined && delete reading[key])
-      
-      const response = await fetch('/api/sensor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(reading)
-      })
-      
-      if (response.ok) {
-        setShowManualEntry(false)
-        setManualForm({ temperature: '', humidity: '', weight: '', battery: '' })
-        // Refresh data
-        await fetchLatestData()
-        await fetch24hHistory()
-      } else {
-        const err = await response.json()
-        alert(err.error || 'Chyba pri ukladaní')
-      }
-    } catch (error) {
-      console.error('Manual entry error:', error)
-      alert('Chyba pripojenia')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   const getOverallStatus = () => {
     const tempStatus = getMetricStatus('temperature', data.temperature)
     const humidStatus = getMetricStatus('humidity', data.humidity)
@@ -381,28 +314,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-
-      {/* Device type info */}
-      {getCurrentHive()?.device?.type && (
-        <div className="device-status-card">
-          <div className="device-header">
-            <span className="device-icon">
-              {getCurrentHive().device.type === 'api' ? '📡' : '📝'}
-            </span>
-            <span className="device-title">
-              {getCurrentHive().device.type === 'api' ? 'API zariadenie' : 'Manuálne zadávanie'}
-            </span>
-          </div>
-          {getCurrentHive().device.type === 'manual' && (
-            <button 
-              className="btn btn-primary btn-sm add-reading-btn"
-              onClick={() => setShowManualEntry(true)}
-            >
-              ➕ Pridať záznam
-            </button>
-          )}
-        </div>
-      )}
 
       <div className="metrics-grid-modern">
         {/* Temperature Card */}
@@ -623,78 +534,6 @@ export default function Dashboard() {
       
       <VarroaReminder />
 
-      {/* Manual Entry Modal */}
-      {showManualEntry && (
-        <div className="modal-overlay" onClick={() => setShowManualEntry(false)}>
-          <div className="modal-content manual-entry-modal" onClick={e => e.stopPropagation()}>
-            <h3>📝 Pridať manuálny záznam</h3>
-            <form onSubmit={handleManualSubmit}>
-              <div className="manual-entry-grid">
-                <label>
-                  <span>🌡️ Teplota (°C)</span>
-                  <input 
-                    type="number" 
-                    step="0.1" 
-                    placeholder="napr. 34.5"
-                    value={manualForm.temperature}
-                    onChange={e => setManualForm(f => ({ ...f, temperature: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  <span>💧 Vlhkosť (%)</span>
-                  <input 
-                    type="number" 
-                    step="0.1" 
-                    min="0" 
-                    max="100"
-                    placeholder="napr. 65"
-                    value={manualForm.humidity}
-                    onChange={e => setManualForm(f => ({ ...f, humidity: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  <span>⚖️ Hmotnosť (kg)</span>
-                  <input 
-                    type="number" 
-                    step="0.01" 
-                    placeholder="napr. 45.5"
-                    value={manualForm.weight}
-                    onChange={e => setManualForm(f => ({ ...f, weight: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  <span>🔋 Batéria (%)</span>
-                  <input 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    max="100"
-                    placeholder="napr. 85"
-                    value={manualForm.battery}
-                    onChange={e => setManualForm(f => ({ ...f, battery: e.target.value }))}
-                  />
-                </label>
-              </div>
-              <div className="form-actions">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary" 
-                  onClick={() => setShowManualEntry(false)}
-                >
-                  Zrušiť
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn btn-primary"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Ukladám...' : 'Uložiť'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

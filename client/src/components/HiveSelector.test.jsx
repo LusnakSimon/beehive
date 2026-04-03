@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import HiveSelector from './HiveSelector';
 import * as HiveContext from '../context/HiveContext';
 
@@ -24,10 +25,10 @@ describe('HiveSelector', () => {
     HiveContext.useHive.mockReturnValue({
       selectedHive: null,
       setSelectedHive: mockSetSelectedHive,
-      hives: []
+      hives: null
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     expect(screen.getByText('Načítavam úle...')).toBeInTheDocument();
   });
@@ -39,7 +40,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     expect(screen.getByText('Úľ 1')).toBeInTheDocument();
     expect(screen.getByText('Záhrada')).toBeInTheDocument();
@@ -52,7 +53,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     // Dropdown should be closed initially
     expect(screen.queryByText('Sad')).not.toBeInTheDocument();
@@ -73,7 +74,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     // Open dropdown
     const button = screen.getByRole('button', { name: /Úľ 1/i });
@@ -93,7 +94,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     // Open dropdown
     const button = screen.getByRole('button', { name: /Úľ 1/i });
@@ -117,7 +118,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     // Open dropdown
     const button = screen.getByRole('button', { name: /Úľ 1/i });
@@ -134,7 +135,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     // Open dropdown
     const button = screen.getByRole('button', { name: /Úľ 1/i });
@@ -152,7 +153,7 @@ describe('HiveSelector', () => {
       hives: mockHives
     });
 
-    render(<HiveSelector />);
+    render(<BrowserRouter><HiveSelector /></BrowserRouter>);
     
     // Should show first hive
     expect(screen.getByText('Úľ 1')).toBeInTheDocument();

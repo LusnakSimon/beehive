@@ -4,7 +4,7 @@
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-black)](https://ebeehive.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**An intelligent IoT system for beehive monitoring** - Progressive Web App with real-time sensor data, LoRaWAN support, and social features for beekeepers.
+**An intelligent IoT system for beehive monitoring** - Progressive Web App with real-time sensor data from custom LoRa hardware.
 
 🌐 **Live Demo:** [https://ebeehive.vercel.app](https://ebeehive.vercel.app)
 
@@ -15,7 +15,7 @@
 ## ✨ Features
 
 ### 📊 Real-time Monitoring
-- Live temperature, humidity & weight tracking from ESP32/LoRaWAN sensors
+- Live temperature, humidity & weight tracking from custom LoRa sensor nodes
 - Interactive charts with historical data (6h, 24h, 7d, 30d, 90d, 1y)
 - Smart alerts for abnormal readings
 - Battery and signal strength monitoring
@@ -25,11 +25,11 @@
 - Monitor unlimited hives per account
 - Custom names, locations, and color coding
 - GPS coordinates with interactive map view
-- Privacy controls (public/private hives)
+- Per-hive API keys for secure device authentication
 
 ### 🗺️ Hive Map
 - Interactive OpenStreetMap integration
-- View your hives and discover nearby beekeepers
+- View your hives on a map
 - Distance calculations between hives
 - Click markers for hive details
 
@@ -37,31 +37,17 @@
 - Digital inspection checklists
 - Track queen sightings, brood patterns, pollen stores
 - Inspection history with notes
-- Varroa treatment reminders
-
-### 🌐 LoRaWAN Integration
-- Long-range monitoring (kilometers away)
-- Low power consumption (months on battery)
-- TTN (The Things Network) webhook support
-- Easy device registration wizard
-
-### 💬 Social Features
-- Friend system with requests
-- Direct messaging between beekeepers
-- Group chats for communities
-- User profiles with hive collections
 
 ### 📱 Progressive Web App
 - Installable on mobile devices
 - Offline support with service worker
-- Push notifications for alerts
+- Push notifications for sensor alerts
 - Responsive design (mobile & desktop)
 
 ### 🔐 Security
 - OAuth 2.0 authentication (Google, GitHub)
 - JWT-based sessions with HTTP-only cookies
-- Role-based access control (User/Admin)
-- Secure API endpoints
+- Secure API endpoints with per-hive API keys
 
 ---
 
@@ -73,7 +59,7 @@
 | **Backend** | Node.js 20, Vercel Serverless Functions |
 | **Database** | MongoDB Atlas, Mongoose ODM |
 | **Auth** | OAuth 2.0 (Google, GitHub), JWT |
-| **IoT** | ESP32-C3, LoRaWAN, DHT22, HX711 |
+| **IoT** | ESP32-C3, Point-to-point LoRa (RFM95W), SHT40, HX711 |
 | **CI/CD** | GitHub Actions, Vercel |
 | **Testing** | Vitest, React Testing Library |
 
@@ -94,11 +80,8 @@ beehive/
 ├── api/                       # Vercel Serverless Functions
 │   ├── auth/                  # OAuth endpoints
 │   ├── sensor/                # Sensor data API
-│   ├── conversations/         # Chat API
-│   ├── friends/               # Friends API
-│   ├── groups/                # Group chat API
+│   ├── harvests/              # Harvest tracking API
 │   ├── inspection/            # Inspection API
-│   ├── lorawan/               # LoRaWAN webhook
 │   └── users/                 # User management API
 │
 ├── lib/                       # Shared Backend Logic
@@ -106,9 +89,10 @@ beehive/
 │   ├── routes/                # Route handlers
 │   └── utils/                 # Utilities
 │
-├── arduino/                   # ESP32 Firmware
-│   ├── beehive_node/          # Sensor node (LoRa TX)
-│   └── beehive_gateway/       # Gateway (LoRa RX + WiFi)
+├── arduino/                   # ESP32 & Arduino Firmware
+│   ├── beehive_node/          # Sensor node (Arduino Pro Mini + LoRa TX)
+│   ├── beehive_node_v2/       # Sensor node v2 (ATmega328P + RFM95W)
+│   └── beehive_gateway/       # Gateway (ESP32-C3 + LoRa RX + WiFi)
 │
 ├── docs/                      # Documentation
 └── .github/workflows/         # CI/CD pipelines
@@ -172,9 +156,8 @@ GITHUB_SECRET=your-github-client-secret
 |----------|-------------|
 | [Local Development](docs/LOCAL_DEVELOPMENT.md) | Setting up local dev environment |
 | [OAuth Setup](docs/OAUTH_SETUP.md) | Configuring Google & GitHub OAuth |
-| [LoRaWAN Setup](docs/LORAWAN_SETUP.md) | Connecting LoRaWAN devices |
 | [Deployment](docs/DEPLOYMENT.md) | Deploying to Vercel |
-| [Arduino Setup](arduino/README.md) | ESP32 firmware guide |
+| [Arduino Setup](arduino/README.md) | ESP32 & sensor node firmware guide |
 
 ---
 
@@ -243,7 +226,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - [OpenStreetMap](https://www.openstreetmap.org/) for map tiles
-- [The Things Network](https://www.thethingsnetwork.org/) for LoRaWAN infrastructure
 - [Vercel](https://vercel.com/) for hosting
 - [MongoDB Atlas](https://www.mongodb.com/atlas) for database
 

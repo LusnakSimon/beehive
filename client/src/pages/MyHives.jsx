@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../contexts/ToastContext'
 import { useHive } from '../context/HiveContext'
+import { compressImage } from '../utils/imageUtils'
 import './MyHives.css'
 
 export default function MyHives() {
@@ -14,7 +15,7 @@ export default function MyHives() {
   const [modalMode, setModalMode] = useState('add') // 'add' | 'edit'
   const colors = ['#fbbf24', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b']
 
-  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
+  const [form, setForm] = useState({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'api', deviceId: '' } })
   const [errors, setErrors] = useState({})
   const [isSaving, setIsSaving] = useState(false)
 
@@ -23,7 +24,7 @@ export default function MyHives() {
 
   const openAddModal = () => {
     setModalMode('add')
-    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'manual', devEUI: '', deviceId: '' } })
+    setForm({ id: '', name: '', location: '', color: colors[0], imageDataUrl: '', imageFile: null, originalImage: '', coordinates: { lat: '', lng: '' }, visibility: 'private', device: { type: 'api', deviceId: '' } })
     setShowModal(true)
   }
 
@@ -39,69 +40,10 @@ export default function MyHives() {
       originalImage: hive.image || '',  // Track original to detect changes
       coordinates: hive.coordinates || { lat: '', lng: '' },
       visibility: hive.visibility || 'private',
-      device: hive.device || { type: 'manual', devEUI: '', deviceId: '' }
+      device: hive.device || { type: 'api', deviceId: '' }
     })
     setShowModal(true)
   }
-
-  // Compress image to reduce file size for mobile uploads
-  const compressImage = (file, maxSizeMB = 2) => {
-    return new Promise((resolve) => {
-      // If not an image or already small enough, return as-is
-      if (!file.type.startsWith('image/') || file.size <= maxSizeMB * 1024 * 1024) {
-        resolve(file);
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let { width, height } = img;
-          
-          // Scale down if image is very large
-          const maxDimension = 1920;
-          if (width > maxDimension || height > maxDimension) {
-            if (width > height) {
-              height = (height / width) * maxDimension;
-              width = maxDimension;
-            } else {
-              width = (width / height) * maxDimension;
-              height = maxDimension;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Start with quality 0.8 and reduce if needed
-          let quality = 0.85;
-          const tryCompress = () => {
-            canvas.toBlob((blob) => {
-              if (blob.size > maxSizeMB * 1024 * 1024 && quality > 0.3) {
-                quality -= 0.1;
-                tryCompress();
-              } else {
-                const compressedFile = new File([blob], file.name, { 
-                  type: 'image/jpeg',
-                  lastModified: file.lastModified 
-                });
-                console.log(`Compressed ${file.name}: ${(file.size/1024/1024).toFixed(2)}MB -> ${(compressedFile.size/1024/1024).toFixed(2)}MB`);
-                resolve(compressedFile);
-              }
-            }, 'image/jpeg', quality);
-          };
-          tryCompress();
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files && e.target.files[0]
@@ -131,7 +73,6 @@ export default function MyHives() {
   const validateForm = () => {
     const e = {}
     if (!form.name || form.name.trim().length === 0) e.name = 'Názov je povinný.'
-    if (form.device?.devEUI && form.device.devEUI.length !== 16) e.devEUI = 'DevEUI musí mať 16 hex znakov.'
     if (form.coordinates?.lat && isNaN(parseFloat(form.coordinates.lat))) e.coordinates = 'Lat musí byť číslo.'
     if (form.coordinates?.lng && isNaN(parseFloat(form.coordinates.lng))) e.coordinates = 'Lng musí byť číslo.'
     setErrors(e)
@@ -162,7 +103,6 @@ export default function MyHives() {
     if (!validateForm()) {
       // Show specific validation errors
       if (errors.name) toast.warning(errors.name)
-      else if (errors.devEUI) toast.warning(errors.devEUI)
       else if (errors.coordinates) toast.warning(errors.coordinates)
       else toast.warning('Skontroluj vyplnené údaje')
       return
@@ -188,9 +128,7 @@ export default function MyHives() {
           fd.append('location', form.location)
           fd.append('color', form.color)
           fd.append('visibility', form.visibility)
-          // Only include devEUI/deviceId if they have values
           const deviceData = { type: form.device.type }
-          if (form.device.devEUI?.trim()) deviceData.devEUI = form.device.devEUI.trim().toUpperCase()
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
           if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
@@ -203,7 +141,6 @@ export default function MyHives() {
         } else {
           const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
-          if (form.device?.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
           if (form.imageDataUrl) hiveData.image = form.imageDataUrl
 
           res = await fetch('/api/users/me/hives', {
@@ -260,9 +197,7 @@ export default function MyHives() {
           fd.append('location', form.location)
           fd.append('color', form.color)
           fd.append('visibility', form.visibility)
-          // Only include devEUI/deviceId if they have values
           const deviceData = { type: form.device.type }
-          if (form.device.devEUI?.trim()) deviceData.devEUI = form.device.devEUI.trim().toUpperCase()
           if (form.device.deviceId?.trim()) deviceData.deviceId = form.device.deviceId.trim()
           fd.append('device', JSON.stringify(deviceData))
           if (form.coordinates?.lat && form.coordinates?.lng) fd.append('coordinates', JSON.stringify({ lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }))
@@ -275,7 +210,6 @@ export default function MyHives() {
         } else {
           const hiveData = { name: form.name, location: form.location, color: form.color, visibility: form.visibility, device: { type: form.device.type } }
           if (form.coordinates?.lat && form.coordinates?.lng) hiveData.coordinates = { lat: parseFloat(form.coordinates.lat), lng: parseFloat(form.coordinates.lng) }
-          if (form.device?.devEUI) hiveData.device.devEUI = form.device.devEUI.toUpperCase()
           
           // Only send image if it actually changed (new base64 data URL, not the same URL)
           const imageChanged = form.imageDataUrl && form.imageDataUrl !== form.originalImage
@@ -474,13 +408,8 @@ export default function MyHives() {
                 </div>
                 {errors.coordinates && <div className="error-text">{errors.coordinates}</div>}
 
-                <label>Typ zariadenia</label>
-                <select value={form.device.type} onChange={e => setForm(f => ({ ...f, device: { ...f.device, type: e.target.value } }))}>
-                  <option value="manual">📝 Manuálne zadávanie</option>
-                  <option value="api">📡 API zariadenie</option>
-                </select>
-                {form.device.type === 'api' && (
-                  <div className="api-key-section">
+                <label>Zariadenie</label>
+                <div className="api-key-section">
                     <label>API Kľúč</label>
                     {form.device.apiKey ? (
                       <>
@@ -517,17 +446,6 @@ export default function MyHives() {
                           🔄 Vygenerovať nový kľúč
                         </button>
                         <small className="field-hint">Použite tento kľúč v hlavičke X-API-Key pri POST na /api/sensor</small>
-                        
-                        <label style={{marginTop: '1rem'}}>DevEUI (voliteľné)</label>
-                        <input 
-                          placeholder="Pre LoRaWAN webhook (16 hex)" 
-                          value={form.device.devEUI || ''} 
-                          onChange={e => { setForm(f => ({ ...f, device: { ...f.device, devEUI: e.target.value.toUpperCase() } })); setErrors(err => ({ ...err, devEUI: null })) }} 
-                          maxLength={16}
-                          className={errors.devEUI ? 'input-error' : ''}
-                        />
-                        {errors.devEUI && <div className="error-text">{errors.devEUI}</div>}
-                        <small className="field-hint">Len ak používate TTN/Chirpstack webhook</small>
                       </>
                     ) : (
                       <div className="no-api-key">
@@ -540,11 +458,7 @@ export default function MyHives() {
                         </div>
                       </div>
                     )}
-                  </div>
-                )}
-                {form.device.type === 'manual' && (
-                  <small className="field-hint">Dáta zadávate manuálne cez dashboard</small>
-                )}
+                </div>
 
                 <label>Viditeľnosť</label>
                 <select value={form.visibility} onChange={e => setForm(f => ({ ...f, visibility: e.target.value }))}>

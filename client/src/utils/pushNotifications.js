@@ -32,16 +32,11 @@ export function areNotificationsEnabled() {
  * Get user's push notification preferences from localStorage
  */
 export function getPushSettings() {
-  const saved = localStorage.getItem('socialPushNotifications');
+  const saved = localStorage.getItem('beehive-settings');
   if (saved) {
     return JSON.parse(saved);
   }
-  // Default settings
-  return {
-    friendRequests: true,
-    friendRequestAccepted: true,
-    newMessages: true
-  };
+  return {};
 }
 
 /**
@@ -76,69 +71,6 @@ export async function showPushNotification(title, options = {}) {
     console.error('Error showing notification:', error);
     return null;
   }
-}
-
-/**
- * Show notification for friend request
- */
-export async function showFriendRequestNotification(fromUser, requestId) {
-  const settings = getPushSettings();
-  if (!settings.friendRequests) {
-    return null;
-  }
-
-  return await showPushNotification('Nová žiadosť o priateľstvo', {
-    body: `${fromUser.name} vám poslal žiadosť o priateľstvo`,
-    icon: fromUser.image || '/icon-192.png',
-    tag: `friend-request-${requestId}`,
-    data: {
-      type: 'friend_request',
-      requestId,
-      url: '/search'
-    }
-  });
-}
-
-/**
- * Show notification for accepted friend request
- */
-export async function showFriendRequestAcceptedNotification(fromUser) {
-  const settings = getPushSettings();
-  if (!settings.friendRequestAccepted) {
-    return null;
-  }
-
-  return await showPushNotification('Žiadosť bola prijatá', {
-    body: `${fromUser.name} prijal vašu žiadosť o priateľstvo`,
-    icon: fromUser.image || '/icon-192.png',
-    tag: `friend-accepted-${fromUser.id}`,
-    data: {
-      type: 'friend_request_accepted',
-      userId: fromUser.id,
-      url: `/profile/${fromUser.id}`
-    }
-  });
-}
-
-/**
- * Show notification for new message
- */
-export async function showNewMessageNotification(fromUser, messagePreview, conversationId) {
-  const settings = getPushSettings();
-  if (!settings.newMessages) {
-    return null;
-  }
-
-  return await showPushNotification(`Nová správa od ${fromUser.name}`, {
-    body: messagePreview,
-    icon: fromUser.image || '/icon-192.png',
-    tag: `message-${conversationId}`,
-    data: {
-      type: 'new_message',
-      conversationId,
-      url: `/messages/${conversationId}`
-    }
-  });
 }
 
 /**

@@ -17,20 +17,7 @@ import VarroaReminder from './components/VarroaReminder'
 // Lazy loaded pages - loaded on demand to reduce initial bundle
 const History = lazy(() => import('./pages/History'))
 const Settings = lazy(() => import('./pages/Settings'))
-const Admin = lazy(() => import('./pages/Admin'))
 const Inspection = lazy(() => import('./pages/Inspection'))
-const Profile = lazy(() => import('./pages/Profile'))
-const ProfileEdit = lazy(() => import('./pages/ProfileEdit'))
-const FriendRequests = lazy(() => import('./pages/FriendRequests'))
-const Friends = lazy(() => import('./pages/Friends'))
-const UserSearch = lazy(() => import('./pages/UserSearch'))
-const Messages = lazy(() => import('./pages/Messages'))
-const Chat = lazy(() => import('./pages/Chat'))
-const Groups = lazy(() => import('./pages/Groups'))
-const CreateGroup = lazy(() => import('./pages/CreateGroup'))
-const GroupDetail = lazy(() => import('./pages/GroupDetail'))
-const GroupChat = lazy(() => import('./pages/GroupChat'))
-const Notifications = lazy(() => import('./pages/Notifications'))
 const HiveMap = lazy(() => import('./pages/HiveMap'))
 const MyHives = lazy(() => import('./pages/MyHives'))
 const Harvests = lazy(() => import('./pages/Harvests'))
@@ -86,23 +73,9 @@ function App() {
               <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
               <Route path="/inspection" element={<ProtectedRoute><Inspection /></ProtectedRoute>} />
               <Route path="/map" element={<ProtectedRoute><HiveMap /></ProtectedRoute>} />
-              <Route path="/search" element={<ProtectedRoute><UserSearch /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
-              <Route path="/profile/:userId" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
-              <Route path="/friends/requests" element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
-              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-              <Route path="/messages/:conversationId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-              <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
-              <Route path="/groups/create" element={<ProtectedRoute><CreateGroup /></ProtectedRoute>} />
-              <Route path="/groups/:groupId" element={<ProtectedRoute><GroupDetail /></ProtectedRoute>} />
-              <Route path="/groups/:groupId/chat" element={<ProtectedRoute><GroupChat /></ProtectedRoute>} />
-              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="/my-hives" element={<ProtectedRoute><MyHives /></ProtectedRoute>} />
               <Route path="/harvests" element={<ProtectedRoute><Harvests /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute requireAdmin><Admin /></ProtectedRoute>} />
               </Routes>
             </Suspense>
           </main>

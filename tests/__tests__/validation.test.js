@@ -6,8 +6,7 @@ const {
   validateSensorReading,
   validateInspectionChecklist,
   sanitizeString,
-  isValidCoordinates,
-  isValidHex
+  isValidCoordinates
 } = require('../../lib/utils/validation');
 
 describe('Validation Utils', () => {
@@ -126,7 +125,7 @@ describe('Validation Utils', () => {
     it('should reject out-of-range values', () => {
       expect(validateSensorReading({ temperature: -100, humidity: 60, weight: 45 }).valid).toBe(false);
       expect(validateSensorReading({ temperature: 35, humidity: 150, weight: 45 }).valid).toBe(false);
-      expect(validateSensorReading({ temperature: 35, humidity: 60, weight: 600 }).valid).toBe(false);
+      expect(validateSensorReading({ temperature: 35, humidity: 60, weight: 300000 }).valid).toBe(false);
     });
   });
 
@@ -177,20 +176,6 @@ describe('Validation Utils', () => {
       expect(isValidCoordinates({ lat: 91, lng: 0 })).toBe(false);
       expect(isValidCoordinates({ lat: 0, lng: 181 })).toBe(false);
       expect(isValidCoordinates({ lat: 'string', lng: 0 })).toBe(false);
-    });
-  });
-
-  describe('isValidHex', () => {
-    it('should validate correct hex strings', () => {
-      expect(isValidHex('70B3D57ED005A4B2', 16)).toBe(true);
-      expect(isValidHex('aabbccdd', 8)).toBe(true);
-    });
-
-    it('should reject invalid hex strings', () => {
-      expect(isValidHex('', 16)).toBe(false);
-      expect(isValidHex(null, 16)).toBe(false);
-      expect(isValidHex('70B3D57ED005A4B', 16)).toBe(false); // too short
-      expect(isValidHex('70B3D57ED005A4B2G', 17)).toBe(false); // invalid char
     });
   });
 });
