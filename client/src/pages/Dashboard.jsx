@@ -109,16 +109,22 @@ export default function Dashboard() {
   }
 
   const getMetricStatus = (type, value) => {
+    const saved = JSON.parse(localStorage.getItem('beehive-settings') || '{}')
+    const tempMin = saved.tempMin ?? 30
+    const tempMax = saved.tempMax ?? 36
+    const humidityMin = saved.humidityMin ?? 40
+    const humidityMax = saved.humidityMax ?? 70
+
     switch(type) {
       case 'temperature':
-        if (value < 28) return { status: 'critical', color: 'var(--primary)', text: 'Príliš nízka' }
-        if (value < 30) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
-        if (value <= 36) return { status: 'good', color: 'var(--success)', text: 'Optimálna' }
-        if (value <= 38) return { status: 'warning', color: 'var(--warning)', text: 'Vysoká' }
+        if (value < tempMin - 2) return { status: 'critical', color: 'var(--primary)', text: 'Príliš nízka' }
+        if (value < tempMin) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
+        if (value <= tempMax) return { status: 'good', color: 'var(--success)', text: 'Optimálna' }
+        if (value <= tempMax + 2) return { status: 'warning', color: 'var(--warning)', text: 'Vysoká' }
         return { status: 'critical', color: 'var(--danger)', text: 'Príliš vysoká' }
       case 'humidity':
-        if (value < 40) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
-        if (value <= 70) return { status: 'good', color: 'var(--success)', text: 'Optimálna' }
+        if (value < humidityMin) return { status: 'warning', color: 'var(--warning)', text: 'Nízka' }
+        if (value <= humidityMax) return { status: 'good', color: 'var(--success)', text: 'Optimálna' }
         return { status: 'warning', color: 'var(--warning)', text: 'Vysoká' }
       case 'weight':
         if (value < 20) return { status: 'critical', color: 'var(--danger)', text: 'Kriticky nízka' }
@@ -267,6 +273,13 @@ export default function Dashboard() {
   }
 
   const overallStatus = getOverallStatus()
+  const savedSettings = JSON.parse(localStorage.getItem('beehive-settings') || '{}')
+  const thresholds = {
+    tempMin: savedSettings.tempMin ?? 30,
+    tempMax: savedSettings.tempMax ?? 36,
+    humidityMin: savedSettings.humidityMin ?? 40,
+    humidityMax: savedSettings.humidityMax ?? 70
+  }
 
   return (
     <div className="dashboard">
@@ -352,7 +365,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           )}
-          <div className="metric-range-modern">Optimum: 30-36°C</div>
+          <div className="metric-range-modern">Optimum: {thresholds.tempMin}-{thresholds.tempMax}°C</div>
         </div>
 
         {/* Humidity Card */}
@@ -389,7 +402,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </div>
           )}
-          <div className="metric-range-modern">Optimum: 40-70%</div>
+          <div className="metric-range-modern">Optimum: {thresholds.humidityMin}-{thresholds.humidityMax}%</div>
         </div>
 
         {/* Weight Card */}
