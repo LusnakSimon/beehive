@@ -11,8 +11,8 @@
 
 
 // ===== CONFIG - EDIT THESE =====
-const char* WIFI_SSID     = "T-A81MJA";
-const char* WIFI_PASS     = "t2lmlakb8kbv";
+const char* WIFI_SSID     = "SSID";
+const char* WIFI_PASS     = "password";
 const char* SERVER_HOST   = "ebeehive.vercel.app";
 const char* HIVE_ID       = "HIVE-099";
 const char* API_KEY       = "09493c5e9d61082e98a902a89bd32a8f";  // Get from hive settings in app

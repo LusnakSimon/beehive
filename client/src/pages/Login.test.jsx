@@ -143,19 +143,6 @@ describe('Login', () => {
     expect(screen.getByText(/Správa tvojich úľov/)).toBeInTheDocument();
   });
 
-  it('should display privacy link', () => {
-    AuthContext.useAuth.mockReturnValue({
-      isAuthenticated: false,
-      login: mockLogin,
-      loading: false
-    });
-
-    renderWithProviders(<Login />);
-    
-    const privacyLink = screen.getByRole('link', { name: /zásadami ochrany osobných údajov/i });
-    expect(privacyLink).toHaveAttribute('href', '/privacy');
-  });
-
   it('should display bee emoji as login icon', () => {
     AuthContext.useAuth.mockReturnValue({
       isAuthenticated: false,

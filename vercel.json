@@ -40,6 +40,14 @@
       "destination": "/api/inspection/[...path]"
     },
     {
+      "source": "/api/harvests",
+      "destination": "/api/harvests/[...path]"
+    },
+    {
+      "source": "/api/harvests/:path*",
+      "destination": "/api/harvests/[...path]"
+    },
+    {
       "source": "/:path((?!api).*)",
       "destination": "/index.html"
     }
